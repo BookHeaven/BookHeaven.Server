@@ -12,8 +12,8 @@ WORKDIR /src
 COPY ["BookHeaven.Server/BookHeaven.Server.csproj", "BookHeaven.Server/"]
 COPY ["EpubManager/EpubManager.csproj", "EpubManager/"]
 RUN dotnet restore "./BookHeaven.Server/BookHeaven.Server.csproj"
-RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
-RUN apt-get install -y nodejs
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
+RUN nvm install 20
 COPY . .
 WORKDIR "/src/BookHeaven.Server"
 RUN npm install
