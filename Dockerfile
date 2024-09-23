@@ -12,8 +12,9 @@ WORKDIR /src
 COPY ["BookHeaven.Server/BookHeaven.Server.csproj", "BookHeaven.Server/"]
 COPY ["EpubManager/EpubManager.csproj", "EpubManager/"]
 RUN dotnet restore "./BookHeaven.Server/BookHeaven.Server.csproj"
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
-RUN nvm install 20
+RUN curl -fsSL https://fnm.vercel.app/install | bash
+RUN source ~/.bashrc
+RUN fnm use --install-if-missing 20
 COPY . .
 WORKDIR "/src/BookHeaven.Server"
 RUN npm install
