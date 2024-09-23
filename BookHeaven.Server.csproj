@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(IsRunningInCI)' != 'true'">
       <Exec Command="npm run buildcss" />
   </Target>
   <PropertyGroup>
