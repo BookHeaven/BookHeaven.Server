@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
 
 jobs:
   build:
@@ -31,7 +28,7 @@ jobs:
         mkdir -p BookHeaven/EpubManager
         mv temp/EpubManager/* BookHeaven/EpubManager/
       env:
-        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+        GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         
     - name: Clone BookHeaven.Domain
       run: |
@@ -39,7 +36,7 @@ jobs:
         mkdir -p BookHeaven/BookHeaven.Domain
         mv temp/BookHeaven.Domain/* BookHeaven/BookHeaven.Domain/
       env:
-        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+        GH_TOKEN: ${{ secrets.PAT_TOKEN }}
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
