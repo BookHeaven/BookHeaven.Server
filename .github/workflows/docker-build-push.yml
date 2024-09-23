@@ -33,6 +33,14 @@ jobs:
         mkdir -p BookHeaven/BookHeaven.Domain
         mv temp/BookHeaven.Domain/* BookHeaven/BookHeaven.Domain/
 
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+
+    - name: Install npm dependencies
+      run: |
+        cd BookHeaven/BookHeaven.Server
+        npm install
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
 
