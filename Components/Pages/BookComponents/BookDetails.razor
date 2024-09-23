@@ -1,0 +1,260 @@
+﻿@page "/book/{id:guid}"
+
+@if(_book == null)
+{
+	<PageTitle>Loading...</PageTitle>
+	<p>Loading...</p>
+	return;
+}
+
+@if(!_isEditing)
+{
+	<div class="tw-fixed tw-left-0 tw-top-0 tw-right-0 tw-bottom-0 -tw-z-10 tw-blur-3xl tw-opacity-10">
+		<img class="tw-h-full tw-w-full" src="@(_book.CoverUrl)" />
+	</div>
+}
+
+
+<PageTitle>@_book.Title</PageTitle>
+
+<SectionContent SectionName="Tools">
+	@if (!_isEditing)
+	{
+		<a href="@_book.BookUrl" download="@_book.FormattedFileName">
+			<MudIconButton Icon="@Icons.Material.Filled.Download" Color="Color.Secondary" />
+		</a>
+		<MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" OnClick="@(() => _isEditing = true)" Edge="Edge.End" />
+	}
+	else
+	{
+		<MudIconButton Icon="@Icons.Material.Filled.Clear" Color="Color.Secondary" OnClick="Cancel" Edge="Edge.End" />
+		<MudIconButton Icon="@Icons.Material.Filled.Save" Color="Color.Primary" OnClick="Save" Edge="Edge.End" />
+	}
+</SectionContent>
+<div class="tw-mx-auto tw-w-10/12 tw-mt-10 tw-flex tw-flex-wrap tw-gap-10">
+	<div class="cover">
+		<img src="@(_newCoverTempPath ?? _book.CoverUrl)" />
+		@if(_isEditing)
+		{
+			<MudFileUpload T="IBrowserFile" FilesChanged="UploadCoverToTempPath" Accept=".jpg">
+				<ActivatorContent>
+					<MudButton HtmlTag="label"
+							   Variant="Variant.Filled"
+							   Color="Color.Tertiary"
+							   Class="tw-w-full"
+							   StartIcon="@Icons.Material.Filled.Refresh">
+						@(string.IsNullOrEmpty(_book.GetCoverPath(Program.CoversPath, true)) ? Translations.ADD_COVER : Translations.REPLACE_COVER)
+					</MudButton>
+				</ActivatorContent>
+			</MudFileUpload>
+			
+			@if(_newCoverTempPath != null)
+			{
+				<MudAlert Class="tw-mt-4" Severity="Severity.Warning">The new cover won't be applied until the changes are saved.</MudAlert>
+			}
+		}
+	</div>
+	<div class="tw-flex-1">
+		@if (!_isEditing)
+		{
+			<Animate Animation="@Animations.Fade" Duration="TimeSpan.FromSeconds(1)" Once="true">
+				<div id="book-header">
+					<MudText Typo="Typo.h4">@_book.Title</MudText>
+					@if (_book.Series != null)
+					{
+						<MudText Typo="Typo.h6" Color="Color.Primary">@_book.Series.Name - @Translations.BOOK @_book.SeriesIndex?.ToString("0.##")</MudText>
+					}
+				</div>
+				@if (_progress.ElapsedTime != TimeSpan.Zero)
+				{
+					<MudPaper Class="tw-mb-5 tw-flex tw-p-5 tw-w-fit tw-flex-col tw-gap-5" Elevation="0">
+						<div class="tw-flex tw-gap-5">
+							<dl>
+								<dt>@Translations.START_DATE</dt>
+								<dd>@_progress.StartDate?.ToString("D")</dd>
+							</dl>
+							@if (_progress.EndDate != null)
+							{
+								<dl>
+									<dt>@Translations.END_DATE</dt>
+									<dd>@_progress.EndDate.Value.ToString("D")</dd>
+								</dl>
+							}
+							<dl>
+								<dt>@Translations.READ_TIME</dt>
+								<dd class="tw-whitespace-nowrap">@_progress.ElapsedTimeFormatted</dd>
+							</dl>
+						</div>
+						
+						<MudProgressLinear Color="Color.Primary" Rounded="true" Size="Size.Medium" Value="@((double)_progress.Progress)">
+							<MudText Typo="Typo.caption">@_progress.Progress.ToString("0.##") %</MudText>
+						</MudProgressLinear>
+					</MudPaper>
+				}
+				<div class="tw-flex tw-mb-2">
+					@if (_book.ISBN10 != null)
+					{
+						<dl id="isbn10">
+							<dt>ISBN-10</dt>
+							<dd>@_book.ISBN10</dd>
+						</dl>
+					}
+					@if (_book.ISBN13 != null)
+					{
+						<dl id="isbn13">
+							<dt>ISBN-13</dt>
+							<dd>@_book.ISBN13</dd>
+						</dl>
+					}
+				</div>
+				<dl id="metadata">
+					@if (_book.Author != null)
+					{
+						<dt>@Translations.AUTHOR</dt>
+						<dd>@_book.Author.Name</dd>
+					}
+					@if (_book.Publisher != null)
+					{
+						<dt>@Translations.PUBLISHER</dt>
+						<dd>@_book.Publisher</dd>
+					}
+					@if (_book.PublishedDate != null)
+					{
+						<dt>@Translations.PUBLISHED</dt>
+						<dd>@_book.PublishedDate.Value.ToString("D")</dd>
+					}
+					@if (_book.Description != null)
+					{
+						<dt class="tw-col-span-2">@Translations.DESCRIPTION</dt>
+						<dd class="description tw-col-span-2">@((MarkupString)_book.Description)</dd>
+					}
+				</dl>
+
+			</Animate>
+
+		}
+		else
+		{
+			<Animate Animation="@Animations.Fade" Duration="TimeSpan.FromSeconds(1)" Once="true">
+				<div class="tw-flex tw-gap-3 tw-mb-5">
+					<MudButton StartIcon="@Icons.Material.Rounded.CloudDownload" Variant="Variant.Filled" Color="Color.Tertiary" OnClick="@ShowMetadataDialog">Get Metadata</MudButton>
+					<MudFileUpload T="IBrowserFile" FilesChanged="UploadEpubToTempPath" Accept=".epub" Class="!tw-m-0">
+						<ActivatorContent>
+							<MudButton HtmlTag="label"
+									   Variant="Variant.Filled"
+									   Color="Color.Tertiary"
+									   Class="tw-w-full"
+									   StartIcon="@Icons.Material.Rounded.DriveFileMove">
+								Replace epub
+							</MudButton>
+						</ActivatorContent>
+					</MudFileUpload>
+				</div>
+				<MudGrid Spacing="2" Class="tw-mb-7">
+					<MudItem xs="12">
+						<MudText Typo="Typo.h5" Class="tw-mb-2">Progress</MudText>
+					</MudItem>
+					<MudItem xs="12" md="4">
+						@* <MudDatePicker @bind-Date="_progress.StartDate" Label="@Translations.START_DATE" Variant="Variant.Filled"></MudDatePicker> *@
+						<MudDateOffsetPicker @bind-NullableValue="_progress.StartDate" Label="@Translations.START_DATE" Required="false" />
+					</MudItem>
+					<MudItem xs="12" md="4">
+						<MudDateOffsetPicker @bind-NullableValue="_progress.EndDate" Label="@Translations.END_DATE" Required="false" />
+						@* <MudDatePicker @bind-Date="_progress.EndDate" Label="@Translations.END_DATE" Variant="Variant.Filled"></MudDatePicker> *@
+					</MudItem>
+					<MudItem xs="12" md="4">
+						<MudTextField @bind-Value="_progress.ElapsedTime" Label="@Translations.READ_TIME" Variant="Variant.Filled" Converter="_timeReadConverter" Clearable="true"></MudTextField>
+					</MudItem>
+				</MudGrid>
+				<MudGrid Spacing="2" Style="min-width:300px;">
+					<MudItem xs="12">
+						<MudText Typo="Typo.h5" Class="tw-mb-2">Metadata</MudText>
+					</MudItem>
+					<MudItem xs="12" md="6">
+						<MudTextField @bind-Value=_book.Title Label="@Translations.TITLE" Variant="Variant.Filled"></MudTextField>
+					</MudItem>
+					<MudItem xs="12" md="6">
+						<MudTextField @bind-Value=_authorName Label="@Translations.AUTHOR" list="authors" Clearable="true" Variant="Variant.Filled"></MudTextField>
+					</MudItem>
+					<MudItem xs="12" md="2">
+						<MudNumericField @bind-Value=_book.SeriesIndex Label="@Translations.SERIES_INDEX" Variant="Variant.Filled"></MudNumericField>
+					</MudItem>
+					<MudItem xs="12" md="10">
+						<MudTextField @bind-Value=_seriesName Label="@Translations.SERIES" list="series" Clearable="true" Variant="Variant.Filled"></MudTextField>
+					</MudItem>
+					<MudItem xs="12" md="4">
+						<MudTextField @bind-Value=_book.ISBN10 Label="ISBN-10" Variant="Variant.Filled"></MudTextField>
+					</MudItem>
+					<MudItem xs="12" md="4">
+						<MudTextField @bind-Value=_book.ISBN13 Label="ISBN-13" Variant="Variant.Filled"></MudTextField>
+					</MudItem>
+					<MudItem xs="12" md="4">
+						<MudTextField @bind-Value=_book.ASIN Label="ASIN" Variant="Variant.Filled"></MudTextField>
+					</MudItem>
+					<MudItem xs="12" md="8">
+						<MudTextField @bind-Value=_book.Publisher Label="@Translations.PUBLISHER" Variant="Variant.Filled"></MudTextField>
+					</MudItem>
+					<MudItem xs="12" md="4">
+						<MudDatePicker @bind-Value=_book.PublishedDate Label="@Translations.PUBLISHED" Variant="Variant.Filled"></MudDatePicker>
+					</MudItem>
+					<MudItem xs="12">
+						<MudTextField @bind-Value=_book.Description Label="@Translations.DESCRIPTION" Lines="12" AutoGrow="true" Variant="Variant.Filled"></MudTextField>
+					</MudItem>
+				</MudGrid>
+
+				<datalist id="authors">
+					@foreach (var author in _authors)
+					{
+						<option value="@author.Name">@author.Name</option>
+					}
+				</datalist>
+
+				<datalist id="series">
+					@foreach (var serie in _series)
+					{
+						<option value="@serie.Name">@serie.Name</option>
+					}
+				</datalist>
+			</Animate>
+
+		}
+	</div>
+	
+</div>
+
+<MudDialog @bind-IsVisible="_searchingMetadata" OnBackdropClick="@(() => _searchingMetadata = false)">
+	<DialogContent>
+		@if(_metadataList.Count == 0)
+		{
+			<MudAlert Severity="Severity.Info">No metadata found for this book.</MudAlert>
+		}
+		else
+		{
+			<MudStack Spacing="10">
+				@foreach (var metadata in _metadataList)
+				{
+					<div class="tw-flex">
+						<img src="@metadata.CoverURL" class="tw-max-w-[100px]" />
+
+						<div class="tw-flex-1 tw-ml-4">
+							<p>@metadata.Title</p>
+							<p>@metadata.Author</p>
+							<p>@metadata.Publisher</p>
+							<p>@metadata.ISBN10</p>
+							<p>@metadata.ISBN13</p>
+							<p>@metadata.ASIN</p>
+							<p>@metadata.Description</p>
+						</div>
+					</div>
+					
+				}
+			</MudStack>
+		}
+	</DialogContent>
+	<DialogActions>
+		<MudButton Color="Color.Primary">Apply</MudButton>
+		<MudButton Color="Color.Secondary">Cancel</MudButton>
+	</DialogActions>
+</MudDialog>
+
+

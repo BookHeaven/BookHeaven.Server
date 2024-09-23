@@ -1,0 +1,69 @@
+﻿@page "/"
+@inject IDatabaseService DatabaseService
+@inject NavigationManager NavigationManager
+
+<PageTitle>@Translations.SHELF</PageTitle>
+
+<div class="books">
+	@if (IsLoading)
+	{
+		@for(var i = 0;i<50;i++)
+		{
+			<MudCard>
+				<MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="250px"/>
+				<MudCardContent>
+					<MudSkeleton SkeletonType="SkeletonType.Text" Width="80%"/>
+					<MudSkeleton SkeletonType="SkeletonType.Text" Width="60%"/>
+					<MudSkeleton SkeletonType="SkeletonType.Text" Width="100%"/>
+				</MudCardContent>
+			</MudCard>
+		}
+	}
+	else
+	{
+		@if (Books.Count == 0)
+		{
+			<p>Your Shelf is empty...</p>
+		}
+		else
+		{
+			@foreach (var book in Books)
+			{
+				<MudCard Elevation="4" Class="book tw-group tw-overflow-hidden tw-flex tw-flex-col hover:tw-cursor-pointer" @onclick="@(() => NavigationManager.NavigateTo($"/book/{book.BookId}"))">
+					<div class="cover tw-overflow-hidden">
+						<MudCardMedia Image="@(book.CoverUrl)" Height="250" Class="tw-transition-transform tw-duration-150 group-hover:tw-scale-105" />
+					</div>
+					<MudCardContent Class="tw-flex-1 tw-flex tw-flex-col tw-gap-1 group-hover:tw-bg-slate-700">
+						<MudText Typo="Typo.body2">@book.Title</MudText>
+						<MudText Typo="Typo.body2" Color="Color.Secondary">@book.Author?.Name</MudText>
+						<MudText Typo="Typo.caption" Color="Color.Primary">@book.Series?.Name</MudText>
+					</MudCardContent>
+				</MudCard>
+
+			}
+		}
+		
+		
+	}
+	
+</div>
+
+@code {
+
+	public bool IsLoading { get; set; } = true;
+	public List<Book> Books { get; set; } = new List<Book>();
+
+	protected override async Task OnInitializedAsync()
+	{
+		await Reload();
+	}
+
+	private async Task Reload()
+	{
+		IsLoading = true;
+		StateHasChanged();
+		var storedBooks = (await DatabaseService.GetAllIncluding<Book>(x => x.Author, x => x.Series)).OrderBy(x => x.Author?.Name).ThenBy(x => x.Series?.Name).ThenBy(x => x.SeriesIndex).ToList();
+		Books.AddRange(storedBooks);
+		IsLoading = false;
+	}
+}

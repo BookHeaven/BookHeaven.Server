@@ -1,0 +1,13 @@
+﻿@page "/settings"
+@using EpubManager.Entities
+@inject IFormatService<EpubBook> EpubService
+<h3>Settings</h3>
+
+<MudButton @onclick="LoadImportFolder">Load import folder</MudButton>
+
+@code {
+	private async Task LoadImportFolder()
+	{
+		await EpubService.LoadFromFolder(Program.ImportPath);
+	}
+}

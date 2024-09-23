@@ -1,0 +1,92 @@
+@page "/series"
+<PageTitle>@Translations.SERIES_PLURAL</PageTitle>
+
+<MudTable 
+    Breakpoint="Breakpoint.None"
+    Items="_items" 
+    Loading="_items == null" 
+    CanCancelEdit="true" 
+    Hover="true" 
+    RowEditPreview="@(a => _elementBeforeEdit = ((Series)a).Clone())" 
+    OnCommitEditClick="@(() => DatabaseService.SaveChanges() )" 
+    RowEditCancel="CancelEdit"
+    ApplyButtonPosition="TableApplyButtonPosition.Start">
+    <ColGroup>
+        <col style="width: 50px;"/>
+        <col style="width: 300px;"/>
+        <col/>
+        <col style="width: 100px;"/>
+    </ColGroup>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Series, object>(x => x.Name!)">@Translations.NAME</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<Series, object>(x => x.Books.Count())">@Translations.BOOKS</MudTableSortLabel></MudTh>
+        <MudTh></MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd>@context.Name</MudTd>
+        <MudTd>@context.Books.Count()</MudTd>
+        <MudTd>
+            <MudIconButton Class="tw-ms-2" ClickPropagation="false" Variant="Variant.Filled" Icon="@((_showDetails[context.SeriesId])? Icons.Material.Outlined.RemoveCircle : Icons.Material.Filled.RemoveRedEye)" OnClick="@(() => _showDetails[context.SeriesId] = !_showDetails[context.SeriesId])"></MudIconButton>
+        </MudTd>
+    </RowTemplate>
+    <RowEditingTemplate>
+        <MudTd><MudTextField @bind-Value="context.Name" Variant="Variant.Outlined"/></MudTd>
+        <MudTd>@context.Books.Count()</MudTd>
+    </RowEditingTemplate>
+    <ChildRowContent>
+        @if (_showDetails[context.SeriesId])
+        {
+            <MudTr>
+                <td colspan="4">
+                    <MudCard Elevation="0">
+                        <MudCardHeader>
+                            <MudText Typo="Typo.h6">@Translations.BOOKS_FROM @context.Name</MudText>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudTable Breakpoint="Breakpoint.None" T="Book" Items="context.Books" Context="book" Elevation="0" Outlined="true" Dense="true" OnRowClick="@(r => NavigationManager.NavigateTo($"/book/{r.Item.BookId}"))">
+                                <ColGroup>
+                                    <col style="width: 200px;"/>
+                                    <col style="width: 50px;"/>
+                                    <col/>
+                                </ColGroup>
+                                <HeaderContent>
+                                    <MudTh><MudTableSortLabel SortBy="new Func<Book, object>(x => x.Title!)">@Translations.TITLE</MudTableSortLabel></MudTh>
+                                    <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Book, object>(x => x.SeriesIndex ?? 0)">@Translations.SERIES_INDEX</MudTableSortLabel></MudTh>
+                                    <MudTh><MudTableSortLabel SortBy="new Func<Book, object>(x => x.Author?.Name!)">@Translations.AUTHOR</MudTableSortLabel></MudTh>
+                                </HeaderContent>
+                                <RowTemplate>
+                                    <MudTd>@book.Title</MudTd>
+                                    <MudTd>@book.SeriesIndex?.ToString("0.##")</MudTd>
+                                    <MudTd>@book.Author?.Name</MudTd>
+                                </RowTemplate>
+                            </MudTable>
+                        </MudCardContent>
+                    </MudCard>
+                    
+                </td>
+            </MudTr>
+        }
+    </ChildRowContent>
+</MudTable>
+
+@code {
+    [Inject] private IDatabaseService DatabaseService { get; set; } = null!;
+    [Inject] private NavigationManager NavigationManager { get; set; } = null!;
+    
+    IEnumerable<Series>? _items;
+    Series? _elementBeforeEdit;
+    Dictionary<Guid, bool> _showDetails = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _items = await DatabaseService.GetAllIncluding<Series>(a => a.Books);
+        _showDetails = _items.ToDictionary(a => a.SeriesId, a => false);
+    }
+    
+    private void CancelEdit(object element)
+    {
+        ((Series)element).Name = _elementBeforeEdit!.Name;
+        _elementBeforeEdit = null;
+    }
+
+}

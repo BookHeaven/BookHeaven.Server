@@ -1,0 +1,95 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+      <Exec Command="npm run buildcss" />
+  </Target>
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>6a60f5e0-2a65-4884-9c73-c8acf7989b10</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <RuntimeIdentifiers>linux-x64</RuntimeIdentifiers>
+    <EnableSdkContainerDebugging>True</EnableSdkContainerDebugging>
+    <NeutralLanguage>en</NeutralLanguage>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="data\**" />
+    <Compile Remove="import\**" />
+    <Compile Remove="wwwroot\lib\**" />
+    <Content Remove="data\**" />
+    <Content Remove="import\**" />
+    <Content Remove="wwwroot\lib\**" />
+    <EmbeddedResource Remove="data\**" />
+    <EmbeddedResource Remove="import\**" />
+    <EmbeddedResource Remove="wwwroot\lib\**" />
+    <None Remove="data\**" />
+    <None Remove="import\**" />
+    <None Remove="wwwroot\lib\**" />
+    <EmbeddedResource Update="Localization\Translations.es.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Translations.es.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Update="Localization\Translations.es.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Translations.es.resx</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="Localization\Translations.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Translations.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Update="Localization\Translations.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Translations.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\logo.svg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="wwwroot\js\boot.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<PackageReference Include="BlazorAnimate" Version="3.0.0" />
+	<PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
+	<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
+    <PackageReference Include="MudBlazor" Version="7.8.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\books\" />
+    <Folder Include="wwwroot\covers\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ContainerEnvironmentVariable Include="ASPNETCORE_HTTPS_PORTS">
+      <Value>8081</Value>
+    </ContainerEnvironmentVariable>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\img\logo.svg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EpubManager\EpubManager.csproj" />
+    <ProjectReference Include="..\BookHeaven.Domain\BookHeaven.Domain.csproj" />
+  </ItemGroup>
+
+	<PropertyGroup>
+		<MudAllowedAttributePattern>LowerCase</MudAllowedAttributePattern>
+		<MudIllegalParameters>V7CaseSensitive</MudIllegalParameters>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<CompilerVisibleProperty Include="MudAllowedAttributePattern" />
+		<CompilerVisibleProperty Include="MudIllegalParameters" />
+	</ItemGroup>
+</Project>

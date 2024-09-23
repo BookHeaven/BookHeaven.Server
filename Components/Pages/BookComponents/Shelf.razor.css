@@ -1,0 +1,24 @@
+﻿.books {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 180px);
+    grid-gap: 1.5rem;
+    justify-content: center;
+}
+
+/*::deep .book {
+    width: 210px;
+}*/
+
+::deep .book .cover {
+    height: 250px;
+}
+
+ ::deep .cover img {
+    height: 100%;
+}
+
+ .book .metadata {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}

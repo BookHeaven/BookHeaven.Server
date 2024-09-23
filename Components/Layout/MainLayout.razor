@@ -1,0 +1,34 @@
+﻿@inherits LayoutComponentBase
+<MudThemeProvider Theme="_theme" IsDarkMode="true"/>
+<MudPopoverProvider />
+<MudSnackbarProvider />
+<MudDialogProvider />
+<PageTitle>MyBookHeaven</PageTitle>
+<MudLayout Class="tw-min-h-full tw-overflow-y-auto">
+    <MudAppBar Elevation="0" Dense="true" Class="tw-backdrop-blur">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <img src="/img/logo.svg" class="tw-h-full tw-py-2" />
+        <MudText Typo="Typo.h6" Class="tw-text-white tw-ms-2">MyBookHeaven</MudText>
+        <MudSpacer />
+        <MudStack Row="true" Spacing="1">
+            <SectionOutlet SectionName="Tools"/>
+        </MudStack>
+        
+    </MudAppBar>
+    
+    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="0" PreserveOpenState="true">
+        <NavMenu />
+    </MudDrawer>
+    <MudMainContent Class="tw-pb-5 !tw-pt-16 md:tw-px-7">
+        @Body
+    </MudMainContent>
+</MudLayout>
+
+
+<SectionContent SectionName="Tools">
+    <MudFileUpload T="IBrowserFile" FilesChanged="UploadBook" Class="!tw-m-0">
+        <ActivatorContent>
+            <MudIconButton HtmlTag="label" Icon="@Icons.Material.Filled.UploadFile" Color="Color.Secondary" />
+        </ActivatorContent>
+    </MudFileUpload>
+</SectionContent>
