@@ -33,14 +33,6 @@ jobs:
         mkdir -p BookHeaven/BookHeaven.Domain
         mv temp/BookHeaven.Domain/* BookHeaven/BookHeaven.Domain/
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-
-    - name: Install npm dependencies
-      run: |
-        cd BookHeaven/BookHeaven.Server
-        npm install
-
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
 
@@ -48,7 +40,7 @@ jobs:
       run: dotnet restore BookHeaven/BookHeaven.Server/BookHeaven.Server.csproj
 
     - name: Build solution
-      run: dotnet build BookHeaven/BookHeaven.Server/BookHeaven.Server.csproj --configuration Release
+      run: dotnet build BookHeaven/BookHeaven.Server/BookHeaven.Server.csproj --configuration Release /p:IsRunningInCI=true
 
     - name: Build Docker image
       run: docker build ./BookHeaven --file BookHeaven/BookHeaven.Server/Dockerfile --tag ${{ env.IMAGE_NAME }}
