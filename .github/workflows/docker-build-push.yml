@@ -22,7 +22,8 @@ jobs:
     - name: Move Server to BookHeaven directory
       run: |
         mkdir -p BookHeaven/BookHeaven.Server
-        mv * BookHeaven/BookHeaven.Server
+        shopt -s extglob
+        mv !(BookHeaven) BookHeaven/BookHeaven.Server/
 
     - name: Clone EpubManager
       run: |
