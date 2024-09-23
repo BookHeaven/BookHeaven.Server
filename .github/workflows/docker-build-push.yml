@@ -33,14 +33,14 @@ jobs:
         mkdir -p BookHeaven/BookHeaven.Domain
         mv temp/BookHeaven.Domain/* BookHeaven/BookHeaven.Domain/
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+    #- name: Setup .NET
+    #  uses: actions/setup-dotnet@v4
 
-    - name: Install dependencies
-      run: dotnet restore BookHeaven/BookHeaven.Server/BookHeaven.Server.csproj
+    #- name: Install dependencies
+    #  run: dotnet restore BookHeaven/BookHeaven.Server/BookHeaven.Server.csproj
 
-    - name: Build solution
-      run: dotnet build BookHeaven/BookHeaven.Server/BookHeaven.Server.csproj --configuration Release /p:IsRunningInCI=true
+    #- name: Build solution
+    #  run: dotnet build BookHeaven/BookHeaven.Server/BookHeaven.Server.csproj --configuration Release /p:IsRunningInCI=true
 
     - name: Build Docker image
       run: docker build ./BookHeaven --file BookHeaven/BookHeaven.Server/Dockerfile --tag ${{ env.IMAGE_NAME }}
