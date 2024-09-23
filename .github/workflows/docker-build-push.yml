@@ -30,12 +30,16 @@ jobs:
         git clone https://github.com/HeasHeartfire/EpubManager.git temp/EpubManager
         mkdir -p BookHeaven/EpubManager
         mv temp/EpubManager/* BookHeaven/EpubManager/
+      env:
+        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
         
     - name: Clone BookHeaven.Domain
       run: |
         git clone https://github.com/HeasHeartfire/BookHeaven.Domain.git temp/BookHeaven.Domain
         mkdir -p BookHeaven/BookHeaven.Domain
         mv temp/BookHeaven.Domain/* BookHeaven/BookHeaven.Domain/
+      env:
+        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
