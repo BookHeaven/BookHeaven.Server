@@ -9,21 +9,21 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["MyBookHeaven.Server/MyBookHeaven.Server.csproj", "MyBookHeaven.Server/"]
+COPY ["BookHeaven.Server/BookHeaven.Server.csproj", "BookHeaven.Server/"]
 COPY ["EpubManager/EpubManager.csproj", "EpubManager/"]
-RUN dotnet restore "./MyBookHeaven.Server/MyBookHeaven.Server.csproj"
+RUN dotnet restore "./BookHeaven.Server/BookHeaven.Server.csproj"
 RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
 RUN apt-get install -y nodejs
 COPY . .
-WORKDIR "/src/MyBookHeaven.Server"
+WORKDIR "/src/BookHeaven.Server"
 RUN npm install
-RUN dotnet build "./MyBookHeaven.Server.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "./BookHeaven.Server.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./MyBookHeaven.Server.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./BookHeaven.Server.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "MyBookHeaven.Server.dll"]
+ENTRYPOINT ["dotnet", "BookHeaven.Server.dll"]
