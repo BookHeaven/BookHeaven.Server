@@ -38,7 +38,7 @@ namespace BookHeaven.Server.Localization {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("MyBookHeaven.Server.Localization.Translations.es", typeof(Translations_es).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("BookHeaven.Server.Localization.Translations.es", typeof(Translations_es).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
