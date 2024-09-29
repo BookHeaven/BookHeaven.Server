@@ -35,7 +35,7 @@ jobs:
         mv temp/BookHeaven.Domain/* BookHeaven/BookHeaven.Domain/
 
     - name: Build Docker image
-      run: docker build ./BookHeaven --file BookHeaven/BookHeaven.Server/Dockerfile --tag ${{ env.IMAGE_NAME }}:latest
+      run: docker build ./BookHeaven --file BookHeaven/BookHeaven.Server/Dockerfile --tag ${{env.REGISTRY}}/${{ env.IMAGE_NAME }}:latest
 
     - name: Log in to GitHub Container Registry
       run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.repository_owner }}" --password-stdin
