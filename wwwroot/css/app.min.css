@@ -184,6 +184,9 @@
 .tw-flex-wrap {
     flex-wrap: wrap;
 }
+.tw-items-center {
+    align-items: center;
+}
 .tw-gap-1 {
     gap: 0.25rem;
 }
@@ -204,6 +207,9 @@
 }
 .tw-whitespace-nowrap {
     white-space: nowrap;
+}
+.tw-text-nowrap {
+    text-wrap: nowrap;
 }
 .tw-p-4 {
     padding: 1rem;

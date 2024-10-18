@@ -58,9 +58,9 @@
   <ItemGroup>
 	<PackageReference Include="BlazorAnimate" Version="3.0.0" />
 	<PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
-	<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
+	<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.10" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
-    <PackageReference Include="MudBlazor" Version="7.8.0" />
+    <PackageReference Include="MudBlazor" Version="7.11.0" />
   </ItemGroup>
 
   <ItemGroup>

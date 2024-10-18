@@ -17,6 +17,12 @@
     <script src="_content/BlazorAnimate/blazorAnimateInterop.js"></script>
     <script src="_content/MudBlazor/MudBlazor.min.js"></script>
     <script src="_framework/blazor.web.js"></script>
+    <script>
+        window.scrollToTop = () => {
+            let main = document.querySelector(".mud-layout");
+            main.scrollTo({ top: 0 });
+        };
+    </script>
 </body>
 
 </html>

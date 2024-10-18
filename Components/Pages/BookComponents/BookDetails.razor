@@ -14,6 +14,7 @@
 	</div>
 }
 
+<ScrollToTop />
 
 <PageTitle>@_book.Title</PageTitle>
 
@@ -86,9 +87,11 @@
 							</dl>
 						</div>
 						
-						<MudProgressLinear Color="Color.Primary" Rounded="true" Size="Size.Medium" Value="@((double)_progress.Progress)">
-							<MudText Typo="Typo.caption">@_progress.Progress.ToString("0.##") %</MudText>
-						</MudProgressLinear>
+						<div class="tw-flex tw-gap-3 tw-items-center">
+							<MudProgressLinear Color="Color.Primary" Rounded="true" Size="Size.Medium" Value="@((double)_progress.Progress)" />
+							<span class="tw-text-nowrap">@_progress.Progress.ToString("0.##") %</span>
+						</div>
+						
 					</MudPaper>
 				}
 				<div class="tw-flex tw-mb-2">
