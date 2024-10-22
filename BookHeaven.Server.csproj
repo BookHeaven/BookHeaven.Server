@@ -4,7 +4,7 @@
       <Exec Command="npm run buildcss" />
   </Target>
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>6a60f5e0-2a65-4884-9c73-c8acf7989b10</UserSecretsId>
@@ -60,7 +60,7 @@
 	<PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
 	<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.10" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
-    <PackageReference Include="MudBlazor" Version="7.11.0" />
+    <PackageReference Include="MudBlazor" Version="7.13.0" />
   </ItemGroup>
 
   <ItemGroup>
