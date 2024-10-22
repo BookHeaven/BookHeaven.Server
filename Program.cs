@@ -53,9 +53,7 @@ namespace BookHeaven.Server
 			builder.Services.AddDomain(DatabasePath);
 			builder.Services.AddEpubManager();
 			builder.Services.AddTransient<IMetadataProviderService, OpenlibraryService>();
-			builder.Services.AddTransient<IFormatService<EpubBook>, EpubService>();
-			
-			
+			builder.Services.AddTransient<IFormatService<EpubBook>, EpubService>();	
 
 			var app = builder.Build();
 			app.UseRequestLocalization(Environment.GetEnvironmentVariable("LANG") ?? CultureInfo.CurrentCulture.Name);
@@ -77,13 +75,14 @@ namespace BookHeaven.Server
 				}
 			};
 
-			app.UseStaticFiles();
+			app.MapStaticAssets();
 			app.UseStaticFiles(new StaticFileOptions
 			{
 				FileProvider = new PhysicalFileProvider(AppDataPath),
 				ContentTypeProvider = provider
 			});
-			app.UseAntiforgery();
+			
+            app.UseAntiforgery();
 
 			app.MapRazorComponents<App>()
 				.AddInteractiveServerRenderMode();

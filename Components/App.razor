@@ -1,12 +1,15 @@
-﻿<!DOCTYPE html>
+﻿@* @using Microsoft.AspNetCore.Mvc.ViewFeatures *@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <base href="/" />
-    <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="css/app.min.css" />
-    <link rel="stylesheet" href="BookHeaven.Server.styles.css" />
+    <link href="@Assets["_content/MudBlazor/MudBlazor.min.css"]" rel="stylesheet" />
+    <link rel="stylesheet" href="@Assets["css/app.min.css"]" />
+    <link rel="stylesheet" href="@Assets["BookHeaven.Server.styles.css"]" />
+    @* <link rel="stylesheet" href="@AddVersion("css/app.min.css")" />
+    <link rel="stylesheet" href="@AddVersion("BookHeaven.Server.styles.css")" /> *@
     <link rel="icon" type="image/x-icon" href="img/logo.svg" />
     <title>BookHeaven</title>
     <HeadOutlet @rendermode="@InteractiveServer" />
@@ -14,9 +17,9 @@
 
 <body>
     <Routes @rendermode="new InteractiveServerRenderMode(prerender:false)"/>
-    <script src="_content/BlazorAnimate/blazorAnimateInterop.js"></script>
-    <script src="_content/MudBlazor/MudBlazor.min.js"></script>
-    <script src="_framework/blazor.web.js"></script>
+    <script src="@Assets["_content/BlazorAnimate/blazorAnimateInterop.js"]"></script>
+    <script src="@Assets["_content/MudBlazor/MudBlazor.min.js"]"></script>
+    <script src="@Assets["_framework/blazor.web.js"]"></script>
     <script>
         window.scrollToTop = () => {
             let main = document.querySelector(".mud-layout");
@@ -26,3 +29,15 @@
 </body>
 
 </html>
+
+@* @code {
+    [Inject] private IFileVersionProvider FileVersionProvider { get; set; } = null!;
+
+    string basePath = "/";
+
+    private string AddVersion(string path)
+    {
+        return FileVersionProvider.AddFileVersionToPath(basePath, path);
+    }
+
+} *@
