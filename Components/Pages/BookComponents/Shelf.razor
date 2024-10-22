@@ -1,4 +1,4 @@
-﻿@page "/"
+﻿@attribute [Route(Urls.Shelf)]
 @inject IDatabaseService DatabaseService
 @inject NavigationManager NavigationManager
 
@@ -31,7 +31,7 @@
 		{
 			@foreach (var book in Books)
 			{
-				<MudCard Elevation="4" Class="book tw-group tw-overflow-hidden tw-flex tw-flex-col hover:tw-cursor-pointer" @onclick="@(() => NavigationManager.NavigateTo($"/book/{book.BookId}"))">
+				<MudCard Elevation="4" Class="book tw-group tw-overflow-hidden tw-flex tw-flex-col hover:tw-cursor-pointer" @onclick="@(() => NavigationManager.NavigateTo(Urls.GetBookUrl(book.BookId)))">
 					<div class="cover tw-overflow-hidden">
 						<MudCardMedia Image="@(book.CoverUrl)" Height="250" Class="tw-transition-transform tw-duration-150 group-hover:tw-scale-105" />
 					</div>

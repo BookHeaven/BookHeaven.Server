@@ -1,7 +1,7 @@
 ﻿@using BookHeaven.Server.Localization
 
 <MudNavMenu Margin="Margin.Dense" Class="tw-p-4" Color="Color.Primary" Rounded="true">
-    <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Rounded.AutoStories">@Translations.SHELF</MudNavLink>
+    <MudNavLink Href="/shelf" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Rounded.AutoStories">@Translations.SHELF</MudNavLink>
     <MudNavLink Href="/authors" Match="NavLinkMatch.All" Icon="@Icons.Material.Rounded.Portrait">@Translations.AUTHORS</MudNavLink>
     <MudNavLink Href="/series" Match="NavLinkMatch.All" Icon="@Icons.Material.Rounded.Label">@Translations.SERIES_PLURAL</MudNavLink>
     <MudNavLink Href="/settings" Match="NavLinkMatch.All" Icon="@Icons.Material.Rounded.Settings">@Translations.SETTINGS</MudNavLink>

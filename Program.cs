@@ -106,6 +106,18 @@ namespace BookHeaven.Server
 			}
 			app.MapControllers();
 
+			app.Use(async (context, next) =>
+            {
+                if (context.Request.Path == "/")
+                {
+                    context.Response.Redirect("/shelf");
+                }
+                else
+                {
+                    await next();
+                }
+            });
+
 			app.Run();
 		}
 	}
