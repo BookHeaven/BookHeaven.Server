@@ -8,7 +8,6 @@ using BookHeaven.Server.Components;
 using BookHeaven.Server.Interfaces;
 using BookHeaven.Server.Services;
 using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Localization;
 using MudBlazor;
 using BookHeaven.Domain;
 using BookHeaven.Domain.Entities;

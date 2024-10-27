@@ -3,6 +3,10 @@
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(IsRunningInCI)' != 'true'">
       <Exec Command="npm run buildcss" />
   </Target>
+	<ItemGroup>
+		<UpToDateCheckBuilt Include="wwwroot\css\app.css" Set="Css" />
+		<UpToDateCheckBuilt Include="tailwind.config.js" Set="Css" />
+	</ItemGroup>
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
