@@ -7,9 +7,13 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
     env:
-      IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/bookheaven-server:latest
+      REGISTRY: ghcr.io
+      IMAGE_NAME: heasheartfire/bookheaven-server
 
     steps:
     - name: Checkout
@@ -33,20 +37,11 @@ jobs:
         mkdir -p BookHeaven/BookHeaven.Domain
         mv temp/BookHeaven.Domain/* BookHeaven/BookHeaven.Domain/
 
-    #- name: Setup .NET
-    #  uses: actions/setup-dotnet@v4
-
-    #- name: Install dependencies
-    #  run: dotnet restore BookHeaven/BookHeaven.Server/BookHeaven.Server.csproj
-
-    #- name: Build solution
-    #  run: dotnet build BookHeaven/BookHeaven.Server/BookHeaven.Server.csproj --configuration Release /p:IsRunningInCI=true
-
     - name: Build Docker image
-      run: docker build ./BookHeaven --file BookHeaven/BookHeaven.Server/Dockerfile --tag ${{ env.IMAGE_NAME }}
+      run: docker build ./BookHeaven --file BookHeaven/BookHeaven.Server/Dockerfile --tag ${{env.REGISTRY}}/${{ env.IMAGE_NAME }}:latest
 
-    - name: Log in to DockerHub
-      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+    - name: Log in to GitHub Container Registry
+      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.repository_owner }}" --password-stdin
 
     - name: Push Docker image
-      run: docker push ${{ env.IMAGE_NAME }}
+      run: docker push ${{env.REGISTRY}}/${{ env.IMAGE_NAME }}:latest
