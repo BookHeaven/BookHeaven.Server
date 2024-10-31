@@ -192,3 +192,7 @@ img {
     display: flex;
     gap: 0.5rem;
 }
+
+#components-reconnect-modal {
+    color: black;
+}
