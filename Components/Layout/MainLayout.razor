@@ -12,11 +12,10 @@
             <MudText Typo="Typo.h6" Class="tw-text-white tw-ms-2">BookHeaven</MudText>
         </MudHidden>
         <MudSpacer />
-        <MudStack Row="true" Spacing="1">
-            <SectionOutlet SectionName="Tools"/>
         <MudStack
             Row="true"
             Spacing="1">
+            <SearchBar />
 
             <MudFileUpload T="IBrowserFile" FilesChanged="UploadBook" Class="!tw-m-0">
                 <ActivatorContent>

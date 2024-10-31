@@ -1,0 +1,74 @@
+﻿<MudAutocomplete
+	@ref="_autocomplete"
+	Class="!tw-mx-2"
+	Placeholder="Search"
+	Margin="Margin.Dense"
+	Variant="Variant.Outlined"
+	Adornment="Adornment.Start"
+	AdornmentIcon="@Icons.Material.Filled.Search"
+	@bind-Value="@_searchItem"
+	@bind-Value:after="NavigateToAndClear"
+	TextUpdateSuppression="false"
+	SearchFunc="Search">
+	<ItemTemplate Context="i">
+		<div class="tw-flex tw-items-center tw-gap-2">
+			<img src="@i.Image" class="tw-w-14" alt="" />
+			<div class="tw-grid">
+				<MudText Typo="Typo.body2" Color="Color.Default">@i.Title</MudText>
+				<MudText Typo="Typo.caption" Color="Color.Secondary">@i.Author</MudText>
+				<MudText Typo="Typo.caption" Color="Color.Primary">@i.Series</MudText>
+			</div>
+		</div>
+	</ItemTemplate>
+</MudAutocomplete>
+	
+@code {
+	[Inject] private NavigationManager NavigationManager { get; set; } = null!;
+	[Inject] private IDatabaseService DatabaseService { get; set; } = null!;
+	private SearchItem? _searchItem;
+	private MudAutocomplete<SearchItem> _autocomplete = null!;
+	
+	private async Task<IEnumerable<SearchItem>> Search(string value, CancellationToken token)
+	{
+		
+		if (string.IsNullOrEmpty(value)) return Array.Empty<SearchItem>();
+		var upperValue = value.ToUpper();
+		
+		var books = await DatabaseService.GetAllByIncluding<Book>(b => 
+			b.Title!.ToUpper().Contains(upperValue) || 
+			b.Author!.Name!.ToUpper().Contains(upperValue) ||
+			b.Series!.Name!.ToUpper().Contains(upperValue), 
+			b => b.Author, b => b.Series);
+		
+		var searchItems = new List<SearchItem>();
+		searchItems.AddRange(books.Select(
+			b => new SearchItem
+			{
+				Image = b.CoverUrl, 
+				Title = b.Title!, 
+				Url = Urls.GetBookUrl(b.BookId),
+				Author = b.Author?.Name,
+				Series = b.Series?.Name
+			})
+		);
+
+		return searchItems;
+	}
+
+	private async Task NavigateToAndClear()
+	{
+		if (_searchItem == null) return;
+		await _autocomplete.ClearAsync();
+		NavigationManager.NavigateTo(_searchItem.Url);
+		_searchItem = null;
+	}
+	
+	private class SearchItem
+	{
+		public string? Image { get; set; }
+		public string Title { get; set; } = null!;
+		public string? Author { get; set; }
+		public string? Series { get; set; }
+		public string Url { get; set; } = null!;
+	}
+}
