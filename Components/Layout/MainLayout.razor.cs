@@ -54,6 +54,7 @@ namespace BookHeaven.Server.Components.Layout
         {
             if (file == null) return;
 
+            Snackbar.Add($"{Translations.UPLOADING_BOOK}...", Severity.Info);
 			var id = await EpubService.LoadFromFile(file);
             if (id != null)
             {
@@ -62,7 +63,7 @@ namespace BookHeaven.Server.Components.Layout
             else
             {
                 Snackbar.Clear();
-				Snackbar.Add("Failed to upload book", Severity.Error);
+				Snackbar.Add(Translations.UPLOADING_BOOK_FAILED, Severity.Error);
             }
         }
     }
