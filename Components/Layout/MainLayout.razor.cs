@@ -3,18 +3,19 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
 using BookHeaven.Server.Interfaces;
+using BookHeaven.Server.Localization;
 
 namespace BookHeaven.Server.Components.Layout
 {
     public partial class MainLayout
     {
-        [Inject] NavigationManager NavigationManager { get; set; } = null!;
-        [Inject] IFormatService<EpubBook> EpubService { get; set; } = null!;
-        [Inject] ISnackbar Snackbar { get; set; } = null!;
+        [Inject] private NavigationManager NavigationManager { get; set; } = null!;
+        [Inject] private IFormatService<EpubBook> EpubService { get; set; } = null!;
+        [Inject] private ISnackbar Snackbar { get; set; } = null!;
+        
+        private bool _drawerOpen = true;
 
-        bool _drawerOpen = true;
-
-		readonly MudTheme _theme = new()
+        private readonly MudTheme _theme = new()
         {
             PaletteDark = new()
             {
@@ -42,15 +43,18 @@ namespace BookHeaven.Server.Components.Layout
             }
         };
 
-        void DrawerToggle()
+        private void DrawerToggle()
         {
             _drawerOpen = !_drawerOpen;
         }
 
-        async void UploadBook(IBrowserFile file)
+        private async void UploadBook(IBrowserFile? file)
         {
             Snackbar.Add("Uploading book...", Severity.Info);
 			Guid? id = await EpubService.LoadFromFile(file);
+            if (file == null) return;
+
+			var id = await EpubService.LoadFromFile(file);
             if (id != null)
             {
                 NavigationManager.NavigateTo($"/book/{id}");
