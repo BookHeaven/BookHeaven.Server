@@ -37,8 +37,10 @@ namespace BookHeaven.Server.Components.Layout
                 ActionDefault = "#56b4ff",
                 ActionDisabled = "#595959",
                 HoverOpacity = 0.1,
+                PrimaryContrastText = "#000000",
                 TertiaryContrastText = "#000000",
                 SecondaryContrastText = "#000000",
+                WarningContrastText = "#000000",
                 TableLines = "#4a5d6d"
             }
         };
@@ -50,8 +52,6 @@ namespace BookHeaven.Server.Components.Layout
 
         private async void UploadBook(IBrowserFile? file)
         {
-            Snackbar.Add("Uploading book...", Severity.Info);
-			Guid? id = await EpubService.LoadFromFile(file);
             if (file == null) return;
 
 			var id = await EpubService.LoadFromFile(file);
