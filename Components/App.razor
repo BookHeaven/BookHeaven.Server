@@ -1,5 +1,4 @@
-﻿@* @using Microsoft.AspNetCore.Mvc.ViewFeatures *@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -8,8 +7,6 @@
     <link href="@Assets["_content/MudBlazor/MudBlazor.min.css"]" rel="stylesheet" />
     <link rel="stylesheet" href="@Assets["css/app.min.css"]" />
     <link rel="stylesheet" href="@Assets["BookHeaven.Server.styles.css"]" />
-    @* <link rel="stylesheet" href="@AddVersion("css/app.min.css")" />
-    <link rel="stylesheet" href="@AddVersion("BookHeaven.Server.styles.css")" /> *@
     <link rel="icon" type="image/x-icon" href="img/logo.svg" />
     <title>BookHeaven</title>
     <HeadOutlet @rendermode="@InteractiveServer" />
@@ -29,15 +26,3 @@
 </body>
 
 </html>
-
-@* @code {
-    [Inject] private IFileVersionProvider FileVersionProvider { get; set; } = null!;
-
-    string basePath = "/";
-
-    private string AddVersion(string path)
-    {
-        return FileVersionProvider.AddFileVersionToPath(basePath, path);
-    }
-
-} *@
