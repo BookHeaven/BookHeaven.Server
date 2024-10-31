@@ -6,18 +6,6 @@
     text-wrap: balance;
 }
 
-.cover {
-    width: 200px;
-    margin: 0 auto;
-}
-
-dl#metadata {
-    display: grid;
-    row-gap: 0.8rem;
-    font-size: 1.2rem;
-    grid-template-columns: 150px 1fr;
-}
-
 dt, dd {
     margin: 0;
 }
@@ -27,12 +15,6 @@ dt {
     color: var(--mud-palette-text-secondary);
 }
 
-.description {
-    max-width: 800px;
-    text-align: justify;
-    line-height: 1.4;
-}
-
 #progress-bar {
     background-color: var(--mud-palette-secondary);
 }
@@ -40,13 +22,3 @@ dt {
 #progress-bar > div {
     background-color: var(--mud-palette-primary);
 }
-
-/* Editing */
-
-/*dt {
-    grid-column: 1;
-}
-
-dd {
-    grid-column: 2;
-}*/

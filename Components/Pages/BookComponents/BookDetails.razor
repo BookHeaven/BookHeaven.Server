@@ -22,17 +22,17 @@
 		<a href="@_book.BookUrl" download="@_book.FormattedFileName">
 			<MudIconButton Icon="@Icons.Material.Filled.Download" Color="Color.Secondary" />
 		</a>
-		<MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" OnClick="@(() => _isEditing = true)" Edge="Edge.End" />
+		<MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" OnClick="@(() => _isEditing = true)" />
 	}
 	else
 	{
-		<MudIconButton Icon="@Icons.Material.Filled.Clear" Color="Color.Secondary" OnClick="Cancel" Edge="Edge.End" />
-		<MudIconButton Icon="@Icons.Material.Filled.Save" Color="Color.Primary" OnClick="Save" Edge="Edge.End" />
+		<MudIconButton Icon="@Icons.Material.Filled.Clear" Color="Color.Secondary" OnClick="Cancel" />
+		<MudIconButton Icon="@Icons.Material.Filled.Save" Color="Color.Primary" OnClick="Save" />
 	}
 </SectionContent>
 <div class="tw-mx-auto tw-w-10/12 tw-mt-10 tw-flex tw-flex-wrap tw-gap-10">
-	<Animate Animation="@Animations.Fade" Duration="TimeSpan.FromSeconds(1)" Once="true">
-		<div class="cover">
+	<Animate Animation="@Animations.Fade" Duration="TimeSpan.FromSeconds(1)" Once="true" class="mx-auto">
+		<div class="tw-w-[200px]">
 			<img src="@(_newCoverTempPath ?? _book.CoverUrl)" />
 			@if (_isEditing)
 			{
@@ -113,7 +113,7 @@
 						</dl>
 					}
 				</div>
-				<dl id="metadata">
+				<dl class="tw-grid tw-gap-3 tw-grid-cols-[150px_1fr] tw-items-center tw-text-xl">
 					@if (_book.Author != null)
 					{
 						<dt>@Translations.AUTHOR</dt>
@@ -132,7 +132,7 @@
 					@if (_book.Description != null)
 					{
 						<dt class="tw-col-span-2">@Translations.DESCRIPTION</dt>
-						<dd class="description tw-col-span-2">@((MarkupString)_book.Description)</dd>
+						<dd class="tw-max-w-[800px] tw-leading-8 tw-col-span-2">@((MarkupString)_book.Description)</dd>
 					}
 				</dl>
 
