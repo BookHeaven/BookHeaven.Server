@@ -6,7 +6,7 @@
 
 <ScrollToTop />
 
-<div class="books">
+<div class="tw-grid tw-grid-cols-[repeat(auto-fill,180px)] tw-gap-6 tw-justify-center">
 	@if (IsLoading)
 	{
 		@for(var i = 0;i<50;i++)
@@ -31,9 +31,9 @@
 		{
 			@foreach (var book in Books)
 			{
-				<MudCard Elevation="4" Class="book tw-group tw-overflow-hidden tw-flex tw-flex-col hover:tw-cursor-pointer" @onclick="@(() => NavigationManager.NavigateTo(Urls.GetBookUrl(book.BookId)))">
-					<div class="cover tw-overflow-hidden">
-						<MudCardMedia Image="@(book.CoverUrl)" Height="250" Class="tw-transition-transform tw-duration-150 group-hover:tw-scale-105" />
+				<MudCard Elevation="4" Class="tw-group tw-overflow-hidden tw-flex tw-flex-col hover:tw-cursor-pointer" @onclick="@(() => NavigationManager.NavigateTo(Urls.GetBookUrl(book.BookId)))">
+					<div class="tw-h-[250px] tw-overflow-hidden">
+						<MudCardMedia Image="@Assets[book.CoverUrl]" Class="tw-transition-transform tw-h-full tw-duration-150 group-hover:tw-scale-105" />
 					</div>
 					<MudCardContent Class="tw-flex-1 tw-flex tw-flex-col tw-gap-1 group-hover:tw-bg-slate-700">
 						<MudText Typo="Typo.body2">@book.Title</MudText>
@@ -52,8 +52,8 @@
 
 @code {
 
-	public bool IsLoading { get; set; } = true;
-	public List<Book> Books { get; set; } = new List<Book>();
+	private bool IsLoading { get; set; } = true;
+	private List<Book> Books { get; set; } = [];
 
 	protected override async Task OnInitializedAsync()
 	{
