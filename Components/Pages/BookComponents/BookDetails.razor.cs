@@ -24,7 +24,7 @@ namespace BookHeaven.Server.Components.Pages.BookComponents
 		private bool _isEditing = false;
 		private bool _searchingMetadata = false;
 
-		private Book _book = null!;
+		private Book? _book;
 		private BookProgress _progress = null!;
 		private List<Author> _authors = [];
 		private List<Series> _series = [];
@@ -36,18 +36,21 @@ namespace BookHeaven.Server.Components.Pages.BookComponents
 		private string? _authorName;
 		private string? _seriesName;
 
-		Converter<TimeSpan> _timeReadConverter = new Converter<TimeSpan>
+		private readonly Converter<TimeSpan> _timeReadConverter = new()
 		{
 			SetFunc = value => $"{(int)value.TotalHours:00}:{value.Minutes:00}",
 			GetFunc = text => text != null ? new(int.Parse(text.Split(":")[0]), int.Parse(text.Split(":")[1]), 0) : TimeSpan.Zero
 		};
 
-		protected override async Task OnInitializedAsync()
+		protected override async Task OnParametersSetAsync()
 		{
-			_authors = (await DatabaseService.GetAll<Author>()).ToList();
-			_series = (await DatabaseService.GetAll<Series>()).ToList();
+			if (Id != _book?.BookId)
+			{
+				_authors = (await DatabaseService.GetAll<Author>()).ToList();
+				_series = (await DatabaseService.GetAll<Series>()).ToList();
 
-			await LoadBook();
+				await LoadBook();
+			}
 		}
 
 		private async Task LoadBook()
