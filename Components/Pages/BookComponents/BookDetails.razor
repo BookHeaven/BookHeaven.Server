@@ -10,30 +10,44 @@
 @if(!_isEditing)
 {
 	<div class="tw-fixed tw-left-0 tw-top-0 tw-right-0 tw-bottom-0 -tw-z-10 tw-blur-3xl tw-opacity-10">
-		<img class="tw-h-full tw-w-full" src="@(_book.CoverUrl)" />
+		<img class="tw-h-full tw-w-full" src="@(_book.CoverUrl)" alt="" />
 	</div>
 }
 
 <PageTitle>@_book.Title</PageTitle>
-
-<SectionContent SectionName="Tools">
+<SectionContent SectionName="TopBar">
+	<MudTooltip Text="@Translations.GO_BACK">
+		<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Color="Color.Primary" Href="/shelf" />
+	</MudTooltip>
+	<MudSpacer />
 	@if (!_isEditing)
 	{
-		<a href="@_book.BookUrl" download="@_book.FormattedFileName">
-			<MudIconButton Icon="@Icons.Material.Filled.Download" Color="Color.Secondary" />
-		</a>
-		<MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" OnClick="@(() => _isEditing = true)" />
+	<MudTooltip Text="@Translations.DOWNLOAD">
+		<MudIconButton Icon="@Icons.Material.Filled.Download" Color="Color.Primary" Href="@_book.BookUrl" download="@_book.FormattedFileName"/>
+	</MudTooltip>
+	<MudTooltip Text="@Translations.EDIT">
+		<MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" OnClick="@(() => _isEditing = true)"/>
+	</MudTooltip>
+
 	}
 	else
 	{
-		<MudIconButton Icon="@Icons.Material.Filled.Clear" Color="Color.Secondary" OnClick="Cancel" />
-		<MudIconButton Icon="@Icons.Material.Filled.Save" Color="Color.Primary" OnClick="Save" />
+
+	<MudTooltip Text="@Translations.CANCEL" Color="Color.Warning">
+		<MudIconButton Icon="@Icons.Material.Filled.Clear" Color="Color.Warning" OnClick="Cancel"/>
+	</MudTooltip>
+	<MudTooltip Text="@Translations.SAVE">
+		<MudIconButton Icon="@Icons.Material.Filled.Save" Color="Color.Primary" OnClick="Save"/>
+	</MudTooltip>
 	}
 </SectionContent>
+@*<div class="tw-flex tw-gap-3 tw-sticky tw-top-[calc(var(--mud-appbar-height)-var(--mud-appbar-height)/4)] tw-bg-[var(--mud-palette-appbar-background)] tw-backdrop-blur tw-z-10">
+	
+</div>*@
 <div class="tw-mx-auto tw-w-10/12 tw-mt-10 tw-flex tw-flex-wrap tw-gap-10">
 	<Animate Animation="@Animations.Fade" Duration="TimeSpan.FromSeconds(1)" Once="true" class="mx-auto">
 		<div class="tw-w-[200px]">
-			<img src="@(_newCoverTempPath ?? _book.CoverUrl)" />
+			<img src="@(_newCoverTempPath ?? _book.CoverUrl)" alt="" />
 			@if (_isEditing)
 			{
 				<MudFileUpload T="IBrowserFile" FilesChanged="UploadCoverToTempPath" Accept=".jpg">
@@ -60,7 +74,7 @@
 		@if (!_isEditing)
 		{
 			<Animate Animation="@Animations.Fade" Duration="TimeSpan.FromSeconds(1)" Once="true">
-				<div id="book-header">
+				<div id="book-header" class="tw-mb-6 tw-flex tw-flex-col tw-gap-2 tw-text-balance">
 					<MudText Typo="Typo.h4">@_book.Title</MudText>
 					@if (_book.Series != null)
 					{
