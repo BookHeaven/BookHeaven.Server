@@ -1,8 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
-
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(IsRunningInCI)' != 'true'">
-      <Exec Command="npm run buildcss" />
-  </Target>
 	<ItemGroup>
 		<UpToDateCheckBuilt Include="wwwroot\css\app.css" Set="Css" />
 		<UpToDateCheckBuilt Include="tailwind.config.js" Set="Css" />
@@ -96,4 +92,8 @@
 		<CompilerVisibleProperty Include="MudAllowedAttributePattern" />
 		<CompilerVisibleProperty Include="MudIllegalParameters" />
 	</ItemGroup>
+
+	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+	  <Exec Command="npm run buildcss" />
+	</Target>
 </Project>
