@@ -93,7 +93,11 @@
 		<CompilerVisibleProperty Include="MudIllegalParameters" />
 	</ItemGroup>
 
-	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <PropertyGroup>
+        <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
+    </PropertyGroup>
+
+    <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
 	  <Exec Command="npm run buildcss" />
 	</Target>
 </Project>
