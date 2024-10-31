@@ -180,4 +180,25 @@
   <data name="BOOKS_FROM" xml:space="preserve">
     <value>Libros de</value>
   </data>
+  <data name="DOWNLOAD" xml:space="preserve">
+    <value>Descargar</value>
+  </data>
+  <data name="EDIT" xml:space="preserve">
+    <value>Editar</value>
+  </data>
+  <data name="CANCEL" xml:space="preserve">
+    <value>Cancelar</value>
+  </data>
+  <data name="SAVE" xml:space="preserve">
+    <value>Guardar</value>
+  </data>
+  <data name="GO_BACK" xml:space="preserve">
+    <value>Volver</value>
+  </data>
+  <data name="UPLOADING_BOOK" xml:space="preserve">
+    <value>Subiendo libro</value>
+  </data>
+  <data name="UPLOADING_BOOK_FAILED" xml:space="preserve">
+    <value>No se ha podido subir el libro</value>
+  </data>
 </root>

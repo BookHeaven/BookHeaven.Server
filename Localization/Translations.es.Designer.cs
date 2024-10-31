@@ -114,6 +114,15 @@ namespace BookHeaven.Server.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cancelar.
+        /// </summary>
+        public static string CANCEL {
+            get {
+                return ResourceManager.GetString("CANCEL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Descripción.
         /// </summary>
         public static string DESCRIPTION {
@@ -123,11 +132,38 @@ namespace BookHeaven.Server.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Descargar.
+        /// </summary>
+        public static string DOWNLOAD {
+            get {
+                return ResourceManager.GetString("DOWNLOAD", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Editar.
+        /// </summary>
+        public static string EDIT {
+            get {
+                return ResourceManager.GetString("EDIT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Fecha Fin.
         /// </summary>
         public static string END_DATE {
             get {
                 return ResourceManager.GetString("END_DATE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Volver.
+        /// </summary>
+        public static string GO_BACK {
+            get {
+                return ResourceManager.GetString("GO_BACK", resourceCulture);
             }
         }
         
@@ -150,7 +186,7 @@ namespace BookHeaven.Server.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Publicado.
+        ///   Looks up a localized string similar to Fecha Publicación.
         /// </summary>
         public static string PUBLISHED {
             get {
@@ -182,6 +218,15 @@ namespace BookHeaven.Server.Localization {
         public static string REPLACE_COVER {
             get {
                 return ResourceManager.GetString("REPLACE_COVER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Guardar.
+        /// </summary>
+        public static string SAVE {
+            get {
+                return ResourceManager.GetString("SAVE", resourceCulture);
             }
         }
         
@@ -245,6 +290,24 @@ namespace BookHeaven.Server.Localization {
         public static string TITLE {
             get {
                 return ResourceManager.GetString("TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Subiendo libro.
+        /// </summary>
+        public static string UPLOADING_BOOK {
+            get {
+                return ResourceManager.GetString("UPLOADING_BOOK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No se ha podido subir el libro.
+        /// </summary>
+        public static string UPLOADING_BOOK_FAILED {
+            get {
+                return ResourceManager.GetString("UPLOADING_BOOK_FAILED", resourceCulture);
             }
         }
     }
