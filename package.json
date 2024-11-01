@@ -1,8 +1,10 @@
 {
   "scripts": {
-    "buildcss": "npx tailwindcss -i ./wwwroot/css/app.css -o ./wwwroot/css/app.min.css --minify"
+    "buildcss": "npx tailwindcss -i ./wwwroot/css/app.css -o ./wwwroot/css/app.min.css --minify",
+    "tailwind": "cross-env NODE_ENV=development ./node_modules/tailwindcss/lib/cli.js -i ./wwwroot/css/app.css -o ./wwwroot/css/app.min.css --watch --minify"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "tailwindcss": "^3.4.14"
   }
 }

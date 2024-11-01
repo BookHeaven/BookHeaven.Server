@@ -11,6 +11,7 @@ using System.Text.Json.Serialization;
 using MudBlazor;
 using BookHeaven.Domain;
 using BookHeaven.Domain.Entities;
+using Tailwind;
 
 namespace BookHeaven.Server
 {
@@ -115,6 +116,11 @@ namespace BookHeaven.Server
                     await next();
                 }
             });
+			
+			if (app.Environment.IsDevelopment())
+			{
+				_ = app.RunTailwind("tailwind", "./");
+			}
 
 			app.Run();
 		}

@@ -18,6 +18,12 @@
       "dotnetRunMessages": true,
       "applicationUrl": "https://localhost:7121;http://localhost:5260"
     },
+    "Blazor": {
+      "commandName": "Executable",
+      "workingDirectory": "$(ProjectDir)",
+      "executablePath": "dotnet",
+      "commandLineArgs": "watch run debug --launch-profile https"
+    },
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
