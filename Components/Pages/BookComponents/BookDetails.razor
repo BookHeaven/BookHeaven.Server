@@ -22,23 +22,21 @@
 	<MudSpacer />
 	@if (!_isEditing)
 	{
-	<MudTooltip Text="@Translations.DOWNLOAD">
-		<MudIconButton Icon="@Icons.Material.Filled.Download" Color="Color.Primary" Href="@_book.BookUrl" download="@_book.FormattedFileName"/>
-	</MudTooltip>
-	<MudTooltip Text="@Translations.EDIT">
-		<MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" OnClick="@(() => _isEditing = true)"/>
-	</MudTooltip>
-
+		<MudTooltip Text="@Translations.DOWNLOAD">
+			<MudIconButton Icon="@Icons.Material.Filled.Download" Color="Color.Primary" Href="@_book.EpubUrl" download="@_book.FormattedFileName"/>
+		</MudTooltip>
+		<MudTooltip Text="@Translations.EDIT">
+			<MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" OnClick="@(() => _isEditing = true)"/>
+		</MudTooltip>
 	}
 	else
 	{
-
-	<MudTooltip Text="@Translations.CANCEL" Color="Color.Warning">
-		<MudIconButton Icon="@Icons.Material.Filled.Clear" Color="Color.Warning" OnClick="Cancel"/>
-	</MudTooltip>
-	<MudTooltip Text="@Translations.SAVE">
-		<MudIconButton Icon="@Icons.Material.Filled.Save" Color="Color.Primary" OnClick="Save"/>
-	</MudTooltip>
+		<MudTooltip Text="@Translations.CANCEL" Color="Color.Warning">
+			<MudIconButton Icon="@Icons.Material.Filled.Clear" Color="Color.Warning" OnClick="Cancel"/>
+		</MudTooltip>
+		<MudTooltip Text="@Translations.SAVE">
+			<MudIconButton Icon="@Icons.Material.Filled.Save" Color="Color.Primary" OnClick="Save"/>
+		</MudTooltip>
 	}
 </SectionContent>
 @*<div class="tw-flex tw-gap-3 tw-sticky tw-top-[calc(var(--mud-appbar-height)-var(--mud-appbar-height)/4)] tw-bg-[var(--mud-palette-appbar-background)] tw-backdrop-blur tw-z-10">
@@ -48,24 +46,9 @@
 	<Animate Animation="@Animations.Fade" Duration="TimeSpan.FromSeconds(1)" Once="true" class="mx-auto">
 		<div class="tw-w-[200px]">
 			<img src="@(_newCoverTempPath ?? _book.CoverUrl)" alt="" />
-			@if (_isEditing)
+			@if (_isEditing && _newCoverTempPath != null)
 			{
-				<MudFileUpload T="IBrowserFile" FilesChanged="UploadCoverToTempPath" Accept=".jpg">
-					<ActivatorContent>
-						<MudButton HtmlTag="label"
-								   Variant="Variant.Filled"
-								   Color="Color.Tertiary"
-								   Class="tw-w-full"
-								   StartIcon="@Icons.Material.Filled.Refresh">
-							@(string.IsNullOrEmpty(_book.GetCoverPath(Program.CoversPath, true)) ? Translations.ADD_COVER : Translations.REPLACE_COVER)
-						</MudButton>
-					</ActivatorContent>
-				</MudFileUpload>
-
-				@if (_newCoverTempPath != null)
-				{
-					<MudAlert Class="tw-mt-4" Severity="Severity.Warning">The new cover won't be applied until the changes are saved.</MudAlert>
-				}
+				<MudAlert Class="tw-mt-4" Severity="Severity.Warning">The new cover won't be applied until the changes are saved.</MudAlert>
 			}
 		</div>
 	</Animate>
@@ -83,7 +66,7 @@
 				</div>
 				@if (_progress.ElapsedTime != TimeSpan.Zero)
 				{
-					<MudPaper Class="tw-mb-5 tw-flex tw-p-5 tw-w-fit tw-min-w-[350px] tw-flex-col tw-gap-5" Elevation="0">
+					<MudPaper Class="tw-mb-5 tw-flex tw-p-5 md:tw-min-w-[350px] tw-w-full lg:tw-w-fit tw-flex-col tw-gap-5" Elevation="0">
 						<div class="tw-flex tw-gap-5 tw-justify-between">
 							<dl>
 								<dt>@Translations.START_DATE</dt>
@@ -146,7 +129,7 @@
 					@if (_book.Description != null)
 					{
 						<dt class="tw-col-span-2">@Translations.DESCRIPTION</dt>
-						<dd class="tw-max-w-[800px] tw-leading-8 tw-col-span-2">@((MarkupString)_book.Description)</dd>
+						<dd class="tw-max-w-[800px] md:tw-min-w-[450px] tw-leading-8 tw-col-span-2">@((MarkupString)_book.Description)</dd>
 					}
 				</dl>
 
@@ -157,20 +140,34 @@
 		{
 			<Animate Animation="@Animations.Fade" Duration="TimeSpan.FromSeconds(1)" Once="true">
 				<div class="tw-flex tw-gap-3 tw-mb-5">
-					<MudButton StartIcon="@Icons.Material.Rounded.CloudDownload" Variant="Variant.Filled" Color="Color.Tertiary" OnClick="@ShowMetadataDialog">Get Metadata</MudButton>
-					<MudFileUpload T="IBrowserFile" FilesChanged="UploadEpubToTempPath" Accept=".epub" Class="!tw-m-0">
-						<ActivatorContent>
-							<MudButton HtmlTag="label"
-									   Variant="Variant.Filled"
-									   Color="Color.Tertiary"
-									   Class="tw-w-full"
-									   StartIcon="@Icons.Material.Rounded.DriveFileMove">
-								Replace epub
-							</MudButton>
-						</ActivatorContent>
-					</MudFileUpload>
+					<MudTooltip Text="Get Metadata">
+						<MudIconButton Icon="@Icons.Material.Rounded.CloudDownload" Variant="Variant.Filled" Color="Color.Tertiary" OnClick="@ShowMetadataDialog"/>
+					</MudTooltip>
+					<MudTooltip Text="@(string.IsNullOrEmpty(_book.GetCoverPath(Program.CoversPath, true)) ? Translations.ADD_COVER : Translations.REPLACE_COVER)">
+						<MudFileUpload T="IBrowserFile" FilesChanged="UploadCoverToTempPath" Accept=".jpg">
+							<ActivatorContent>
+								<MudIconButton HtmlTag="label"
+								               Variant="Variant.Filled"
+								               Color="Color.Tertiary"
+								               Class="tw-w-full"
+								               Icon="@Icons.Material.Filled.Image"/>
+							</ActivatorContent>
+						</MudFileUpload>
+					</MudTooltip>
+					<MudTooltip Text="Replace epub file">
+						<MudFileUpload T="IBrowserFile" FilesChanged="UploadEpubToTempPath" Accept=".epub" Class="!tw-m-0">
+							<ActivatorContent>
+								<MudIconButton HtmlTag="label"
+								               Variant="Variant.Filled"
+								               Color="Color.Tertiary"
+								               Class="tw-w-full"
+								               Icon="@Icons.Material.Rounded.DriveFileMove"/>
+							</ActivatorContent>
+						</MudFileUpload>
+					</MudTooltip>
+
 				</div>
-				<MudGrid Spacing="2" Class="tw-mb-7">
+				<MudGrid Spacing="4" Class="tw-mb-7">
 					<MudItem xs="12">
 						<MudText Typo="Typo.h5" Class="tw-mb-2">Progress</MudText>
 					</MudItem>
@@ -186,7 +183,7 @@
 						<MudTextField @bind-Value="_progress.ElapsedTime" HelperText="Hours:Minutes" Label="@Translations.READ_TIME" Variant="Variant.Filled" Converter="_timeReadConverter" Clearable="true"></MudTextField>
 					</MudItem>
 				</MudGrid>
-				<MudGrid Spacing="2" Style="min-width:300px;">
+				<MudGrid Spacing="4" Style="min-width:300px;">
 					<MudItem xs="12">
 						<MudText Typo="Typo.h5" Class="tw-mb-2">Metadata</MudText>
 					</MudItem>
