@@ -96,9 +96,9 @@
 
     <!--<PropertyGroup>
         <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
-    </PropertyGroup>
+    </PropertyGroup>-->
 
-    <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Target Name="PreBuild" BeforeTargets="BeforeRebuild">
 	  <Exec Command="npm run buildcss" />
-	</Target>-->
+	</Target>
 </Project>

@@ -16,11 +16,11 @@ COPY ["BookHeaven.Server/BookHeaven.Server.csproj", "BookHeaven.Server/"]
 COPY ["EpubManager/EpubManager.csproj", "EpubManager/"]
 COPY ["BookHeaven.Domain/BookHeaven.Domain.csproj", "BookHeaven.Domain/"]
 RUN dotnet restore "./BookHeaven.Server/BookHeaven.Server.csproj"
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
-RUN apt-get install -y nodejs
+#RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+#RUN apt-get install -y nodejs
 COPY . .
 WORKDIR "/src/BookHeaven.Server"
-RUN npm install
+#RUN npm install
 RUN dotnet build "./BookHeaven.Server.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # Esta fase se usa para publicar el proyecto de servicio que se copiará en la fase final.
