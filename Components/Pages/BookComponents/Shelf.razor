@@ -1,6 +1,5 @@
-﻿@attribute [Route(Urls.Shelf)]
-@inject IDatabaseService DatabaseService
-@inject NavigationManager NavigationManager
+﻿@using BookHeaven.Server.Features.Books
+@attribute [Route(Urls.Shelf)]
 
 <PageTitle>@Translations.SHELF</PageTitle>
 
@@ -51,21 +50,15 @@
 </div>
 
 @code {
-
+	[Inject] private NavigationManager NavigationManager { get; set; } = null!;
+	[Inject] private ISender Sender { get; set; } = null!;
 	private bool IsLoading { get; set; } = true;
 	private List<Book> Books { get; set; } = [];
 
 	protected override async Task OnInitializedAsync()
 	{
-		await Reload();
-	}
-
-	private async Task Reload()
-	{
-		IsLoading = true;
-		StateHasChanged();
-		var storedBooks = (await DatabaseService.GetAllIncluding<Book>(x => x.Author, x => x.Series)).OrderBy(x => x.Author?.Name).ThenBy(x => x.Series?.Name).ThenBy(x => x.SeriesIndex).ToList();
-		Books.AddRange(storedBooks);
+		var getBooks = await Sender.Send(new GetAllBooksQuery());
+		Books = getBooks.Value.OrderBy(b => b.Author?.Name).ThenBy(b => b.Series?.Name).ThenBy(b => b.SeriesIndex).ToList();
 		IsLoading = false;
 	}
 }

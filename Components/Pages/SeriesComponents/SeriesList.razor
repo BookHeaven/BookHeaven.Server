@@ -1,3 +1,4 @@
+@using BookHeaven.Server.Features.Seriess
 @attribute [Route(Urls.Series)]
 <PageTitle>@Translations.SERIES_PLURAL</PageTitle>
 
@@ -7,8 +8,8 @@
     Loading="_items == null" 
     CanCancelEdit="true" 
     Hover="true" 
-    RowEditPreview="@(a => _elementBeforeEdit = ((Series)a).Clone())" 
-    OnCommitEditClick="@(() => DatabaseService.SaveChanges() )" 
+    RowEditPreview="@(a => _elementBeforeEdit = ((Series)a!).Clone())"
+    RowEditCommit="@(async s => await CommitEdit((Series)s!))"
     RowEditCancel="CancelEdit"
     ApplyButtonPosition="TableApplyButtonPosition.Start">
     <ColGroup>
@@ -70,7 +71,8 @@
 </MudTable>
 
 @code {
-    [Inject] private IDatabaseService DatabaseService { get; set; } = null!;
+    [Inject] private ISender Sender { get; set; } = null!;
+    [Inject] private ISnackbar Snackbar { get; set; } = null!;
     [Inject] private NavigationManager NavigationManager { get; set; } = null!;
     
     IEnumerable<Series>? _items;
@@ -79,8 +81,25 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _items = await DatabaseService.GetAllIncluding<Series>(a => a.Books);
+        var getAllSeries = await Sender.Send(new GetAllSeriesQuery());
+        if (getAllSeries.IsFailure)
+        {
+            Snackbar.Add(getAllSeries.Error.Description!, Severity.Error);
+            return;
+        }
+        _items = getAllSeries.Value;
         _showDetails = _items.ToDictionary(a => a.SeriesId, a => false);
+    }
+    
+    private async Task CommitEdit(Series series)
+    {
+        var updateSeries = await Sender.Send(new UpdateSeriesCommand(series));
+        if (updateSeries.IsFailure)
+        {
+            Snackbar.Add(updateSeries.Error.Description!, Severity.Error);
+            return;
+        }
+        _elementBeforeEdit = null;
     }
     
     private void CancelEdit(object element)

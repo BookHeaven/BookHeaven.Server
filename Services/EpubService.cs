@@ -3,12 +3,15 @@ using EpubManager.Entities;
 using Microsoft.AspNetCore.Components.Forms;
 using BookHeaven.Server.Interfaces;
 using System.Globalization;
-using BookHeaven.Domain.Entities;
-using BookHeaven.Domain.Services;
+using BookHeaven.Domain.Helpers;
+using BookHeaven.Server.Features.Authors;
+using BookHeaven.Server.Features.Books;
+using BookHeaven.Server.Features.Seriess;
+using MediatR;
 
 namespace BookHeaven.Server.Services
 {
-	public class EpubService(IEpubReader epubReader, IDatabaseService databaseService, ILogger<EpubService> logger) : IFormatService<EpubBook>
+	public class EpubService(IEpubReader epubReader, ISender sender, ILogger<EpubService> logger) : IFormatService<EpubBook>
 	{
 		public async Task<EpubBook> GetMetadata(string path)
 		{
@@ -40,92 +43,80 @@ namespace BookHeaven.Server.Services
 
 		public async Task<Guid?> LoadFromFilePath(string path)
 		{
-			EpubBook epubBook = await GetMetadata(path);
-			Book? book = await databaseService.GetBy<Book>(x => x.Title!.Equals(epubBook.Metadata.Title));
-			if (book == null)
+			Guid? authorId = null;
+			Guid? seriesId = null;
+			
+			
+			var epubBook = await GetMetadata(path);
+			// Book? book = await databaseService.GetBy<Book>(x => x.Title!.Equals(epubBook.Metadata.Title));
+			
+			var getBook = await sender.Send(new GetBookQuery(null, epubBook.Metadata.Title));
+			
+			if (getBook.IsSuccess)
 			{
-				
-				Author? author = await databaseService.GetBy<Author>(x => x.Name!.ToUpper().Equals(epubBook.Metadata.Author.ToUpper()));
-
-				if (author == null)
-				{
-					author = new Author
-					{
-						Name = epubBook.Metadata.Author,
-					};
-
-					await databaseService.AddOrUpdate(author);
-				}
-				
-				book = new Book
-				{
-					Title = epubBook.Metadata.Title,
-					AuthorId = author.AuthorId,
-					Description = epubBook.Metadata.Description,
-					PublishedDate = DateTime.TryParseExact(epubBook.Metadata.PublishDate, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var tempDate) ? tempDate : null,
-					Publisher = epubBook.Metadata.Publisher,
-					Language = epubBook.Metadata.Language
-				};
-
-				if (epubBook.Metadata.Series != null)
-				{
-					Series? series = await databaseService.GetBy<Series>(x => x.Name!.ToUpper().Equals(epubBook.Metadata.Series.ToUpper()));
-					if (series == null)
-					{
-						series = new Series
-						{
-							Name = epubBook.Metadata.Series
-						};
-						await databaseService.AddOrUpdate(series);
-					}
-					
-					book.SeriesId = series.SeriesId;
-					book.SeriesIndex = epubBook.Metadata.SeriesIndex;
-				}
-				
-				foreach (var identifier in epubBook.Metadata.Identifiers)
-				{
-					var value = identifier.Value.Split(":").Last();
-					switch (identifier.Scheme)
-					{
-						case "ASIN":
-							book.ASIN = value;
-							break;
-						case "UUID":
-							book.UUID = value;
-							break;
-						case "ISBN":
-							if (value.Length == 13)
-							{
-								book.ISBN13 = value;
-							}
-							else
-							{
-								book.ISBN10 = value;
-							}
-							break;
-					}
-				}
-				await databaseService.AddOrUpdate(book);
-				
-				var profiles = await databaseService.GetAll<Profile>();
-				
-				foreach (var profile in profiles)
-				{
-					await databaseService.AddOrUpdate(new BookProgress
-					{
-						BookId = book.BookId,
-						ProfileId = profile.ProfileId
-					});
-				}
-				
-				await databaseService.SaveChanges();
-
-				await StoreCover(epubBook.Cover, book.GetCoverPath(Program.CoversPath)!);
-				await StoreBook(epubBook.FilePath, book.GetBookPath(Program.BooksPath)!);
+				return getBook.Value.BookId;
 			}
-
-			return book?.BookId;
+			
+			var getAuthor = await sender.Send(new GetAuthorQuery(null, epubBook.Metadata.Author));
+			if (getAuthor.IsFailure)
+			{
+				var createAuthor = await sender.Send(new CreateAuthorCommand(epubBook.Metadata.Author));
+				if (createAuthor.IsFailure)
+				{
+					return null;
+				}
+				authorId = createAuthor.Value.AuthorId;
+			}
+			else
+			{
+				authorId = getAuthor.Value.AuthorId;
+			}
+			
+			if (epubBook.Metadata.Series != null)
+			{
+				var getSeries = await sender.Send(new GetSeriesQuery(null, epubBook.Metadata.Series));
+				if (getSeries.IsFailure)
+				{
+					var createSeries = await sender.Send(new CreateSeriesCommand(epubBook.Metadata.Series));
+					if (createSeries.IsFailure)
+					{
+						return null;
+					}
+					seriesId = createSeries.Value.SeriesId;
+				}
+				else
+				{
+					seriesId = getSeries.Value.SeriesId;
+				}
+			}
+			var isbnIdentifiers = epubBook.Metadata.Identifiers.Where(x => x.Scheme == "ISBN").ToList();
+			
+			var createBook = await sender.Send(
+				new CreateBookCommand(
+					AuthorId: authorId!.Value,
+					SeriesId: seriesId,
+					SeriesIndex: epubBook.Metadata.SeriesIndex,
+					Title: epubBook.Metadata.Title,
+					Description: epubBook.Metadata.Description,
+					PublishedDate: DateTime.TryParseExact(epubBook.Metadata.PublishDate, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var tempDate) ? tempDate : DateTime.MinValue,
+					Publisher: epubBook.Metadata.Publisher,
+					Language: epubBook.Metadata.Language,
+					Isbn10: isbnIdentifiers.FirstOrDefault(x => x.Value.Length == 10)?.Value.Split(":").Last(),
+					Isbn13: isbnIdentifiers.FirstOrDefault(x => x.Value.Length == 13)?.Value.Split(":").Last(),
+					Asin: epubBook.Metadata.Identifiers.FirstOrDefault(x => x.Scheme == "ASIN")?.Value.Split(":").Last(),
+					Uuid: epubBook.Metadata.Identifiers.FirstOrDefault(x => x.Scheme == "UUID")?.Value.Split(":").Last()
+				)
+			);
+			
+			if (createBook.IsFailure)
+			{
+				return null;
+			}
+			
+			await StoreCover(epubBook.Cover, Helpers.GetCoverPath(Program.CoversPath, createBook.Value)!);
+			await StoreBook(epubBook.FilePath, Helpers.GetBookPath(Program.BooksPath, createBook.Value)!);
+			
+			return createBook.Value;
 		}
 
 		public async Task LoadFromFolder(string path)

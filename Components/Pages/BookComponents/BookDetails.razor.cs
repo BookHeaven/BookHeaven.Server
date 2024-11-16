@@ -7,14 +7,18 @@ using MudBlazor;
 using BookHeaven.Domain.Entities;
 using BookHeaven.Domain.Services;
 using BookHeaven.Server.Entities;
+using BookHeaven.Server.Features.Authors;
+using BookHeaven.Server.Features.Books;
+using BookHeaven.Server.Features.Seriess;
 using BookHeaven.Server.Interfaces;
+using MediatR;
 
 namespace BookHeaven.Server.Components.Pages.BookComponents
 {
 	public partial class BookDetails
 	{
+		[Inject] private ISender Sender { get; set; } = null!;
 		[Inject] private IFormatService<EpubBook> EpubService { get; set; } = null!;
-		[Inject] private IDatabaseService DatabaseService { get; set; } = null!;
 		[Inject] private IMetadataProviderService OpenLibraryService { get; set; } = null!;
 		[Inject] private IEpubWriter EpubWriter { get; set; } = null!;
 
@@ -46,8 +50,12 @@ namespace BookHeaven.Server.Components.Pages.BookComponents
 		{
 			if (Id != _book?.BookId)
 			{
-				_authors = (await DatabaseService.GetAll<Author>()).ToList();
-				_series = (await DatabaseService.GetAll<Series>()).ToList();
+				
+				var getAuthors = await Sender.Send(new GetAllAuthorsQuery());
+				_authors = getAuthors.Value;
+				
+				var getSeries = await Sender.Send(new GetAllSeriesQuery());
+				_series = getSeries.Value;
 
 				await LoadBook();
 			}
@@ -57,8 +65,16 @@ namespace BookHeaven.Server.Components.Pages.BookComponents
 		{
 			_authorName = null;
 			_seriesName = null;
-			_book = (await DatabaseService.GetIncluding<Book>(Id, x => x.Author, x => x.Series))!;
-			_progress = (await DatabaseService.GetBy<BookProgress>(bp => bp.BookId == Id && bp.ProfileId == Program.SelectedProfile!.ProfileId))!;
+			
+			var getBook = await Sender.Send(new GetBookQuery(Id));
+			if (getBook.IsFailure)
+			{
+				return;
+			}
+			_book = getBook.Value;
+			
+			var getBookProgress = await Sender.Send(new GetBookProgressByProfileQuery(Id, Program.SelectedProfile!.ProfileId));
+			_progress = getBookProgress.IsFailure ? new BookProgress { BookId = Id, ProfileId = Program.SelectedProfile!.ProfileId } : getBookProgress.Value;
 			
 			if (_book.Author != null)
 			{
@@ -102,11 +118,16 @@ namespace BookHeaven.Server.Components.Pages.BookComponents
 			{
 				if (_book.Author?.Name != _authorName)
 				{
-					Author? author = _authors.FirstOrDefault(a => a.Name == _authorName);
+					var author = _authors.FirstOrDefault(a => a.Name == _authorName);
 					if (author == null)
 					{
-						author = new Author { Name = _authorName };
-						await DatabaseService.AddOrUpdate(author);
+						var createAuthor = await Sender.Send(new CreateAuthorCommand(_authorName));
+						if(createAuthor.IsFailure)
+						{
+							throw new Exception(createAuthor.Error.Description);
+						}
+
+						author = createAuthor.Value;
 					}
 					_book!.AuthorId = author.AuthorId;
 				}
@@ -120,11 +141,15 @@ namespace BookHeaven.Server.Components.Pages.BookComponents
 			{
 				if (_book.Series?.Name != _seriesName)
 				{
-					Series? series = _series.FirstOrDefault(s => s.Name == _seriesName);
+					var series = _series.FirstOrDefault(a => a.Name == _seriesName);
 					if (series == null)
 					{
-						series = new Series { Name = _seriesName };
-						await DatabaseService.AddOrUpdate(series);
+						var createSeries = await Sender.Send(new CreateSeriesCommand(_seriesName));
+						if(createSeries.IsFailure)
+						{
+							throw new Exception(createSeries.Error.Description);
+						}
+						series = createSeries.Value;
 					}
 					_book!.SeriesId = series.SeriesId;
 				}
@@ -134,9 +159,11 @@ namespace BookHeaven.Server.Components.Pages.BookComponents
 				_book.SeriesId = null;
 			}
 
-			await DatabaseService.AddOrUpdate(_book);
-			await DatabaseService.AddOrUpdate(_progress);
-			await DatabaseService.SaveChanges();
+			var updateBook = await Sender.Send(new UpdateBookCommand(_book, _progress));
+			if(updateBook.IsFailure)
+			{
+				throw new Exception(updateBook.Error.Description);
+			}
 			if(_newCoverTempPath != null)
 			{
 				await EpubService.StoreCover(File.ReadAllBytes(_newCoverTempPath), _book.GetCoverPath(Program.CoversPath)!);
@@ -148,11 +175,11 @@ namespace BookHeaven.Server.Components.Pages.BookComponents
 				File.Delete(_newEpubTempPath);
 			}
 
-			await UpdateEpub();
+			await UpdateEpubFileMetadata();
 			_isEditing = false;
 		}
 
-		private async Task UpdateEpub()
+		private async Task UpdateEpubFileMetadata()
 		{
 			var metadata = new EpubMetadata
 			{

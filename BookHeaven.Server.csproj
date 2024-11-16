@@ -12,6 +12,7 @@
     <RuntimeIdentifiers>linux-x64</RuntimeIdentifiers>
     <EnableSdkContainerDebugging>True</EnableSdkContainerDebugging>
     <NeutralLanguage>en</NeutralLanguage>
+    <Version>1.0.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -58,7 +59,12 @@
   <ItemGroup>
 	<PackageReference Include="BlazorAnimate" Version="3.0.0" />
 	<PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
+	<PackageReference Include="MediatR" Version="12.4.1" />
 	<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.10" />
+	<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.10">
+	  <PrivateAssets>all</PrivateAssets>
+	  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	</PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
     <PackageReference Include="MudBlazor" Version="7.13.0" />
     <PackageReference Include="Tailwind.Extensions.AspNetCore" Version="1.0.0" />
@@ -93,10 +99,6 @@
 		<CompilerVisibleProperty Include="MudAllowedAttributePattern" />
 		<CompilerVisibleProperty Include="MudIllegalParameters" />
 	</ItemGroup>
-
-    <!--<PropertyGroup>
-        <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
-    </PropertyGroup>-->
 
     <Target Name="PreBuild" BeforeTargets="BeforeRebuild">
 	  <Exec Command="npm run buildcss" />

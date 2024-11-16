@@ -1,3 +1,4 @@
+@using BookHeaven.Server.Features.Authors
 @attribute [Route(Urls.Authors)]
 <PageTitle>@Translations.AUTHORS</PageTitle>
 
@@ -7,8 +8,8 @@
     Loading="_authors == null" 
     CanCancelEdit="true" 
     Hover="true" 
-    RowEditPreview="@(a => _elementBeforeEdit = ((Author)a).Clone())" 
-    OnCommitEditClick="@(() => DatabaseService.SaveChanges() )" 
+    RowEditPreview="@(a => _elementBeforeEdit = ((Author)a!).Clone())"
+    RowEditCommit="@(async s => await CommitEdit((Author)s!))"
     RowEditCancel="CancelEdit"
     ApplyButtonPosition="TableApplyButtonPosition.Start">
     <ColGroup>
@@ -72,7 +73,8 @@
 </MudTable>
 
 @code {
-    [Inject] private IDatabaseService DatabaseService { get; set; } = null!;
+    [Inject] private ISender Sender { get; set; } = null!;
+    [Inject] private ISnackbar Snackbar { get; set; } = null!;
     [Inject] private NavigationManager NavigationManager { get; set; } = null!;
     
     IEnumerable<Author>? _authors;
@@ -81,8 +83,26 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _authors = await DatabaseService.GetAllIncluding<Author>(a => a.Books);
+        var getAuthors = await Sender.Send(new GetAllAuthorsQuery(true));
+        if (getAuthors.IsFailure)
+        {
+            Snackbar.Add(getAuthors.Error.Description!, Severity.Error);
+            return;
+        }
+
+        _authors = getAuthors.Value;
         _showDetails = _authors.ToDictionary(a => a.AuthorId, a => false);
+    }
+    
+    private async Task CommitEdit(Author author)
+    {
+        var updateAuthor = await Sender.Send(new UpdateAuthorCommand(author));
+        if (updateAuthor.IsFailure)
+        {
+            Snackbar.Add(updateAuthor.Error.Description!, Severity.Error);
+            return;
+        }
+        _elementBeforeEdit = null;
     }
     
     private void CancelEdit(object element)

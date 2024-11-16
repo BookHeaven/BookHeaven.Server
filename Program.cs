@@ -11,6 +11,7 @@ using System.Text.Json.Serialization;
 using MudBlazor;
 using BookHeaven.Domain;
 using BookHeaven.Domain.Entities;
+using MediatR;
 using Tailwind;
 
 namespace BookHeaven.Server
@@ -51,6 +52,13 @@ namespace BookHeaven.Server
 			});
 
 			builder.Services.AddDomain(DatabasePath);
+			builder.Services.AddDomain(DatabasePath, DependencyInjection.DatabaseInjectionType.Factory);
+
+			builder.Services.AddMediatR(config =>
+			{
+				config.RegisterServicesFromAssembly(typeof(Program).Assembly);
+			});
+			
 			builder.Services.AddEpubManager();
 			builder.Services.AddTransient<IMetadataProviderService, OpenlibraryService>();
 			builder.Services.AddTransient<IFormatService<EpubBook>, EpubService>();	
