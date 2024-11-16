@@ -61,8 +61,8 @@ namespace BookHeaven.Server
 			});
 			
 			builder.Services.AddEpubManager();
-			builder.Services.AddTransient<IMetadataProviderService, OpenlibraryService>();
-			builder.Services.AddTransient<IFormatService<EpubBook>, EpubService>();	
+			builder.Services.AddScoped<IMetadataProviderService, OpenlibraryService>();
+			builder.Services.AddScoped<IFormatService<EpubBook>, EpubService>();	
 
 			var app = builder.Build();
 			app.UseRequestLocalization(Environment.GetEnvironmentVariable("LANG") ?? CultureInfo.CurrentCulture.Name);
