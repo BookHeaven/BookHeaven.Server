@@ -11,6 +11,7 @@ using System.Text.Json.Serialization;
 using MudBlazor;
 using BookHeaven.Domain;
 using BookHeaven.Domain.Entities;
+using BookHeaven.Server.Features.Profiles;
 using MediatR;
 using Tailwind;
 
@@ -97,19 +98,27 @@ namespace BookHeaven.Server
 
 			using (var scope = app.Services.CreateScope())
 			{
-				var context = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+				// Create default profile if it doesn't exist
+				Profile defaultProfile;
+				var sender = scope.ServiceProvider.GetRequiredService<ISender>();
 
-				if(!context.Profiles.Any())
+				var profileQuery = Task.Run(async() => await sender.Send(new GetDefaultProfileQuery())).Result;
+				if(profileQuery.IsFailure)
 				{
-					context.Profiles.Add(new Profile
+					var createProfile = Task.Run(async() => await sender.Send(new CreateProfileCommand("Default"))).Result;
+					if (createProfile.IsFailure)
 					{
-						Name = "Default",
-						IsSelected = true,
-					});
-					context.SaveChanges();
+						throw new Exception(createProfile.Error.Description);
+					}
+					defaultProfile = createProfile.Value;
+				}
+				else
+				{
+					defaultProfile = profileQuery.Value;
 				}
 				
-				SelectedProfile = context.Profiles.First(x => x.IsSelected);
+				// To be changed when the user is able to pick a profile
+				SelectedProfile = defaultProfile;
 			}
 			app.MapControllers();
 
