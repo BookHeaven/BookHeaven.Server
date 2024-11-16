@@ -1,3 +1,4 @@
+using BookHeaven.Server.Constants;
 using EpubManager.Entities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -58,7 +59,7 @@ namespace BookHeaven.Server.Components.Layout
 			var id = await EpubService.LoadFromFile(file);
             if (id != null)
             {
-                NavigationManager.NavigateTo($"/book/{id}");
+                NavigationManager.NavigateTo(Urls.GetBookUrl(id.Value));
             }
             else
             {
