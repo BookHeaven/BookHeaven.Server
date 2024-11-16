@@ -14,6 +14,7 @@ using BookHeaven.Domain.Entities;
 using BookHeaven.Server.Features.Profiles;
 using MediatR;
 using Tailwind;
+using DependencyInjection = BookHeaven.Domain.DependencyInjection;
 
 namespace BookHeaven.Server
 {
@@ -52,7 +53,6 @@ namespace BookHeaven.Server
 				config.SnackbarConfiguration.PreventDuplicates = false;
 			});
 
-			builder.Services.AddDomain(DatabasePath);
 			builder.Services.AddDomain(DatabasePath, DependencyInjection.DatabaseInjectionType.Factory);
 
 			builder.Services.AddMediatR(config =>
