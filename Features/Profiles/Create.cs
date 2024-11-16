@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Internal;
 
 namespace BookHeaven.Server.Features.Profiles;
 
-public sealed record CreateProfileCommand(string Name, bool IsSelected) : ICommand<Profile>;
+public sealed record CreateProfileCommand(string Name) : ICommand<Profile>;
 
 internal class CreateProfileCommandHandler(IDbContextFactory<DatabaseContext> dbContextFactory) : ICommandHandler<CreateProfileCommand, Profile>
 {
