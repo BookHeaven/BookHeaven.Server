@@ -81,7 +81,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var getAllSeries = await Sender.Send(new GetAllSeriesQuery());
+        var getAllSeries = await Sender.Send(new GetAllSeriesQuery(true));
         if (getAllSeries.IsFailure)
         {
             Snackbar.Add(getAllSeries.Error.Description!, Severity.Error);
