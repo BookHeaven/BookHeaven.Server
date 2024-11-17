@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BookHeaven.Server.Features.Books;
 
-public sealed record UpdateBookCommand(Book Book, BookProgress? BookProgress = null) : ICommand;
+public sealed record UpdateBookCommand(Book Book) : ICommand;
 
 internal class UpdateBookCommandHandler(IDbContextFactory<DatabaseContext> dbContextFactory) : ICommandHandler<UpdateBookCommand>
 {
@@ -15,11 +15,6 @@ internal class UpdateBookCommandHandler(IDbContextFactory<DatabaseContext> dbCon
         await using var context = await dbContextFactory.CreateDbContextAsync(cancellationToken);
         
         context.Books.Update(request.Book);
-        
-        if (request.BookProgress != null)
-        {
-            context.BooksProgress.Update(request.BookProgress);
-        }
 
         try
         {

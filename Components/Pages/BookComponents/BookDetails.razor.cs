@@ -160,11 +160,17 @@ namespace BookHeaven.Server.Components.Pages.BookComponents
 				_book.SeriesId = null;
 			}
 
-			var updateBook = await Sender.Send(new UpdateBookCommand(_book, _progress));
+			var updateBook = await Sender.Send(new UpdateBookCommand(_book));
 			if(updateBook.IsFailure)
 			{
 				throw new Exception(updateBook.Error.Description);
 			}
+			var updateProgress = await Sender.Send(new UpdateBookProgressCommand(_progress));
+			if(updateProgress.IsFailure)
+			{
+				throw new Exception(updateProgress.Error.Description);
+			}
+			
 			if(_newCoverTempPath != null)
 			{
 				await EpubService.StoreCover(File.ReadAllBytes(_newCoverTempPath), _book.GetCoverPath(Program.CoversPath)!);
