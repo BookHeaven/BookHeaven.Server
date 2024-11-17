@@ -3,7 +3,6 @@ using BookHeaven.Domain.Entities;
 using BookHeaven.Domain.Shared;
 using BookHeaven.Server.Abstractions.Messaging;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 
 namespace BookHeaven.Server.Features.Books;
 
@@ -20,7 +19,7 @@ internal class GetBookQueryHandler(IDbContextFactory<DatabaseContext> dbContextF
         
         await using var context = await dbContextFactory.CreateDbContextAsync(cancellationToken);
         
-        var book = await context.Books.FirstOrDefaultAsync(x => x.BookId == request.BookId || x.Title == request.Title, cancellationToken);
+        var book = await context.Books.Include(b => b.Author).Include(b => b.Series).FirstOrDefaultAsync(x => x.BookId == request.BookId || x.Title == request.Title, cancellationToken);
         
         return book == null ? Result<Book>.Failure(new Error("Error", "Book not found")) : Result<Book>.Success(book);
     }
