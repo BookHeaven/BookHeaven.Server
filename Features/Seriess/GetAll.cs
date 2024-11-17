@@ -16,7 +16,7 @@ internal class GetAllSeriesQueryHandler(IDbContextFactory<DatabaseContext> dbCon
         await using var context = await dbContextFactory.CreateDbContextAsync(cancellationToken);
         
         var series = request.IncludeBooks
-            ? await context.Series.Include(x => x.Books).ToListAsync(cancellationToken)
+            ? await context.Series.Include(x => x.Books).ThenInclude(b => b.Author).ToListAsync(cancellationToken)
             : await context.Series.ToListAsync(cancellationToken);
 
         return Result<List<Series>>.Success(series);
