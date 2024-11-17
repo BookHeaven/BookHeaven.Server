@@ -9,6 +9,7 @@ using BookHeaven.Domain.Services;
 using BookHeaven.Server.Entities;
 using BookHeaven.Server.Features.Authors;
 using BookHeaven.Server.Features.Books;
+using BookHeaven.Server.Features.BooksProgress;
 using BookHeaven.Server.Features.Seriess;
 using BookHeaven.Server.Interfaces;
 using MediatR;

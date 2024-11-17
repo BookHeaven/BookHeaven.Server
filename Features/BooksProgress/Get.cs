@@ -4,7 +4,21 @@ using BookHeaven.Domain.Shared;
 using BookHeaven.Server.Abstractions.Messaging;
 using Microsoft.EntityFrameworkCore;
 
-namespace BookHeaven.Server.Features.Books;
+namespace BookHeaven.Server.Features.BooksProgress;
+
+public sealed record GetBookProgress(Guid BookProgressId) : IQuery<BookProgress>;
+
+internal class GetBookProgressQueryHandler(IDbContextFactory<DatabaseContext> dbContextFactory) : IQueryHandler<GetBookProgress, BookProgress>
+{
+    public async Task<Result<BookProgress>> Handle(GetBookProgress request, CancellationToken cancellationToken)
+    {
+        await using var context = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+
+        var progress = await context.BooksProgress.FirstOrDefaultAsync(bp => bp.BookProgressId == request.BookProgressId, cancellationToken);
+
+        return progress == null ? Result<BookProgress>.Failure(new Error("Error", "Progress not found")) : Result<BookProgress>.Success(progress);
+    }
+}
 
 public sealed record GetBookProgressByProfileQuery(Guid BookId, Guid ProfileId) : IQuery<BookProgress>;
 
