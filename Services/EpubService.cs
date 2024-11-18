@@ -6,6 +6,8 @@ using System.Globalization;
 using BookHeaven.Domain.Helpers;
 using BookHeaven.Server.Features.Authors;
 using BookHeaven.Server.Features.Books;
+using BookHeaven.Server.Features.BooksProgress;
+using BookHeaven.Server.Features.Profiles;
 using BookHeaven.Server.Features.Seriess;
 using MediatR;
 
@@ -111,6 +113,17 @@ namespace BookHeaven.Server.Services
 			if (createBook.IsFailure)
 			{
 				return null;
+			}
+			
+			var getProfiles = await sender.Send(new GetAllProfilesQuery());
+			if (getProfiles.IsFailure)
+			{
+				throw new Exception("Failed to get profiles");
+			}
+
+			foreach (var profile in getProfiles.Value)
+			{
+				await sender.Send(new CreateBookProgressCommand(createBook.Value, profile.ProfileId));
 			}
 			
 			await StoreCover(epubBook.Cover, Helpers.GetCoverPath(Program.CoversPath, createBook.Value)!);
