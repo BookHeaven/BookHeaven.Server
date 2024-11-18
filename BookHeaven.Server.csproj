@@ -59,6 +59,7 @@
   <ItemGroup>
 	<PackageReference Include="BlazorAnimate" Version="3.0.0" />
 	<PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
+	<PackageReference Include="Google.Apis.Books.v1" Version="1.68.0.3331" />
 	<PackageReference Include="MediatR" Version="12.4.1" />
 	<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.10" />
 	<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.10">

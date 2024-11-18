@@ -1,6 +1,6 @@
 ﻿@attribute [Route($"{Urls.Shelf}/{{Id:guid}}")]
 <ScrollToTop />
-@if(_book == null)
+@if(_book.BookId == Guid.Empty)
 {
 	<PageTitle>Loading...</PageTitle>
 	<p>Loading...</p>
@@ -83,7 +83,7 @@
 							
 							<dl>
 								<dt>@Translations.READ_TIME</dt>
-								<dd class="tw-whitespace-nowrap">@_progress.ElapsedTimeFormatted</dd>
+								<dd class="tw-whitespace-nowrap">@_progress.ElapsedTimeFormatted()</dd>
 							</dl>
 						</div>
 						
@@ -239,7 +239,7 @@
 	
 </div>
 
-<MudDialog @bind-IsVisible="_searchingMetadata" OnBackdropClick="@(() => _searchingMetadata = false)">
+<MudDialog @bind-Visible="_searchingMetadata" OnBackdropClick="@(() => _searchingMetadata = false)">
 	<DialogContent>
 		@if(_metadataList.Count == 0)
 		{
@@ -250,18 +250,35 @@
 			<MudStack Spacing="10">
 				@foreach (var metadata in _metadataList)
 				{
-					<div class="tw-flex">
-						<img src="@metadata.CoverURL" class="tw-max-w-[100px]" />
+					<div>
+						<div class="tw-flex tw-items-start">
+							<img src="@metadata.CoverURL" class="tw-max-w-[200px]" alt="" />
 
-						<div class="tw-flex-1 tw-ml-4">
-							<p>@metadata.Title</p>
-							<p>@metadata.Author</p>
-							<p>@metadata.Publisher</p>
-							<p>@metadata.ISBN10</p>
-							<p>@metadata.ISBN13</p>
-							<p>@metadata.ASIN</p>
-							<p>@metadata.Description</p>
+							<div class="tw-flex-1 tw-ml-4">
+								<p class="tw-text-xl">@metadata.Title</p>
+								<p class="tw-text-lg">@metadata.Author</p>
+								<p>@metadata.Publisher</p>
+								@if(metadata.PublishedDate != null)
+								{
+									<p>@metadata.PublishedDate.Value.ToString("D")</p>
+								}
+								<div class="tw-flex tw-items-center tw-flex-wrap">
+									@if (!string.IsNullOrEmpty(metadata.ISBN10))
+									{
+										<MudChip T="MarkupString" Size="Size.Small" Color="Color.Primary">
+											ISBN-10: <span class="tw-ms-1">@metadata.ISBN10</span>
+										</MudChip>
+									}
+									@if (!string.IsNullOrEmpty(metadata.ISBN13))
+									{
+										<MudChip T="MarkupString" Size="Size.Small" Color="Color.Primary">
+											ISBN-13: <span class="tw-ms-1">@metadata.ISBN13</span>
+										</MudChip>
+									}
+								</div>
+							</div>
 						</div>
+						<p class="tw-mt-4">@metadata.Description</p>
 					</div>
 					
 				}

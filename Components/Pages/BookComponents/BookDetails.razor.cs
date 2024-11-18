@@ -2,10 +2,8 @@ using EpubManager;
 using EpubManager.Entities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.AspNetCore.Mvc;
 using MudBlazor;
 using BookHeaven.Domain.Entities;
-using BookHeaven.Domain.Services;
 using BookHeaven.Server.Entities;
 using BookHeaven.Server.Features.Authors;
 using BookHeaven.Server.Features.Books;
@@ -20,16 +18,16 @@ namespace BookHeaven.Server.Components.Pages.BookComponents
 	{
 		[Inject] private ISender Sender { get; set; } = null!;
 		[Inject] private IFormatService<EpubBook> EpubService { get; set; } = null!;
-		[Inject] private IMetadataProviderService OpenLibraryService { get; set; } = null!;
+		[Inject] private IMetadataProviderService MetadataProviderService { get; set; } = null!;
 		[Inject] private IEpubWriter EpubWriter { get; set; } = null!;
 
 		[Parameter]
 		public Guid Id { get; set; }
 
-		private bool _isEditing = false;
-		private bool _searchingMetadata = false;
+		private bool _isEditing;
+		private bool _searchingMetadata;
 
-		private Book? _book;
+		private Book _book = new();
 		private BookProgress _progress = null!;
 		private List<Author> _authors = [];
 		private List<Series> _series = [];
@@ -49,7 +47,7 @@ namespace BookHeaven.Server.Components.Pages.BookComponents
 
 		protected override async Task OnParametersSetAsync()
 		{
-			if (Id != _book?.BookId)
+			if (_book.BookId == Guid.Empty || Id != _book.BookId)
 			{
 				
 				var getAuthors = await Sender.Send(new GetAllAuthorsQuery());
@@ -89,7 +87,9 @@ namespace BookHeaven.Server.Components.Pages.BookComponents
 
 		private async Task UploadCoverToTempPath(IBrowserFile? file)
 		{
-			string tempPath = Path.Combine(Path.GetTempPath(), file.Name);
+			if (file == null) return;
+			
+			var tempPath = Path.Combine(Path.GetTempPath(), file.Name);
 			await using (var stream = new FileStream(tempPath, FileMode.Create))
 			{
 				await file.OpenReadStream(maxAllowedSize: 1024 * 30000).CopyToAsync(stream);
@@ -99,7 +99,9 @@ namespace BookHeaven.Server.Components.Pages.BookComponents
 
 		private async Task UploadEpubToTempPath(IBrowserFile? file)
 		{
-			string tempPath = Path.Combine(Path.GetTempPath(), file.Name);
+			if(file == null) return;
+			
+			var tempPath = Path.Combine(Path.GetTempPath(), file.Name);
 			await using (var stream = new FileStream(tempPath, FileMode.Create))
 			{
 				await file.OpenReadStream(maxAllowedSize: 1024 * 30000).CopyToAsync(stream);
@@ -173,7 +175,7 @@ namespace BookHeaven.Server.Components.Pages.BookComponents
 			
 			if(_newCoverTempPath != null)
 			{
-				await EpubService.StoreCover(File.ReadAllBytes(_newCoverTempPath), _book.GetCoverPath(Program.CoversPath)!);
+				await EpubService.StoreCover(await File.ReadAllBytesAsync(_newCoverTempPath), _book.GetCoverPath(Program.CoversPath)!);
 				File.Delete(_newCoverTempPath);
 			}
 			if(_newEpubTempPath != null)
@@ -212,8 +214,9 @@ namespace BookHeaven.Server.Components.Pages.BookComponents
 
 		private async Task ShowMetadataDialog()
 		{
-			_metadataList = await OpenLibraryService.GetMetadataByName(_book.Title!);
+			_metadataList = await MetadataProviderService.GetMetadataByName(_book.Title!);
 			_searchingMetadata = true;
+			StateHasChanged();
 		}
 	}
 }

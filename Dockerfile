@@ -7,6 +7,8 @@ WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
+ARG GOOGLE_BOOKS_API_KEY
+ENV GOOGLE_BOOKS_API_KEY=$GOOGLE_BOOKS_API_KEY
 
 # Esta fase se usa para compilar el proyecto de servicio
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build

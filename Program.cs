@@ -61,7 +61,8 @@ namespace BookHeaven.Server
 			});
 			
 			builder.Services.AddEpubManager();
-			builder.Services.AddScoped<IMetadataProviderService, OpenlibraryService>();
+			builder.Services.AddScoped<IMetadataProviderService, GoogleBooksService>();
+			// builder.Services.AddScoped<IMetadataProviderService, OpenLibraryService>();
 			builder.Services.AddScoped<IFormatService<EpubBook>, EpubService>();	
 
 			var app = builder.Build();
