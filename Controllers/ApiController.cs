@@ -1,13 +1,10 @@
-﻿using BookHeaven.Domain;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using BookHeaven.Domain.Entities;
-using BookHeaven.Domain.Services;
 using BookHeaven.Server.Features.Authors;
 using BookHeaven.Server.Features.Books;
 using BookHeaven.Server.Features.BooksProgress;
 using BookHeaven.Server.Features.Profiles;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace BookHeaven.Server.Controllers
 {
@@ -71,7 +68,7 @@ namespace BookHeaven.Server.Controllers
 
 			if (getExistingProgress.IsSuccess && progress.LastRead <= getExistingProgress.Value.LastRead)
 			{
-				logger.LogInformation("Progress is older than existing, skipping update");
+				logger.LogInformation("Last reading time is equal or older than existing one, skipping update");
 				return Ok();
 			}
 				
