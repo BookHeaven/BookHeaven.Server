@@ -1,11 +1,13 @@
-﻿using BookHeaven.Server.Entities;
+﻿using System.Globalization;
+using BookHeaven.Server.Entities;
 using BookHeaven.Server.Interfaces;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using OpenLibraryNET;
 
 namespace BookHeaven.Server.Services
 {
-	public class OpenlibraryService : IMetadataProviderService
+	public class OpenLibraryService : IMetadataProviderService
 	{
 		private const string BaseUrl = "https://openlibrary.org";
 		private const string WorkListEndpoint = BaseUrl + "/search.json?q=title:\"{0}\"&lang=spa&_spellcheck_count=0&limit=3&fields=key,cover_i,title,author_name,description,editions,publisher,isbn,id_amazon&mode=everything";
@@ -15,16 +17,39 @@ namespace BookHeaven.Server.Services
 
 		public async Task<List<BookMetadata>> GetMetadataByName(string name)
 		{
+			var client = new OpenLibraryClient();
+			var parameters = new KeyValuePair<string, string>[]
+			{
+				new("lang", CultureInfo.CurrentCulture.ThreeLetterISOLanguageName),
+				new("_spellcheck_count", "0"),
+				new("limit", "3"),
+			};
+			
+			var results = await client.Search.GetSearchResultsAsync(name, parameters);
+			if(results == null) return [];
+			
 			List<BookMetadata> books = [];
+			foreach (var result in results)
+			{
+				var editions = await client.Work.GetEditionsAsync(result.ID, parameters);
+				if(editions == null) continue;
+
+				var edition = editions.First();
+			}
+			
+			return [];
+
+
+			/*List<BookMetadata> books = [];
 
 			var works = await GetWorks(name);
 
 			foreach (var work in works)
 			{
-				
+
 				var edition = work.editions.Docs.FirstOrDefault();
 				if (edition == null) continue;
-				
+
 				var book = new BookMetadata
 				{
 					Title = edition.title,
@@ -35,9 +60,9 @@ namespace BookHeaven.Server.Services
 					ISBN13 = edition.isbn?.FirstOrDefault(i => i.Length == 13),
 					ASIN = edition.id_amazon?.FirstOrDefault()
 				};
-				
+
 				var bookData = await GetBookData(edition.key);
-				
+
 				if (bookData?.TryGetProperty("description", out var description) == true)
 				{
 					if (description.ValueKind == JsonValueKind.Object && description.TryGetProperty("value", out var value))
@@ -49,16 +74,17 @@ namespace BookHeaven.Server.Services
 				{
 					book.Series = series.EnumerateArray().FirstOrDefault().GetString();
 				}
-				
+
 				books.Add(book);
 			}
-			return books;
+			return books;*/
 		}
 		
 		private async Task<List<Doc>> GetWorks(string title)
 		{
 			using var client = new HttpClient();
-			var request = new HttpRequestMessage(HttpMethod.Get, string.Format(WorkListEndpoint, title));
+			var uri = string.Format(WorkListEndpoint, title);
+			var request = new HttpRequestMessage(HttpMethod.Get, uri);
 			var response = await client.SendAsync(request);
 
 			if (!response.IsSuccessStatusCode) return [];
