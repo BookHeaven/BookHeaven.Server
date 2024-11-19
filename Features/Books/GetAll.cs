@@ -16,6 +16,7 @@ internal class GetAllBooksQueryHandler(IDbContextFactory<DatabaseContext> dbCont
         var books = await context.Books
             .Include(b => b.Author)
             .Include(b => b.Series)
+            .Include(b => b.Progresses.Where(bp => bp.ProfileId == Program.SelectedProfile!.ProfileId))
             .ToListAsync(cancellationToken);
 
         return books.Any() ? Result<List<Book>>.Success(books) : Result<List<Book>>.Failure(new Error("Error", "No books found"));

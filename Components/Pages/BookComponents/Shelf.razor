@@ -1,4 +1,5 @@
 ﻿@using BookHeaven.Server.Features.Books
+@using BookHeaven.Server.Helpers
 @attribute [Route(Urls.Shelf)]
 
 <PageTitle>@Translations.SHELF</PageTitle>
@@ -30,14 +31,34 @@
 		{
 			@foreach (var book in Books)
 			{
-				<MudCard Elevation="4" Class="tw-group tw-overflow-hidden tw-flex tw-flex-col hover:tw-cursor-pointer" @onclick="@(() => NavigationManager.NavigateTo(Urls.GetBookUrl(book.BookId)))">
+				<MudCard Elevation="4" 
+				         Class="tw-group tw-overflow-hidden tw-flex tw-flex-col hover:tw-cursor-pointer" 
+				         @onclick="@(() => NavigationManager.NavigateTo(Urls.GetBookUrl(book.BookId)))">
+					
+					
 					<div class="tw-h-[250px] tw-overflow-hidden">
-						<MudCardMedia Image="@Assets[book.CoverUrl]" Class="tw-transition-transform tw-h-full tw-duration-150 group-hover:tw-scale-105" />
+						<span class="tw-h-full" style="@Transitions.GetTransitionName("img", book.BookId)">
+							<MudCardMedia Image="@Assets[book.CoverUrl]" Class="tw-transition-transform !tw-h-full tw-duration-150 group-hover:tw-scale-105"/>
+						</span>
+						
 					</div>
-					<MudCardContent Class="tw-flex-1 tw-flex tw-flex-col tw-gap-1 group-hover:tw-bg-slate-700">
-						<MudText Typo="Typo.body2">@book.Title</MudText>
-						<MudText Typo="Typo.body2" Color="Color.Secondary">@book.Author?.Name</MudText>
-						<MudText Typo="Typo.caption" Color="Color.Primary">@book.Series?.Name</MudText>
+					
+					
+					<MudCardContent Class="tw-flex-1 tw-relative tw-flex tw-flex-col tw-gap-1 tw-transition-colors group-hover:tw-bg-slate-700">
+						@if(book.IsStartedReading())
+						{
+							var borders = "tw-border-t-blue-400 tw-border-r-blue-400";
+							if (book.IsFinishedReading())
+							{
+								borders = "tw-border-t-green-300 tw-border-r-green-300";
+							}
+							<div class="tw-absolute tw-z-10 tw-top-0 tw-right-0 tw-w-0 tw-h-0 tw-border-[10px] @borders tw-border-l-transparent tw-border-b-transparent">
+
+							</div>
+						}
+						<MudText Typo="Typo.body2"><span style="@Transitions.GetTransitionName("title", book.BookId)">@book.Title</span></MudText>
+						<MudText Typo="Typo.body2" Color="Color.Secondary"><span style="@Transitions.GetTransitionName("author", book.BookId)">@book.Author?.Name</span></MudText>
+						<MudText Typo="Typo.caption" Color="Color.Primary"><span style="@Transitions.GetTransitionName("series", book.BookId)">@book.Series?.Name</span></MudText>
 					</MudCardContent>
 				</MudCard>
 

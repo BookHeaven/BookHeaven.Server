@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
 using BookHeaven.Domain.Entities;
+using BookHeaven.Server.Constants;
 using BookHeaven.Server.Entities;
 using BookHeaven.Server.Features.Authors;
 using BookHeaven.Server.Features.Books;
@@ -20,11 +21,12 @@ namespace BookHeaven.Server.Components.Pages.BookComponents
 		[Inject] private IFormatService<EpubBook> EpubService { get; set; } = null!;
 		[Inject] private IMetadataProviderService MetadataProviderService { get; set; } = null!;
 		[Inject] private IEpubWriter EpubWriter { get; set; } = null!;
+		[Inject] private NavigationManager NavigationManager { get; set; } = null!;
 
-		[Parameter]
-		public Guid Id { get; set; }
+		[Parameter] public Guid Id { get; set; }
+		[Parameter] public string? Editing { get; set; }
 
-		private bool _isEditing;
+		private bool IsEditing => Editing == "edit";
 		private bool _searchingMetadata;
 
 		private Book _book = new();
@@ -59,6 +61,16 @@ namespace BookHeaven.Server.Components.Pages.BookComponents
 				await LoadBook();
 			}
 		}
+
+		private void EnableEditing()
+		{
+			NavigationManager.NavigateTo($"{Urls.GetBookUrl(_book.BookId)}/edit");
+		}
+
+		private void DisableEditing()
+		{
+			NavigationManager.NavigateTo(Urls.GetBookUrl(_book.BookId));
+		} 
 
 		private async Task LoadBook()
 		{
@@ -107,12 +119,6 @@ namespace BookHeaven.Server.Components.Pages.BookComponents
 				await file.OpenReadStream(maxAllowedSize: 1024 * 30000).CopyToAsync(stream);
 			}
 			_newEpubTempPath = tempPath;
-		}
-
-		private async Task Cancel()
-		{
-			await LoadBook();
-			_isEditing = false;
 		}
 
 		private async Task Save()
@@ -185,7 +191,7 @@ namespace BookHeaven.Server.Components.Pages.BookComponents
 			}
 
 			await UpdateEpubFileMetadata();
-			_isEditing = false;
+			DisableEditing();
 		}
 
 		private async Task UpdateEpubFileMetadata()
