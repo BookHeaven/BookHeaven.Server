@@ -173,6 +173,10 @@ namespace BookHeaven.Server.Components.Pages.BookComponents
 			{
 				throw new Exception(updateBook.Error.Description);
 			}
+			if(_progress is { EndDate: not null, Progress: < 100 })
+			{
+				_progress.Progress = 100;
+			}
 			var updateProgress = await Sender.Send(new UpdateBookProgressCommand(_progress));
 			if(updateProgress.IsFailure)
 			{
