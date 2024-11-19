@@ -126,8 +126,8 @@ namespace BookHeaven.Server.Services
 				await sender.Send(new CreateBookProgressCommand(createBook.Value, profile.ProfileId));
 			}
 			
-			await StoreCover(epubBook.Cover, Helpers.GetCoverPath(Program.CoversPath, createBook.Value)!);
-			await StoreBook(epubBook.FilePath, Helpers.GetBookPath(Program.BooksPath, createBook.Value)!);
+			await StoreCover(epubBook.Cover, GetCoverPath(Program.CoversPath, createBook.Value)!);
+			await StoreBook(epubBook.FilePath, GetBookPath(Program.BooksPath, createBook.Value)!);
 			
 			return createBook.Value;
 		}
@@ -153,5 +153,25 @@ namespace BookHeaven.Server.Services
             await using FileStream destination = File.Create(dest);
             await source.CopyToAsync(destination);
         }
+		
+		public static string? GetBookPath(string booksPath, Guid bookId, bool checkPath = false)
+		{
+			var path = $"{booksPath}/{bookId}.epub";
+			if (checkPath && !File.Exists(path))
+			{
+				return null;
+			}
+			return path;
+		}
+	
+		public static string? GetCoverPath(string coversPath, Guid bookId, bool checkPath = false)
+		{
+			var path = $"{coversPath}/{bookId}.jpg";
+			if (checkPath && !File.Exists(path))
+			{
+				return null;
+			}
+			return path;
+		}
 	}
 }
