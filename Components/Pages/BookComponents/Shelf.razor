@@ -1,4 +1,5 @@
-﻿@using BookHeaven.Server.Features.Books
+﻿@using BookHeaven.Domain.Enums
+@using BookHeaven.Server.Features.Books
 @using BookHeaven.Server.Helpers
 @attribute [Route(Urls.Shelf)]
 
@@ -44,18 +45,23 @@
 					</div>
 					
 					
-					<MudCardContent Class="tw-flex-1 tw-relative tw-flex tw-flex-col tw-gap-1 tw-transition-colors group-hover:tw-bg-slate-700">
-						@if(book.IsStartedReading())
-						{
-							var borders = "tw-border-t-blue-400 tw-border-r-blue-400";
-							if (book.IsFinishedReading())
+					<MudCardContent 
+						Class="tw-flex-1 tw-relative tw-flex tw-flex-col tw-gap-1 tw-transition-colors group-hover:tw-bg-slate-700">
+						@*@{
+							var indicatorBg = book.ReadingStatus() switch
 							{
-								borders = "tw-border-t-green-300 tw-border-r-green-300";
-							}
-							<div class="tw-absolute tw-z-10 tw-top-0 tw-right-0 tw-w-0 tw-h-0 tw-border-[10px] @borders tw-border-l-transparent tw-border-b-transparent">
-
-							</div>
-						}
+								BookStatus.New => "tw-bg-gray-400",
+								BookStatus.Reading => "tw-bg-green-400",
+								BookStatus.Finished => "tw-bg-blue-400"
+							};
+						}*@
+						@* <div class="tw-absolute tw-z-10 tw-bottom-0 tw-left-0 tw-h-[5px] tw-bg-blue-400" style="width: @((int)book.Progress().Progress)%;@Transitions.GetTransitionName("progress-bar", book.BookId)"></div> *@
+						<span class="tw-absolute tw-z-10 tw-bottom-0 tw-inset-x-0" style="@Transitions.GetTransitionName("progress-bar", book.BookId)">
+							<MudProgressLinear
+								Color="Color.Primary"
+								Size="Size.Small"
+								Value="@((double)book.Progress().Progress)"/>
+						</span>
 						<MudText Typo="Typo.body2"><span style="@Transitions.GetTransitionName("title", book.BookId)">@book.Title</span></MudText>
 						<MudText Typo="Typo.body2" Color="Color.Secondary"><span style="@Transitions.GetTransitionName("author", book.BookId)">@book.Author?.Name</span></MudText>
 						<MudText Typo="Typo.caption" Color="Color.Primary"><span style="@Transitions.GetTransitionName("series", book.BookId)">@book.Series?.Name</span></MudText>

@@ -1,4 +1,5 @@
-﻿@using BookHeaven.Server.Helpers
+﻿@using BookHeaven.Domain.Enums
+@using BookHeaven.Server.Helpers
 @attribute [Route($"{Urls.Shelf}/{{Id:guid}}")]
 @attribute [Route($"{Urls.Shelf}/{{Id:guid}}/{{Editing}}")]
 <ScrollToTop />
@@ -56,32 +57,41 @@
 					<MudText Typo="Typo.h6" Color="Color.Primary"><span style="@Transitions.GetTransitionName("series", _book.BookId)">@_book.Series.Name - @Translations.BOOK @_book.SeriesIndex?.ToString("0.##")</span></MudText>
 				}
 			</div>
-			@if (_progress.ElapsedTime != TimeSpan.Zero)
+			@if (_book.ReadingStatus() != BookStatus.New)
 			{
-				<MudPaper Class="tw-mb-5 tw-flex tw-p-5 md:tw-min-w-[350px] tw-w-full lg:tw-w-fit tw-flex-col tw-gap-5" Elevation="0">
+				<MudPaper 
+					Class="tw-mb-5 tw-flex tw-p-5 md:tw-min-w-[350px] tw-w-full lg:tw-w-fit tw-flex-col tw-gap-5" 
+					Elevation="0">
 					<div class="tw-flex tw-gap-5 tw-justify-between">
 						<dl>
 							<dt>@Translations.START_DATE</dt>
-							<dd>@_progress.StartDate?.ToString("d")</dd>
+							<dd>@_book.Progress().StartDate?.ToString("d")</dd>
 						</dl>
 						<dl>
 							<dt>@Translations.END_DATE</dt>
-							@if (_progress.EndDate != null)
+							@if (_book.Progress().EndDate != null)
 							{
-								<dd>@_progress.EndDate.Value.ToString("d")</dd>
+								<dd>@_book.Progress().EndDate!.Value.ToString("d")</dd>
 							}
 
 						</dl>
 
 						<dl>
 							<dt>@Translations.READ_TIME</dt>
-							<dd class="tw-whitespace-nowrap">@_progress.ElapsedTimeFormatted()</dd>
+							<dd class="tw-whitespace-nowrap">@_book.Progress().ElapsedTimeFormatted()</dd>
 						</dl>
 					</div>
 
 					<div class="tw-flex tw-gap-3 tw-items-center">
-						<MudProgressLinear Color="Color.Primary" Rounded="true" Size="Size.Medium" Value="@((double)_progress.Progress)" />
-						<span class="tw-text-nowrap">@_progress.Progress.ToString("0.##") %</span>
+						<span class="tw-w-full" style="@Transitions.GetTransitionName("progress-bar", _book.BookId)">
+							<MudProgressLinear
+								Color="Color.Primary"
+								Rounded="true"
+								Size="Size.Medium"
+								Value="@((double)_book.Progress().Progress)"/>
+						</span>
+						
+						<span class="tw-text-nowrap">@_book.Progress().Progress.ToString("0.##") %</span>
 					</div>
 
 				</MudPaper>
@@ -153,18 +163,21 @@
 			</div>
 			<MudGrid Spacing="4" Class="tw-mb-7">
 				<MudItem xs="12">
-					<MudText Typo="Typo.h5" Class="tw-mb-2">Progress</MudText>
+					<MudText Typo="Typo.h5" Class="tw-mb-2">@Translations.PROGRESS</MudText>
 				</MudItem>
 				<MudItem xs="12" md="4">
-					@* <MudDatePicker @bind-Date="_progress.StartDate" Label="@Translations.START_DATE" Variant="Variant.Filled"></MudDatePicker> *@
-					<MudDateOffsetPicker @bind-NullableValue="_progress.StartDate" Label="@Translations.START_DATE" Required="false" />
+					@* <MudDatePicker @bind-Date="_book.Progress().StartDate" Label="@Translations.START_DATE" Variant="Variant.Filled"></MudDatePicker> *@
+					<MudDateOffsetPicker @bind-NullableValue="_book.Progress().StartDate" Label="@Translations.START_DATE" Required="false" />
 				</MudItem>
 				<MudItem xs="12" md="4">
-					<MudDateOffsetPicker @bind-NullableValue="_progress.EndDate" Label="@Translations.END_DATE" Required="false" />
-					@* <MudDatePicker @bind-Date="_progress.EndDate" Label="@Translations.END_DATE" Variant="Variant.Filled"></MudDatePicker> *@
+					<MudDateOffsetPicker @bind-NullableValue="_book.Progress().EndDate" Label="@Translations.END_DATE" Required="false" />
+					@* <MudDatePicker @bind-Date="_book.Progress().EndDate" Label="@Translations.END_DATE" Variant="Variant.Filled"></MudDatePicker> *@
 				</MudItem>
 				<MudItem xs="12" md="4">
-					<MudTextField @bind-Value="_progress.ElapsedTime" HelperText="Hours:Minutes" Label="@Translations.READ_TIME" Variant="Variant.Filled" Converter="_timeReadConverter" Clearable="true"></MudTextField>
+					<MudTextField @bind-Value="_book.Progress().ElapsedTime" HelperText="Hours:Minutes" Label="@Translations.READ_TIME" Variant="Variant.Filled" Converter="_timeReadConverter" Clearable="true"></MudTextField>
+				</MudItem>
+				<MudItem xs="12" md="4">
+					<MudTextField @bind-Value="_book.Progress().Progress" Label="@Translations.PROGRESS" Variant="Variant.Filled"></MudTextField>
 				</MudItem>
 			</MudGrid>
 			<MudGrid Spacing="4" Style="min-width:300px;">

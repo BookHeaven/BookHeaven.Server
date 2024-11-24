@@ -57,13 +57,13 @@ namespace BookHeaven.Server.Components.Layout
 
             Snackbar.Add($"{Translations.UPLOADING_BOOK}...", Severity.Info);
 			var id = await EpubService.LoadFromFile(file);
+            Snackbar.Clear();
             if (id != null)
             {
                 NavigationManager.NavigateTo(Urls.GetBookUrl(id.Value));
             }
             else
             {
-                Snackbar.Clear();
 				Snackbar.Add(Translations.UPLOADING_BOOK_FAILED, Severity.Error);
             }
         }

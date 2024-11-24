@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
 using BookHeaven.Domain.Entities;
+using BookHeaven.Domain.Extensions;
 using BookHeaven.Server.Constants;
 using BookHeaven.Server.Entities;
 using BookHeaven.Server.Features.Authors;
@@ -30,7 +31,6 @@ namespace BookHeaven.Server.Components.Pages.BookComponents
 		private bool _searchingMetadata;
 
 		private Book _book = new();
-		private BookProgress _progress = null!;
 		private List<Author> _authors = [];
 		private List<Series> _series = [];
 		private List<BookMetadata> _metadataList = [];
@@ -85,7 +85,7 @@ namespace BookHeaven.Server.Components.Pages.BookComponents
 			_book = getBook.Value;
 			
 			var getBookProgress = await Sender.Send(new GetBookProgressByProfileQuery(Id, Program.SelectedProfile!.ProfileId));
-			_progress = getBookProgress.IsFailure ? new BookProgress { BookId = Id, ProfileId = Program.SelectedProfile!.ProfileId } : getBookProgress.Value;
+			_book.Progresses.Add(getBookProgress.Value);
 			
 			if (_book.Author != null)
 			{
@@ -173,11 +173,11 @@ namespace BookHeaven.Server.Components.Pages.BookComponents
 			{
 				throw new Exception(updateBook.Error.Description);
 			}
-			if(_progress is { EndDate: not null, Progress: < 100 })
+			if(_book.Progress() is { EndDate: not null, Progress: < 100 })
 			{
-				_progress.Progress = 100;
+				_book.Progress().Progress = 100;
 			}
-			var updateProgress = await Sender.Send(new UpdateBookProgressCommand(_progress));
+			var updateProgress = await Sender.Send(new UpdateBookProgressCommand(_book.Progress()));
 			if(updateProgress.IsFailure)
 			{
 				throw new Exception(updateProgress.Error.Description);
