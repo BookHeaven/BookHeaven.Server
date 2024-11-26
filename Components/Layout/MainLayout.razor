@@ -5,7 +5,7 @@
 <MudDialogProvider />
 <PageTitle>BookHeaven</PageTitle>
 <MudLayout Class="tw-min-h-full tw-overflow-y-auto">
-    <MudAppBar Elevation="0" Dense="true" Class="tw-backdrop-blur">
+    <MudAppBar Elevation="0" Dense="true" Class="tw-backdrop-blur" Style="view-transition-name:appbar;">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
         <img src="@Assets["/img/logo.svg"]" class="tw-h-full tw-py-2" alt="" />
         <MudHidden Breakpoint="Breakpoint.Xs">

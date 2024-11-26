@@ -10,6 +10,10 @@
     margin: 0;
 }*/
 
+::view-transition-group(appbar) {
+    z-index: 1300;
+}
+
 html {
     height: 100%;
 }
