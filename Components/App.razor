@@ -21,8 +21,21 @@
 <script>
         window.scrollToTop = () => {
             let main = document.querySelector(".mud-layout");
-            main.scrollTo({ top: 0 });
+            let path = window.location.pathname;
+            if (sessionStorage.getItem(path)) {
+                main.scrollTo({ top: parseInt(sessionStorage.getItem(path)) });
+                sessionStorage.removeItem(path);
+            }
+            else {
+                main.scrollTo({ top: 0 });
+            }
         };
+        window.saveScrollPosition = (path) => {
+            let scrollY = document.querySelector(".mud-layout")?.scrollTop;
+            if (scrollY > 0) {
+                sessionStorage.setItem(path, scrollY.toString());
+            }
+        }
     </script>
 </body>
 

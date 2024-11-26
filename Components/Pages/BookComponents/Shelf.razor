@@ -1,7 +1,8 @@
-﻿@using BookHeaven.Domain.Enums
-@using BookHeaven.Server.Features.Books
+﻿@using BookHeaven.Server.Features.Books
 @using BookHeaven.Server.Helpers
 @attribute [Route(Urls.Shelf)]
+
+@implements IDisposable
 
 <PageTitle>@Translations.SHELF</PageTitle>
 
@@ -79,6 +80,7 @@
 @code {
 	[Inject] private NavigationManager NavigationManager { get; set; } = null!;
 	[Inject] private ISender Sender { get; set; } = null!;
+	[Inject] private IJSRuntime JsRuntime { get; set; } = null!;
 	private bool IsLoading { get; set; } = true;
 	private List<Book> Books { get; set; } = [];
 
@@ -88,4 +90,10 @@
 		Books = getBooks.Value.OrderBy(b => b.Author?.Name).ThenBy(b => b.Series?.Name).ThenBy(b => b.SeriesIndex).ToList();
 		IsLoading = false;
 	}
+
+	public void Dispose()
+	{
+		JsRuntime.InvokeVoidAsync("saveScrollPosition", Urls.Shelf);
+	}
+
 }

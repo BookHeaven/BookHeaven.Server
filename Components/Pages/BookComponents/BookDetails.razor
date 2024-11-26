@@ -19,7 +19,7 @@
 <PageTitle>@_book.Title</PageTitle>
 <SectionContent SectionName="TopBar">
 	<MudTooltip Text="@Translations.GO_BACK">
-		<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Color="Color.Primary" Href="/shelf" />
+		<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Color="Color.Primary" Href="@Urls.Shelf" />
 	</MudTooltip>
 	<MudSpacer />
 	@if (!IsEditing)
@@ -45,7 +45,7 @@
 	
 </div>*@
 <div class="tw-mx-auto tw-w-10/12 tw-mt-10 tw-flex tw-flex-wrap tw-gap-10">
-	<div class="tw-w-[200px]">
+	<div class="tw-w-[200px] tw-mx-auto">
 		<img src="@(_newCoverTempPath ?? _book.CoverUrl)" style="@Transitions.GetTransitionName("img", _book.BookId)" alt="" />
 		@if (IsEditing && _newCoverTempPath != null)
 		{
