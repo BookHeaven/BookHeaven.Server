@@ -3,6 +3,12 @@
 @attribute [Route($"{Urls.Shelf}/{{Id:guid}}")]
 @attribute [Route($"{Urls.Shelf}/{{Id:guid}}/{{Editing}}")]
 <ScrollToTop />
+
+@if (!_book.Progresses.Any())
+{
+	return;
+}
+
 @if(!IsEditing)
 {
 	<div class="tw-fixed tw-left-0 tw-top-0 tw-right-0 tw-bottom-0 -tw-z-10 tw-blur-3xl tw-opacity-10">
@@ -65,13 +71,13 @@
 					<div class="tw-flex tw-gap-5 tw-justify-between">
 						<dl>
 							<dt>@Translations.START_DATE</dt>
-							<dd>@_book.Progress().StartDate?.ToString("d")</dd>
+							<dd>@_book.Progress().StartDate?.ToString(_settings.DateFormat)</dd>
 						</dl>
 						<dl>
 							<dt>@Translations.END_DATE</dt>
 							@if (_book.Progress().EndDate != null)
 							{
-								<dd>@_book.Progress().EndDate!.Value.ToString("d")</dd>
+								<dd>@_book.Progress().EndDate!.Value.ToString(_settings.DateFormat)</dd>
 							}
 
 						</dl>
@@ -121,7 +127,7 @@
 				@if (_book.PublishedDate != null)
 				{
 					<dt>@Translations.PUBLISHED</dt>
-					<dd>@_book.PublishedDate.Value.ToString("D")</dd>
+					<dd class="tw-capitalize">@_book.PublishedDate.Value.ToString(_settings.LongDateFormat)</dd>
 				}
 				@if (_book.Description != null)
 				{
@@ -255,7 +261,7 @@
 								<p>@metadata.Publisher</p>
 								@if(metadata.PublishedDate != null)
 								{
-									<p>@metadata.PublishedDate.Value.ToString("D")</p>
+									<p>@metadata.PublishedDate.Value.ToString(_settings.LongDateFormat)</p>
 								}
 								<div class="tw-flex tw-items-center tw-flex-wrap">
 									@if (!string.IsNullOrEmpty(metadata.ISBN10))
@@ -273,7 +279,7 @@
 								</div>
 							</div>
 						</div>
-						<p class="tw-mt-4">@metadata.Description</p>
+						<p class="tw-mt-4">@((MarkupString)metadata.Description)</p>
 					</div>
 					
 				}

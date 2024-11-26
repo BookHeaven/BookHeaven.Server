@@ -1,14 +1,68 @@
 ﻿@attribute [Route(Urls.Settings)]
 @using BookHeaven.Server.Abstractions
 @using EpubManager.Entities
-@inject IFormatService<EpubBook> EpubService
-<h3>Settings</h3>
-
-<MudButton @onclick="LoadImportFolder">Load import folder</MudButton>
+<SectionContent SectionName="TopBar">
+	<MudSpacer />
+	<MudTooltip Text="@Translations.SAVE">
+		<MudIconButton Icon="@Icons.Material.Filled.Save" Color="Color.Primary" OnClick="Save"/>
+	</MudTooltip>
+</SectionContent>
+<div class="tw-mx-auto tw-w-10/12 tw-flex tw-flex-col tw-gap-10">
+	<section>
+		<h1 class="tw-mb-3">Library</h1>
+		<MudButton Variant="Variant.Filled" @onclick="LoadImportFolder">Load import folder</MudButton>
+	</section>
+	<section>
+		<h1 class="tw-mb-3">UI</h1>
+		<MudStack Spacing="5">
+			<MudSelect @bind-Value="_serverSettings.Culture" Label="@Translations.LANGUAGE" Variant="Variant.Filled" Class="tw-flex-grow-0 tw-min-w-[300px]">
+				<MudSelectItem Value="@("es-ES")">Español</MudSelectItem>
+				<MudSelectItem Value="@("en-US")">English</MudSelectItem>
+			</MudSelect>
+			@{
+				var date = DateTime.Parse("2020-01-28");
+			}
+			<MudSelect @bind-Value="_serverSettings.DateFormat" Label="@Translations.DATE_FORMAT" Variant="Variant.Filled" Class="tw-flex-grow-0 tw-min-w-[300px]">
+				@foreach(var format in _dateFormats)
+				{
+					<MudSelectItem Value="@format">@date.ToString(format) <span class="tw-float-end tw-ms-5">@format</span></MudSelectItem>
+				}
+			</MudSelect>
+			<MudSelect @bind-Value="_serverSettings.LongDateFormat" Label="@Translations.LONG_DATE_FORMAT" Variant="Variant.Filled" Class="tw-flex-grow-0 tw-min-w-[300px]">
+				@foreach(var format in _longDateFormats)
+				{
+					<MudSelectItem Value="@format">@date.ToString(format)</MudSelectItem>
+				}
+			</MudSelect>
+		</MudStack>
+		
+	</section>
+</div>
 
 @code {
+	[Inject] private IFormatService<EpubBook> EpubService { get; set; } = null!;
+	[Inject] private ISettingsManagerService SettingsManager { get; set; } = null!;
+	[Inject] private NavigationManager NavigationManager { get; set; } = null!;
+	[Inject] private ISnackbar Snackbar { get; set; } = null!;
+	
+	private readonly List<string> _dateFormats = ["dd/MM/yyyy", "MM/dd/yyyy"];
+	private readonly List<string> _longDateFormats = ["dddd, dd MMMM, yyyy", "dddd, MMMM dd, yyyy"];
+	
+	private Entities.ServerSettings _serverSettings = new();
+
+	protected override async Task OnInitializedAsync()
+	{
+		_serverSettings = await SettingsManager.LoadSettingsAsync();
+	}
+
 	private async Task LoadImportFolder()
 	{
 		await EpubService.LoadFromFolder(Program.ImportPath);
+	}
+
+	private async Task Save()
+	{
+		await SettingsManager.SaveSettingsAsync(_serverSettings);
+		NavigationManager.NavigateTo($"Culture/Set?culture={Uri.EscapeDataString(_serverSettings.Culture)}&redirectUri={Uri.EscapeDataString(Urls.Settings)}", forceLoad: true);
 	}
 }

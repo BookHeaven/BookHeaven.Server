@@ -123,6 +123,15 @@ namespace BookHeaven.Server.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Date format.
+        /// </summary>
+        public static string DATE_FORMAT {
+            get {
+                return ResourceManager.GetString("DATE_FORMAT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Description.
         /// </summary>
         public static string DESCRIPTION {
@@ -164,6 +173,24 @@ namespace BookHeaven.Server.Localization {
         public static string GO_BACK {
             get {
                 return ResourceManager.GetString("GO_BACK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Language.
+        /// </summary>
+        public static string LANGUAGE {
+            get {
+                return ResourceManager.GetString("LANGUAGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Long date format.
+        /// </summary>
+        public static string LONG_DATE_FORMAT {
+            get {
+                return ResourceManager.GetString("LONG_DATE_FORMAT", resourceCulture);
             }
         }
         

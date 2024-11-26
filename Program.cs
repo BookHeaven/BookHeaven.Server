@@ -11,6 +11,7 @@ using System.Text.Json.Serialization;
 using MudBlazor;
 using BookHeaven.Domain;
 using BookHeaven.Domain.Entities;
+using BookHeaven.Server.Abstractions;
 using BookHeaven.Server.Features.Profiles;
 using MediatR;
 using Tailwind;
@@ -24,7 +25,7 @@ namespace BookHeaven.Server
 		public static readonly string ImportPath = Path.Combine(Directory.GetCurrentDirectory(), "import");
 		public static readonly string BooksPath = Path.Combine(AppDataPath, "books");
 		public static readonly string CoversPath = Path.Combine(AppDataPath, "covers");
-		private static readonly string DatabasePath = Path.Combine(AppDataPath, "database");
+		public static readonly string DatabasePath = Path.Combine(AppDataPath, "database");
 		public static Profile? SelectedProfile { get; set; }
 		
 		public static void Main(string[] args)
@@ -61,12 +62,20 @@ namespace BookHeaven.Server
 			});
 			
 			builder.Services.AddEpubManager();
+			builder.Services.AddScoped<ISettingsManagerService, SettingsManagerService>();
 			builder.Services.AddScoped<IMetadataProviderService, GoogleBooksService>();
 			// builder.Services.AddScoped<IMetadataProviderService, OpenLibraryService>();
 			builder.Services.AddScoped<IFormatService<EpubBook>, EpubService>();	
 
 			var app = builder.Build();
-			app.UseRequestLocalization(Environment.GetEnvironmentVariable("LANG") ?? CultureInfo.CurrentCulture.Name);
+			
+			var supportedCultures = new[]{ "en-US", "es-ES" };
+			var localizationOptions = new RequestLocalizationOptions()
+				.SetDefaultCulture(supportedCultures[0])
+				.AddSupportedCultures(supportedCultures)
+				.AddSupportedUICultures(supportedCultures);
+			
+			app.UseRequestLocalization(localizationOptions);
 
 			// Configure the HTTP request pipeline.
 			if (!app.Environment.IsDevelopment())

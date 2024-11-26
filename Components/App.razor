@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using BookHeaven.Server.Abstractions
+@using Microsoft.AspNetCore.Localization
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -13,10 +15,10 @@
 </head>
 
 <body>
-    <Routes @rendermode="new InteractiveServerRenderMode(prerender:false)"/>
-    <script src="@Assets["_content/MudBlazor/MudBlazor.min.js"]"></script>
-    <script src="@Assets["_framework/blazor.web.js"]"></script>
-    <script>
+<Routes @rendermode="new InteractiveServerRenderMode(prerender:false)"/>
+<script src="@Assets["_content/MudBlazor/MudBlazor.min.js"]"></script>
+<script src="@Assets["_framework/blazor.web.js"]"></script>
+<script>
         window.scrollToTop = () => {
             let main = document.querySelector(".mud-layout");
             main.scrollTo({ top: 0 });
@@ -25,3 +27,21 @@
 </body>
 
 </html>
+@code {
+    [Inject] ISettingsManagerService SettingsManager { get; set; } = null!;
+    
+    [CascadingParameter]
+    public HttpContext? HttpContext { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (HttpContext is null) return;
+        var culture = (await SettingsManager.LoadSettingsAsync()).Culture;
+        HttpContext?.Response.Cookies.Append(
+            CookieRequestCultureProvider.DefaultCookieName,
+            CookieRequestCultureProvider.MakeCookieValue(
+                new RequestCulture(
+                    culture,
+                    culture)));
+    }
+}

@@ -201,4 +201,13 @@
   <data name="UPLOADING_BOOK_FAILED" xml:space="preserve">
     <value>Failed to upload book</value>
   </data>
+  <data name="LANGUAGE" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="DATE_FORMAT" xml:space="preserve">
+    <value>Date format</value>
+  </data>
+  <data name="LONG_DATE_FORMAT" xml:space="preserve">
+    <value>Long date format</value>
+  </data>
 </root>

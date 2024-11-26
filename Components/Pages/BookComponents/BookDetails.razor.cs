@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
 using BookHeaven.Domain.Entities;
 using BookHeaven.Domain.Extensions;
+using BookHeaven.Server.Abstractions;
 using BookHeaven.Server.Constants;
 using BookHeaven.Server.Entities;
 using BookHeaven.Server.Features.Authors;
@@ -23,9 +24,12 @@ namespace BookHeaven.Server.Components.Pages.BookComponents
 		[Inject] private IMetadataProviderService MetadataProviderService { get; set; } = null!;
 		[Inject] private IEpubWriter EpubWriter { get; set; } = null!;
 		[Inject] private NavigationManager NavigationManager { get; set; } = null!;
+		[Inject] private ISettingsManagerService SettingsManager { get; set; } = null!;
 
 		[Parameter] public Guid Id { get; set; }
 		[Parameter] public string? Editing { get; set; }
+		
+		private ServerSettings _settings = new();
 
 		private bool IsEditing => Editing == "edit";
 		private bool _searchingMetadata;
@@ -46,6 +50,11 @@ namespace BookHeaven.Server.Components.Pages.BookComponents
 			SetFunc = value => $"{(int)value.TotalHours:00}:{value.Minutes:00}",
 			GetFunc = text => text != null ? new(int.Parse(text.Split(":")[0]), int.Parse(text.Split(":")[1]), 0) : TimeSpan.Zero
 		};
+
+		protected override async Task OnInitializedAsync()
+		{
+			_settings = await SettingsManager.LoadSettingsAsync();
+		}
 
 		protected override async Task OnParametersSetAsync()
 		{
