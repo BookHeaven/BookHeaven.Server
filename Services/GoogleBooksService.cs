@@ -24,9 +24,9 @@ public class GoogleBooksService : IMetadataProviderService
             Author = item.VolumeInfo.Authors?.FirstOrDefault(),
             Publisher = item.VolumeInfo.Publisher,
             PublishedDate = DateTime.Parse(item.VolumeInfo.PublishedDate),
-            CoverURL = item.VolumeInfo.ImageLinks?.Large ?? item.VolumeInfo.ImageLinks?.Medium ?? item.VolumeInfo.ImageLinks?.Small ?? item.VolumeInfo.ImageLinks?.Thumbnail ?? item.VolumeInfo.ImageLinks?.SmallThumbnail ?? string.Empty,
-            ISBN10 = item.VolumeInfo.IndustryIdentifiers?.FirstOrDefault(i => i.Type == "ISBN_10")?.Identifier,
-            ISBN13 = item.VolumeInfo.IndustryIdentifiers?.FirstOrDefault(i => i.Type == "ISBN_13")?.Identifier,
+            CoverUrl = item.VolumeInfo.ImageLinks?.Large ?? item.VolumeInfo.ImageLinks?.Medium ?? item.VolumeInfo.ImageLinks?.Small ?? item.VolumeInfo.ImageLinks?.Thumbnail ?? item.VolumeInfo.ImageLinks?.SmallThumbnail ?? string.Empty,
+            Isbn10 = item.VolumeInfo.IndustryIdentifiers?.FirstOrDefault(i => i.Type == "ISBN_10")?.Identifier,
+            Isbn13 = item.VolumeInfo.IndustryIdentifiers?.FirstOrDefault(i => i.Type == "ISBN_13")?.Identifier,
             Description = item.VolumeInfo.Description
         }).ToList();
     }
