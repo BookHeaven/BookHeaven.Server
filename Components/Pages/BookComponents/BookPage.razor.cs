@@ -17,7 +17,7 @@ using MediatR;
 
 namespace BookHeaven.Server.Components.Pages.BookComponents
 {
-	public partial class BookDetails
+	public partial class BookPage
 	{
 		[Inject] private ISender Sender { get; set; } = null!;
 		[Inject] private IFormatService<EpubBook> EpubService { get; set; } = null!;
@@ -33,6 +33,8 @@ namespace BookHeaven.Server.Components.Pages.BookComponents
 
 		private bool IsEditing => Editing == "edit";
 		private bool _searchingMetadata;
+		
+		private bool CoverExists => File.Exists(_book.CoverPath(Program.CoversPath));
 
 		private Book _book = new();
 		private List<Author> _authors = [];
@@ -169,7 +171,7 @@ namespace BookHeaven.Server.Components.Pages.BookComponents
 						}
 						series = createSeries.Value;
 					}
-					_book!.SeriesId = series.SeriesId;
+					_book.SeriesId = series.SeriesId;
 				}
 			}
 			else
@@ -194,12 +196,12 @@ namespace BookHeaven.Server.Components.Pages.BookComponents
 			
 			if(_newCoverTempPath != null)
 			{
-				await EpubService.StoreCover(await File.ReadAllBytesAsync(_newCoverTempPath), _book.GetCoverPath(Program.CoversPath)!);
+				await EpubService.StoreCover(await File.ReadAllBytesAsync(_newCoverTempPath), _book.CoverPath(Program.CoversPath)!);
 				File.Delete(_newCoverTempPath);
 			}
 			if(_newEpubTempPath != null)
 			{
-				await EpubService.StoreBook(_newEpubTempPath, _book.GetBookPath(Program.BooksPath)!);
+				await EpubService.StoreBook(_newEpubTempPath, _book.EpubPath(Program.BooksPath));
 				File.Delete(_newEpubTempPath);
 			}
 
@@ -221,10 +223,10 @@ namespace BookHeaven.Server.Components.Pages.BookComponents
 				SeriesIndex = _book.SeriesIndex
 			};
 
-			await EpubWriter.ReplaceMetadata(_book.GetBookPath(Program.BooksPath)!, metadata);
+			await EpubWriter.ReplaceMetadata(_book.EpubPath(Program.BooksPath), metadata);
 			if(_newCoverTempPath != null)
 			{
-				await EpubWriter.ReplaceCover(_book.GetBookPath(Program.BooksPath)!, _book.GetCoverPath(Program.CoversPath)!);
+				await EpubWriter.ReplaceCover(_book.EpubPath(Program.BooksPath), _book.CoverPath(Program.CoversPath));
 			}
 			_newCoverTempPath = null;
 			_newEpubTempPath = null;

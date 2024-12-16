@@ -12,7 +12,7 @@
 @if(!IsEditing)
 {
 	<div class="tw-fixed tw-left-0 tw-top-0 tw-right-0 tw-bottom-0 -tw-z-10 tw-blur-3xl tw-opacity-10">
-		<img class="tw-h-full tw-w-full" src="@(_book.CoverUrl)" alt="" />
+		<img class="tw-h-full tw-w-full" src="@(_book.CoverUrl())" alt="" />
 	</div>
 }
 
@@ -25,19 +25,19 @@
 	@if (!IsEditing)
 	{
 		<MudTooltip Text="@Translations.DOWNLOAD">
-			<MudIconButton Icon="@Icons.Material.Filled.Download" Color="Color.Primary" Href="@_book.EpubUrl" download="@_book.FormattedFileName"/>
+			<MudIconButton Icon="@Icons.Material.Filled.Download" Color="Color.Primary" Href="@_book.EpubUrl()" download="@_book.FormattedFileName()"/>
 		</MudTooltip>
 		<MudTooltip Text="@Translations.EDIT">
-			<MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" OnClick="EnableEditing"/>
+			<MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" OnClick="@EnableEditing"/>
 		</MudTooltip>
 	}
 	else
 	{
 		<MudTooltip Text="@Translations.CANCEL" Color="Color.Warning">
-			<MudIconButton Icon="@Icons.Material.Filled.Clear" Color="Color.Warning" OnClick="DisableEditing"/>
+			<MudIconButton Icon="@Icons.Material.Filled.Clear" Color="Color.Warning" OnClick="@DisableEditing"/>
 		</MudTooltip>
 		<MudTooltip Text="@Translations.SAVE">
-			<MudIconButton Icon="@Icons.Material.Filled.Save" Color="Color.Primary" OnClick="Save"/>
+			<MudIconButton Icon="@Icons.Material.Filled.Save" Color="Color.Primary" OnClick="@Save"/>
 		</MudTooltip>
 	}
 </SectionContent>
@@ -46,7 +46,7 @@
 </div>*@
 <div class="tw-mx-auto tw-w-10/12 tw-mt-10 tw-flex tw-flex-wrap tw-gap-10">
 	<div class="tw-w-[200px] tw-mx-auto">
-		<img src="@(_newCoverTempPath ?? _book.CoverUrl)" style="@Transitions.GetTransitionName("img", _book.BookId)" alt="" />
+		<img src="@(_newCoverTempPath ?? _book.CoverUrl())" style="@Transitions.GetTransitionName("img", _book.BookId)" alt="" />
 		@if (IsEditing && _newCoverTempPath != null)
 		{
 			<MudAlert Class="tw-mt-4" Severity="Severity.Warning">The new cover won't be applied until the changes are saved.</MudAlert>
@@ -143,7 +143,7 @@
 				<MudTooltip Text="Get Metadata">
 					<MudIconButton Icon="@Icons.Material.Rounded.CloudDownload" Variant="Variant.Filled" Color="Color.Tertiary" OnClick="@ShowMetadataDialog"/>
 				</MudTooltip>
-				<MudTooltip Text="@(string.IsNullOrEmpty(_book.GetCoverPath(Program.CoversPath, true)) ? Translations.ADD_COVER : Translations.REPLACE_COVER)">
+				<MudTooltip Text="@(!CoverExists ? Translations.ADD_COVER : Translations.REPLACE_COVER)">
 					<MudFileUpload T="IBrowserFile" FilesChanged="UploadCoverToTempPath" Accept=".jpg">
 						<ActivatorContent>
 							<MudIconButton HtmlTag="label"
@@ -253,7 +253,7 @@
 				{
 					<div>
 						<div class="tw-flex tw-items-start">
-							<img src="@metadata.CoverURL" class="tw-max-w-[200px]" alt="" />
+							<img src="@metadata.CoverUrl" class="tw-max-w-[200px]" alt="" />
 
 							<div class="tw-flex-1 tw-ml-4">
 								<p class="tw-text-xl">@metadata.Title</p>
@@ -264,16 +264,16 @@
 									<p>@metadata.PublishedDate.Value.ToString(_settings.LongDateFormat)</p>
 								}
 								<div class="tw-flex tw-items-center tw-flex-wrap">
-									@if (!string.IsNullOrEmpty(metadata.ISBN10))
+									@if (!string.IsNullOrEmpty(metadata.Isbn10))
 									{
 										<MudChip T="MarkupString" Size="Size.Small" Color="Color.Primary">
-											ISBN-10: <span class="tw-ms-1">@metadata.ISBN10</span>
+											ISBN-10: <span class="tw-ms-1">@metadata.Isbn10</span>
 										</MudChip>
 									}
-									@if (!string.IsNullOrEmpty(metadata.ISBN13))
+									@if (!string.IsNullOrEmpty(metadata.Isbn13))
 									{
 										<MudChip T="MarkupString" Size="Size.Small" Color="Color.Primary">
-											ISBN-13: <span class="tw-ms-1">@metadata.ISBN13</span>
+											ISBN-13: <span class="tw-ms-1">@metadata.Isbn13</span>
 										</MudChip>
 									}
 								</div>
