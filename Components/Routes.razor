@@ -1,5 +1,13 @@
 ﻿<ViewTransitionRouter AppAssembly="@typeof(Program).Assembly">
     <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)" />
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
     </Found>
+    <NotFound>
+        <LayoutView Layout="@typeof(MainLayout)">
+            <PageTitle>404 - Not found</PageTitle>
+            <div class="tw-absolute tw-inset-0 tw-flex tw-flex-col tw-items-center tw-justify-center">
+                <h1 class="tw-text-5xl tw-mb-5">Whatever you are looking for, it's gone</h1>
+            </div>
+        </LayoutView>
+    </NotFound>
 </ViewTransitionRouter>
