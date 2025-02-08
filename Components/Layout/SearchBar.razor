@@ -47,7 +47,7 @@
 		searchItems.AddRange(getBooks.Value.Select(
 			b => new SearchItem
 			{
-				Image = b.CoverUrl, 
+				Image = b.CoverUrl(), 
 				Title = b.Title!, 
 				Url = Urls.GetBookUrl(b.BookId),
 				Author = b.Author?.Name,

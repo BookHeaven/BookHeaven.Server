@@ -11,4 +11,9 @@ public static class Urls
 	{
 		return $"{Shelf}/{bookId}";
 	}
+	
+	public static string GetAuthorUrl(Guid authorId)
+	{
+		return $"{Authors}/{authorId}";
+	}
 }

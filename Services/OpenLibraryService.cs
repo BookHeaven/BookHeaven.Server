@@ -120,27 +120,27 @@ namespace BookHeaven.Server.Services
 	internal class Doc
 	{
 		[JsonPropertyName("author_name")]
-		public List<string> author_name { get; set; }
+		public List<string> AuthorName { get; set; } = [];
 
 		[JsonPropertyName("cover_i")]
-		public int cover_i { get; set; }
+		public int CoverI { get; set; }
 
 		[JsonPropertyName("isbn")]
-		public List<string> isbn { get; set; }
+		public List<string> Isbn { get; set; } = [];
 
 		[JsonPropertyName("key")]
-		public string key { get; set; }
+		public string Key { get; set; } = string.Empty;
 
 		[JsonPropertyName("publisher")]
-		public List<string> publisher { get; set; }
+		public List<string> Publisher { get; set; } = [];
 
 		[JsonPropertyName("title")]
-		public string title { get; set; }
+		public string Title { get; set; } = string.Empty;
 
 		[JsonPropertyName("id_amazon")]
-		public List<string> id_amazon { get; set; }
+		public List<string> IdAmazon { get; set; } = [];
 
 		[JsonPropertyName("editions")]
-		public Root editions { get; set; }
+		public Root Editions { get; set; } = new();
 	}
 }

@@ -1,0 +1,118 @@
+﻿@using BookHeaven.Domain.Enums
+@using BookHeaven.Server.Features.Authors
+@attribute [Route($"{Urls.Authors}/{{Id:guid}}")]
+@attribute [Route($"{Urls.Authors}/{{Id:guid}}/{{Editing}}")]
+
+@if(!_isLoaded)
+{
+	return;
+}
+<SectionContent SectionName="TopBar">
+	<MudTooltip Text="@Translations.GO_BACK">
+		<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Color="Color.Primary" Href="@Urls.Authors" />
+	</MudTooltip>
+	<MudSpacer />
+	@if (!IsEditing)
+	{
+		<MudTooltip Text="@Translations.EDIT">
+			<MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" OnClick="@EnableEditing"/>
+		</MudTooltip>
+	}
+	else
+	{
+		<MudTooltip Text="@Translations.CANCEL" Color="Color.Warning">
+			<MudIconButton Icon="@Icons.Material.Filled.Clear" Color="Color.Warning" OnClick="@DisableEditing"/>
+		</MudTooltip>
+		<MudTooltip Text="@Translations.SAVE">
+			<MudIconButton Icon="@Icons.Material.Filled.Save" Color="Color.Primary" OnClick="@Save"/>
+		</MudTooltip>
+	}
+</SectionContent>
+<div class="tw-container tw-px-4 tw-py-5 tw-mx-auto">
+	<div class="tw-flex tw-flex-wrap tw-gap-5 lg:tw-gap-10 tw-mb-10">
+		<div class="tw-w-[250px] tw-rounded tw-overflow-hidden tw-mx-auto">
+			@if (string.IsNullOrEmpty(_author.ImageUrl))
+			{
+				<div class="tw-h-[375px] tw-bg-slate-600 tw-flex tw-flex-col tw-items-center tw-justify-center">
+					<MudIcon Icon="@Icons.Material.Rounded.PersonOff" Size="Size.Large"/>
+					<span>No image</span>
+				</div>
+			}
+			else
+			{
+				<img src="@_author.ImageUrl" alt=""/>
+			}
+			<div class="tw-p-2 tw-bg-slate-700">
+				<p class="tw-text-center">@BooksRead finished out of @_author.Books.Count</p>
+			</div>
+		</div>
+		<div class="tw-flex-1">
+			@if (!IsEditing)
+			{
+				<h1>@_author.Name</h1>
+				<p>@_author.Biography</p>
+			}
+			else
+			{
+				<MudTextField Label="@Translations.NAME" @bind-Value="_author.Name" Variant="Variant.Filled"/>
+				<MudTextField Label="Biography" Lines="12" @bind-Value="_author.Biography" Variant="Variant.Filled"/>
+			}
+			
+		</div>
+	</div>
+	@if (!IsEditing)
+	{
+		<h2 class="tw-mb-5">@_author.Books.Count @(_author.Books.Count > 1 ? "books" : "book")</h2>
+		<BookGrid Books="_author.Books.OrderBy(b => b.Author?.Name).ThenBy(b => b.Series?.Name).ThenBy(b => b.SeriesIndex).ToList()" />
+	}
+	
+</div>
+
+@code {
+	[Inject] private ISender Sender { get; set; } = null!;
+	[Inject] private NavigationManager NavigationManager { get; set; } = null!;
+	[Parameter] public Guid Id { get; set; }
+	[Parameter] public string? Editing { get; set; }
+	
+	private bool _isLoaded;
+	private Author _author = new();
+	private bool IsEditing => Editing == "edit";
+	
+	private int BooksRead => _author.Books.Count(book => book.ReadingStatus() == BookStatus.Finished);
+
+	protected override async Task OnParametersSetAsync()
+	{
+		if (_author.AuthorId == Guid.Empty || Id != _author.AuthorId)
+		{
+			var getAuthor = await Sender.Send(new GetAuthorQuery(new AuthorRequest {AuthorId = Id, IncludeBooks = true}));
+			if (getAuthor.IsFailure)
+			{
+				return;	
+			}
+			_author = getAuthor.Value;
+			_isLoaded = true;
+			StateHasChanged();	
+		}
+	}
+
+	private void EnableEditing()
+	{
+		NavigationManager.NavigateTo($"{Urls.GetAuthorUrl(_author.AuthorId)}/edit");
+	}
+
+	private void DisableEditing()
+	{
+		NavigationManager.NavigateTo(Urls.GetAuthorUrl(_author.AuthorId));
+	}
+
+	private async Task Save()
+	{
+		var updateAuthor = await Sender.Send(new UpdateAuthorCommand(_author));
+		if (updateAuthor.IsFailure)
+		{
+			return;
+		}
+		DisableEditing();
+	}
+
+}

@@ -59,7 +59,7 @@ namespace BookHeaven.Server.Services
 				return getBook.Value.BookId;
 			}
 			
-			var getAuthor = await sender.Send(new GetAuthorQuery(null, epubBook.Metadata.Author));
+			var getAuthor = await sender.Send(new GetAuthorQuery(new AuthorRequest {Name = epubBook.Metadata.Author}));
 			if (getAuthor.IsFailure)
 			{
 				var createAuthor = await sender.Send(new CreateAuthorCommand(epubBook.Metadata.Author));
@@ -149,8 +149,8 @@ namespace BookHeaven.Server.Services
 		public async Task StoreBook(string? sourcePath, string dest)
 		{
 			if (sourcePath == null) return;
-            await using FileStream source = File.OpenRead(sourcePath);
-            await using FileStream destination = File.Create(dest);
+            await using var source = File.OpenRead(sourcePath);
+            await using var destination = File.Create(dest);
             await source.CopyToAsync(destination);
         }
 		

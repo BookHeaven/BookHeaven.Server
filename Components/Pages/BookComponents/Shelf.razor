@@ -1,5 +1,4 @@
 ﻿@using BookHeaven.Server.Features.Books
-@using BookHeaven.Server.Helpers
 @attribute [Route(Urls.Shelf)]
 
 @implements IDisposable
@@ -8,74 +7,7 @@
 
 <ScrollToTop />
 
-<div class="tw-grid tw-grid-cols-[repeat(auto-fill,180px)] tw-gap-6 tw-justify-center">
-	@if (IsLoading)
-	{
-		@for(var i = 0;i<50;i++)
-		{
-			<MudCard>
-				<MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="250px"/>
-				<MudCardContent>
-					<MudSkeleton SkeletonType="SkeletonType.Text" Width="80%"/>
-					<MudSkeleton SkeletonType="SkeletonType.Text" Width="60%"/>
-					<MudSkeleton SkeletonType="SkeletonType.Text" Width="100%"/>
-				</MudCardContent>
-			</MudCard>
-		}
-	}
-	else
-	{
-		@if (Books.Count == 0)
-		{
-			<p>Your Shelf is empty...</p>
-		}
-		else
-		{
-			@foreach (var book in Books)
-			{
-				<MudCard Elevation="4" 
-				         Class="tw-group tw-overflow-hidden tw-flex tw-flex-col hover:tw-cursor-pointer" 
-				         @onclick="@(() => NavigationManager.NavigateTo(Urls.GetBookUrl(book.BookId)))">
-					
-					
-					<div class="tw-h-[250px] tw-overflow-hidden">
-						<span class="tw-h-full" style="@Transitions.GetTransitionName("img", book.BookId)">
-							<MudCardMedia Image="@Assets[book.CoverUrl]" Class="tw-transition-transform !tw-h-full tw-duration-150 group-hover:tw-scale-105"/>
-						</span>
-						
-					</div>
-					
-					
-					<MudCardContent 
-						Class="tw-flex-1 tw-relative tw-flex tw-flex-col tw-gap-1 tw-transition-colors group-hover:tw-bg-slate-700">
-						@*@{
-							var indicatorBg = book.ReadingStatus() switch
-							{
-								BookStatus.New => "tw-bg-gray-400",
-								BookStatus.Reading => "tw-bg-green-400",
-								BookStatus.Finished => "tw-bg-blue-400"
-							};
-						}*@
-						@* <div class="tw-absolute tw-z-10 tw-bottom-0 tw-left-0 tw-h-[5px] tw-bg-blue-400" style="width: @((int)book.Progress().Progress)%;@Transitions.GetTransitionName("progress-bar", book.BookId)"></div> *@
-						<span class="tw-absolute tw-z-10 tw-bottom-0 tw-inset-x-0" style="@Transitions.GetTransitionName("progress-bar", book.BookId)">
-							<MudProgressLinear
-								Color="Color.Primary"
-								Size="Size.Small"
-								Value="@((double)book.Progress().Progress)"/>
-						</span>
-						<MudText Typo="Typo.body2"><span style="@Transitions.GetTransitionName("title", book.BookId)">@book.Title</span></MudText>
-						<MudText Typo="Typo.body2" Color="Color.Secondary"><span style="@Transitions.GetTransitionName("author", book.BookId)">@book.Author?.Name</span></MudText>
-						<MudText Typo="Typo.caption" Color="Color.Primary"><span style="@Transitions.GetTransitionName("series", book.BookId)">@book.Series?.Name</span></MudText>
-					</MudCardContent>
-				</MudCard>
-
-			}
-		}
-		
-		
-	}
-	
-</div>
+<BookGrid Books="Books" Center="true" />
 
 @code {
 	[Inject] private NavigationManager NavigationManager { get; set; } = null!;

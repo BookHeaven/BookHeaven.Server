@@ -44,7 +44,7 @@
                             <MudText Typo="Typo.h6">@Translations.BOOKS_FROM @context.Name</MudText>
                         </MudCardHeader>
                         <MudCardContent>
-                            <MudTable Breakpoint="Breakpoint.None" T="Book" Items="context.Books" Context="book" Elevation="0" Outlined="true" Dense="true" OnRowClick="@(r => NavigationManager.NavigateTo($"/book/{r.Item.BookId}"))">
+                            <MudTable Breakpoint="Breakpoint.None" T="Book" Items="context.Books" Context="book" Elevation="0" Outlined="true" Dense="true" OnRowClick="@(r => NavigationManager.NavigateTo($"/book/{r.Item!.BookId}"))">
                                 <ColGroup>
                                     <col style="width: 200px;"/>
                                     <col style="width: 50px;"/>
@@ -75,9 +75,9 @@
     [Inject] private ISnackbar Snackbar { get; set; } = null!;
     [Inject] private NavigationManager NavigationManager { get; set; } = null!;
     
-    IEnumerable<Series>? _items;
-    Series? _elementBeforeEdit;
-    Dictionary<Guid, bool> _showDetails = new();
+    private List<Series>? _items;
+    private Series? _elementBeforeEdit;
+    private Dictionary<Guid, bool> _showDetails = new();
 
     protected override async Task OnInitializedAsync()
     {

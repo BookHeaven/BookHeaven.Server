@@ -7,13 +7,20 @@ using Microsoft.EntityFrameworkCore.Internal;
 
 namespace BookHeaven.Server.Features.Authors;
 
-public sealed record GetAuthorQuery(Guid? AuthorId, string? Name): IQuery<Author>;
+public sealed record AuthorRequest
+{
+    public Guid? AuthorId { get; init; }
+    public string? Name { get; init; }
+    public bool IncludeBooks { get; init; }
+}
+
+public sealed record GetAuthorQuery(AuthorRequest Request): IQuery<Author>;
 
 internal class GetAuthorQueryHandler(IDbContextFactory<DatabaseContext> dbContextFactory) : IQueryHandler<GetAuthorQuery, Author>
 {
-    public async Task<Result<Author>> Handle(GetAuthorQuery request, CancellationToken cancellationToken)
+    public async Task<Result<Author>> Handle(GetAuthorQuery query, CancellationToken cancellationToken)
     {
-        if(request.AuthorId == null && request.Name == null)
+        if(query.Request.AuthorId == null && query.Request.Name == null)
         {
             return Result<Author>.Failure(new Error("Error", "You must provide either an AuthorId or a Name"));
         }
@@ -22,10 +29,20 @@ internal class GetAuthorQueryHandler(IDbContextFactory<DatabaseContext> dbContex
 
         try
         {
-            var author = await context.Authors.FirstOrDefaultAsync(x => 
-                    (request.AuthorId != null && x.AuthorId == request.AuthorId) || 
-                    (request.Name != null && x.Name!.ToUpper() == request.Name.ToUpper())
-                , cancellationToken);
+            var dbQuery = context.Authors.Where(x => 
+                    (query.Request.AuthorId != null && x.AuthorId == query.Request.AuthorId) || 
+                    (query.Request.Name != null && x.Name!.ToUpper() == query.Request.Name.ToUpper()));
+            
+            if (query.Request.IncludeBooks)
+            {
+                dbQuery = dbQuery
+                    .Include(a => a.Books)
+                    .ThenInclude(b => b.Series)
+                    .Include(a => a.Books)
+                    .ThenInclude(b => b.Progresses.Where(bp => bp.ProfileId == Program.SelectedProfile!.ProfileId));
+            }
+
+            var author = await dbQuery.FirstOrDefaultAsync(cancellationToken: cancellationToken);
             
             return author == null ? Result<Author>.Failure(new Error("Error", "Author not found")) : Result<Author>.Success(author);
         }
