@@ -1,0 +1,11 @@
+﻿<div class="tw-grid tw-grid-cols-[repeat(auto-fill,180px)] tw-gap-5 @(Center ? "tw-justify-center" : "")">
+	@foreach(var book in Books)
+	{
+		<BookCard Book="book"/>
+	}
+</div>
+
+@code {
+	[Parameter] public required List<Book> Books { get; set; }
+	[Parameter] public bool Center { get; set; }
+}
