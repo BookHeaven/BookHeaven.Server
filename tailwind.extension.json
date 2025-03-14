@@ -1,1 +1,32 @@
-{"ConfigurationFile":"tailwind.config.js","BuildFiles":[{"Input":"wwwroot\\css\\app.css"}],"UseCli":false}
+{
+  "$schema": "https://raw.githubusercontent.com/theron-wang/VS2022-Editor-Support-for-Tailwind-CSS/refs/heads/main/tailwind.extension.schema.json",
+  "ConfigurationFiles": [
+    {
+      "Path": "tailwind.config.js",
+      "IsDefault": true,
+      "ApplicableLocations": []
+    }
+  ],
+  "BuildFiles": [
+    {
+      "Input": "wwwroot\\css\\app.css",
+      "Output": ""
+    }
+  ],
+  "PackageConfigurationFile": null,
+  "CustomRegexes": {
+    "Razor": {
+      "Override": false,
+      "Values": []
+    },
+    "HTML": {
+      "Override": false,
+      "Values": []
+    },
+    "JavaScript": {
+      "Override": false,
+      "Values": []
+    }
+  },
+  "UseCli": false
+}
