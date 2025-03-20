@@ -14,13 +14,13 @@ internal class GetBookQueryHandler(IDbContextFactory<DatabaseContext> dbContextF
     {
         if(request.BookId == null && request.Title == null)
         {
-            return Result<Book>.Failure(new Error("Error", "You must provide either a BookId or a Title"));
+            return new Error("Error", "You must provide either a BookId or a Title");
         }
         
         await using var context = await dbContextFactory.CreateDbContextAsync(cancellationToken);
         
         var book = await context.Books.Include(b => b.Author).Include(b => b.Series).FirstOrDefaultAsync(x => x.BookId == request.BookId || x.Title == request.Title, cancellationToken);
         
-        return book == null ? Result<Book>.Failure(new Error("Error", "Book not found")) : Result<Book>.Success(book);
+        return book != null ? book : new Error("Error", "Book not found");
     }
 }

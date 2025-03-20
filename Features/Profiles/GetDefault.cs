@@ -16,6 +16,6 @@ internal class GetDefaultProfileQueryHandler(IDbContextFactory<DatabaseContext> 
 
         var profile = await context.Profiles.FirstOrDefaultAsync(p => p.Name == "Default", cancellationToken);
 
-        return profile == null ? Result<Profile>.Failure(new Error("Error", "Default profile not found")) : Result<Profile>.Success(profile);
+        return profile != null ? profile : new Error("Error", "Default profile not found");
     }
 }

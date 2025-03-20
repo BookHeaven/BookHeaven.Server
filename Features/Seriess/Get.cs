@@ -15,7 +15,7 @@ internal class GetSeriesQueryHandler(IDbContextFactory<DatabaseContext> dbContex
     {
         if(request.SeriesId == null && request.Name == null)
         {
-            return Result<Series>.Failure(new Error("Error", "You must provide either an SeriesId or a Name"));
+            return new Error("Error", "You must provide either an SeriesId or a Name");
         }
         
         await using var context = await dbContextFactory.CreateDbContextAsync(cancellationToken);
@@ -27,11 +27,11 @@ internal class GetSeriesQueryHandler(IDbContextFactory<DatabaseContext> dbContex
                     (request.Name != null && x.Name!.ToUpper() == request.Name.ToUpper()),
                 cancellationToken);
             
-            return series == null ? Result<Series>.Failure(new Error("Error", "Series not found")) : Result<Series>.Success(series);
+            return series != null ? series : new Error("Error", "Series not found");
         }
         catch (Exception e)
         {
-            return Result<Series>.Failure(new Error("Error", e.Message));
+            return new Error("Error", e.Message);
         }
     }
 }

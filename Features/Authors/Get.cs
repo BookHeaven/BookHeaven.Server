@@ -22,7 +22,7 @@ internal class GetAuthorQueryHandler(IDbContextFactory<DatabaseContext> dbContex
     {
         if(query.Request.AuthorId == null && query.Request.Name == null)
         {
-            return Result<Author>.Failure(new Error("Error", "You must provide either an AuthorId or a Name"));
+            return new Error("Error", "You must provide either an AuthorId or a Name");
         }
         
         await using var context = await dbContextFactory.CreateDbContextAsync(cancellationToken);
@@ -44,11 +44,11 @@ internal class GetAuthorQueryHandler(IDbContextFactory<DatabaseContext> dbContex
 
             var author = await dbQuery.FirstOrDefaultAsync(cancellationToken: cancellationToken);
             
-            return author == null ? Result<Author>.Failure(new Error("Error", "Author not found")) : Result<Author>.Success(author);
+            return author != null ? author : new Error("Error", "Author not found");
         }
         catch (Exception e)
         {
-            return Result<Author>.Failure(new Error("Error", e.Message));
+            return new Error("Error", e.Message);
         }
     }
 }

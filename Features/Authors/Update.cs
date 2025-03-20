@@ -22,9 +22,9 @@ internal class UpdateAuthorCommandHandler(IDbContextFactory<DatabaseContext> dbC
         }
         catch (DbUpdateException)
         {
-            return Result<Author>.Failure(new Error("Error", "An error occurred while updating the author"));
+            return new Error("Error", "An error occurred while updating the author");
         }
         
-        return Result<Author>.Success(request.Author);
+        return request.Author;
     }
 }

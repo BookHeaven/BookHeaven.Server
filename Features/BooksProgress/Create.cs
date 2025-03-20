@@ -27,8 +27,8 @@ internal class CreateBookProgressCommandHandler(IDbContextFactory<DatabaseContex
         }
         catch (Exception e)
         {
-            return Result<Guid>.Failure(new Error("Error", e.Message));
+            return new Error("Error", e.Message);
         }
-        return Result<Guid>.Success(progress.BookProgressId);
+        return progress.BookProgressId;
     }
 }

@@ -28,9 +28,9 @@ internal class CreateProfileCommandHandler(IDbContextFactory<DatabaseContext> db
         }
         catch (Exception e)
         {
-            return Result<Profile>.Failure(new Error("Error", e.Message));
+            return new Error("Error", e.Message);
         }
         
-        return Result<Profile>.Success(profile);
+        return profile;
     }
 }

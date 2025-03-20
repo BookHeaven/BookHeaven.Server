@@ -16,7 +16,7 @@ internal class GetBookProgressQueryHandler(IDbContextFactory<DatabaseContext> db
 
         var progress = await context.BooksProgress.FirstOrDefaultAsync(bp => bp.BookProgressId == request.BookProgressId, cancellationToken);
 
-        return progress == null ? Result<BookProgress>.Failure(new Error("Error", "Progress not found")) : Result<BookProgress>.Success(progress);
+        return progress != null ? progress : new Error("Error", "Progress not found");
     }
 }
 
@@ -31,6 +31,6 @@ internal class GetBookProgressByProfileQueryHandler(IDbContextFactory<DatabaseCo
 
         var progress = await context.BooksProgress.FirstOrDefaultAsync(x => x.BookId == request.BookId && x.ProfileId == request.ProfileId, cancellationToken);
 
-        return progress == null ? Result<BookProgress>.Failure(new Error("Error", "Progress not found")) : Result<BookProgress>.Success(progress);
+        return progress != null ? progress : new Error("Error", "Progress not found");
     }
 }

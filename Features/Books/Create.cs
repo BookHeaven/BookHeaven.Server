@@ -47,9 +47,9 @@ internal class CreateBookCommandHandler(IDbContextFactory<DatabaseContext> dbCon
         }
         catch (Exception e)
         {
-            return Result<Guid>.Failure(new("Error", e.Message));
+            return new Error("Error", e.Message);
         }
 
-        return Result<Guid>.Success(book.BookId);
+        return book.BookId;
     }
 }

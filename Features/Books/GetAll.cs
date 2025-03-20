@@ -19,7 +19,7 @@ internal class GetAllBooksQueryHandler(IDbContextFactory<DatabaseContext> dbCont
             .Include(b => b.Progresses.Where(bp => bp.ProfileId == Program.SelectedProfile!.ProfileId))
             .ToListAsync(cancellationToken);
 
-        return books.Any() ? Result<List<Book>>.Success(books) : Result<List<Book>>.Failure(new Error("Error", "No books found"));
+        return books.Count != 0 ? books : new Error("Error", "No books found");
     }
 }
 
@@ -39,6 +39,6 @@ internal class GetAllBooksContainingQueryHandler(IDbContextFactory<DatabaseConte
                 b.Author!.Name!.ToUpper().Contains(request.Filter) ||
                 b.Series!.Name!.ToUpper().Contains(request.Filter))
             .ToListAsync(cancellationToken);
-        return books.Any() ? Result<List<Book>>.Success(books) : Result<List<Book>>.Failure(new Error("Error", $"No books found with filter {request.Filter}"));
+        return books.Count != 0 ? books : new Error("Error", $"No books found with filter {request.Filter}");
     }
 }

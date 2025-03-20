@@ -29,9 +29,9 @@ internal class CreateSeriesCommandHandler(IDbContextFactory<DatabaseContext> dbC
         }
         catch (Exception e)
         {
-            return Result<Series>.Failure(new("Error", e.Message));
+            return new Error("Error", e.Message);
         }
 
-        return Result<Series>.Success(series);
+        return series;
     }
 }

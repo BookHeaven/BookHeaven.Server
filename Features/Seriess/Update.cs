@@ -23,9 +23,9 @@ internal class UpdateSeriesCommandHandler(IDbContextFactory<DatabaseContext> dbC
         }
         catch (DbUpdateException)
         {
-            return Result<Series>.Failure(new Error("Error", "An error occurred while updating the series"));
+            return new Error("Error", "An error occurred while updating the series");
         }
 
-        return Result<Series>.Success(request.Series);
+        return request.Series;
     }
 }

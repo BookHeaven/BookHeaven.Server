@@ -30,9 +30,9 @@ internal class CreateAuthorCommandHandler(IDbContextFactory<DatabaseContext> dbC
         }
         catch (Exception e)
         {
-            return Result<Author>.Failure(new("Error", e.Message));
+            return new Error("Error", e.Message);
         }
 
-        return Result<Author>.Success(author);
+        return author;
     }
 }

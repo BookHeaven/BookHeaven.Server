@@ -15,8 +15,6 @@ internal class GetAllProfilesQueryHandler(IDbContextFactory<DatabaseContext> dbC
     {
         await using var context = await dbContextFactory.CreateDbContextAsync(cancellationToken);
 
-        var profiles = await context.Profiles.ToListAsync(cancellationToken);
-
-        return Result<List<Profile>>.Success(profiles);
+        return await context.Profiles.ToListAsync(cancellationToken);
     }
 }
