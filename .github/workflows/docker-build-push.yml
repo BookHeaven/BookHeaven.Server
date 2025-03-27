@@ -13,7 +13,7 @@ jobs:
 
     env:
       REGISTRY: ghcr.io
-      IMAGE_NAME: heasheartfire/bookheaven-server
+      IMAGE_NAME: bookheaven/bookheaven-server
 
     steps:
     - name: Checkout
@@ -33,7 +33,7 @@ jobs:
         
     - name: Clone BookHeaven.Domain
       run: |
-        git clone https://${{ secrets.PAT_TOKEN }}@github.com/HeasHeartfire/BookHeaven.Domain.git temp/BookHeaven.Domain
+        git clone https://${{ secrets.PAT_TOKEN }}@github.com/BookHeaven/BookHeaven.Domain.git temp/BookHeaven.Domain
         mkdir -p BookHeaven/BookHeaven.Domain
         mv temp/BookHeaven.Domain/* BookHeaven/BookHeaven.Domain/
 
