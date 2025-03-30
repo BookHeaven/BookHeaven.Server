@@ -4,12 +4,12 @@
 <MudSnackbarProvider />
 <MudDialogProvider />
 <PageTitle>BookHeaven</PageTitle>
-<MudLayout Class="tw-min-h-full tw-overflow-y-auto">
-    <MudAppBar Elevation="0" Dense="true" Class="tw-backdrop-blur" Style="view-transition-name:appbar;">
+<MudLayout Class="tw:min-h-full tw:overflow-y-auto">
+    <MudAppBar Elevation="0" Dense="true" Class="tw:backdrop-blur" Style="view-transition-name:appbar;">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-        <img src="@Assets["/img/logo.svg"]" class="tw-h-full tw-py-2" alt="" />
+        <img src="@Assets["/img/logo.svg"]" class="tw:h-full tw:py-2" alt="" />
         <MudHidden Breakpoint="Breakpoint.Xs">
-            <MudText Typo="Typo.h6" Class="tw-text-white tw-ms-2">BookHeaven</MudText>
+            <MudText Typo="Typo.h6" Class="tw:text-white tw:ms-2">BookHeaven</MudText>
         </MudHidden>
         <MudSpacer />
         <MudStack
@@ -17,7 +17,7 @@
             Spacing="1">
             <SearchBar />
 
-            <MudFileUpload T="IBrowserFile" FilesChanged="UploadBook" Class="!tw-m-0">
+            <MudFileUpload T="IBrowserFile" FilesChanged="UploadBook" Class="!tw:m-0">
                 <ActivatorContent>
                     <MudIconButton HtmlTag="label" Icon="@Icons.Material.Filled.UploadFile" Color="Color.Secondary" />
                 </ActivatorContent>
@@ -28,8 +28,8 @@
     <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="0">
         <NavMenu />
     </MudDrawer>
-    <MudMainContent Class="tw-pb-5 md:tw-px-7 tw-mt-5">
-        <div class="tw-flex tw-gap-3">
+    <MudMainContent Class="tw:pb-5 tw:md:px-7 tw:mt-5">
+        <div class="tw:flex tw:gap-3">
             <SectionOutlet SectionName="TopBar" />
         </div>
         @Body

@@ -1,7 +1,6 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
+@layer theme, base, components;
+@import "tailwindcss/theme.css" layer(theme) prefix(tw);
+@import "tailwindcss/utilities.css" prefix(tw); /* Remove utilities layer so it doesn't get overridden by Mudblazor styles */
 /*body {
     --body-font: "Segoe UI Variable", "Segoe UI", sans-serif;
     font-family: var(--body-font);
@@ -187,8 +186,7 @@ code {
 }
 
 img {
-        max-width: 100%;
-
+    max-width: 100%;
 }
 
 #tools {

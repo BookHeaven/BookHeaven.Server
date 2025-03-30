@@ -14,7 +14,6 @@ using BookHeaven.Domain.Entities;
 using BookHeaven.Server.Abstractions;
 using BookHeaven.Server.Features.Profiles;
 using MediatR;
-using Tailwind;
 using DependencyInjection = BookHeaven.Domain.DependencyInjection;
 
 namespace BookHeaven.Server
@@ -143,11 +142,6 @@ namespace BookHeaven.Server
                     await next();
                 }
             });
-			
-			if (app.Environment.IsDevelopment())
-			{
-				_ = app.RunTailwind("tailwind", "./");
-			}
 
 			app.Run();
 		}

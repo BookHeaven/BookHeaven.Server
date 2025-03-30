@@ -11,8 +11,8 @@
 
 @if(!IsEditing)
 {
-	<div class="tw-fixed tw-left-0 tw-top-0 tw-right-0 tw-bottom-0 -tw-z-10 tw-blur-3xl tw-opacity-10">
-		<img class="tw-h-full tw-w-full" src="@(_book.CoverUrl())" alt="" />
+	<div class="tw:fixed tw:left-0 tw:top-0 tw:right-0 tw:bottom-0 tw:-z-10 tw:blur-3xl tw:opacity-10">
+		<img class="tw:h-full tw:w-full" src="@(_book.CoverUrl())" alt="" />
 	</div>
 }
 
@@ -41,23 +41,23 @@
 		</MudTooltip>
 	}
 </SectionContent>
-@*<div class="tw-flex tw-gap-3 tw-sticky tw-top-[calc(var(--mud-appbar-height)-var(--mud-appbar-height)/4)] tw-bg-[var(--mud-palette-appbar-background)] tw-backdrop-blur tw-z-10">
+@*<div class="tw:flex tw:gap-3 tw:sticky tw:top-[calc(var(--mud-appbar-height)-var(--mud-appbar-height)/4)] tw:bg-[var(--mud-palette-appbar-background)] tw:backdrop-blur tw:z-10">
 	
 </div>*@
-<div class="tw-mx-auto tw-w-10/12 tw-mt-10 tw-flex tw-flex-wrap tw-gap-10">
-	<div class="tw-w-[200px] tw-mx-auto">
+<div class="tw:mx-auto tw:w-10/12 tw:mt-10 tw:flex tw:flex-wrap tw:gap-10">
+	<div class="tw:w-[200px] tw:mx-auto">
 		<img src="@(_newCoverTempPath ?? _book.CoverUrl())" style="@Transitions.GetTransitionName("img", _book.BookId)" alt="" />
 		@if (IsEditing && _newCoverTempPath != null)
 		{
-			<MudAlert Class="tw-mt-4" Severity="Severity.Warning">The new cover won't be applied until the changes are saved.</MudAlert>
+			<MudAlert Class="tw:mt-4" Severity="Severity.Warning">The new cover won't be applied until the changes are saved.</MudAlert>
 		}
 	</div>
-	<div class="tw-flex-1">
+	<div class="tw:flex-1">
 		@if (!IsEditing)
 		{
-			<div id="book-header" class="tw-mb-6 tw-flex tw-flex-col tw-text-balance">
+			<div id="book-header" class="tw:mb-6 tw:flex tw:flex-col tw:text-balance">
 				<MudText Typo="Typo.h4"><span style="@Transitions.GetTransitionName("title", _book.BookId)">@_book.Title</span></MudText>
-				<MudText Typo="Typo.h5" Class="tw-mb-2" Color="Color.Secondary"><span style="@Transitions.GetTransitionName("author", _book.BookId)">@_book.Author?.Name</span></MudText>
+				<MudText Typo="Typo.h5" Class="tw:mb-2" Color="Color.Secondary"><span style="@Transitions.GetTransitionName("author", _book.BookId)">@_book.Author?.Name</span></MudText>
 				@if (_book.Series != null)
 				{
 					<MudText Typo="Typo.h6" Color="Color.Primary"><span style="@Transitions.GetTransitionName("series", _book.BookId)">@_book.Series.Name - @Translations.BOOK @_book.SeriesIndex?.ToString("0.##")</span></MudText>
@@ -66,9 +66,9 @@
 			@if (_book.ReadingStatus() != BookStatus.New)
 			{
 				<MudPaper 
-					Class="tw-mb-5 tw-flex tw-p-5 md:tw-min-w-[350px] tw-w-full lg:tw-w-fit tw-flex-col tw-gap-5" 
+					Class="tw:mb-5 tw:flex tw:p-5 tw:md:min-w-[350px] tw:w-full tw:lg:w-fit tw:flex-col tw:gap-5" 
 					Elevation="0">
-					<div class="tw-flex tw-gap-5 tw-justify-between">
+					<div class="tw:flex tw:gap-5 tw:justify-between">
 						<dl>
 							<dt>@Translations.START_DATE</dt>
 							<dd>@_book.Progress().StartDate?.ToString(_settings.DateFormat)</dd>
@@ -84,12 +84,12 @@
 
 						<dl>
 							<dt>@Translations.READ_TIME</dt>
-							<dd class="tw-whitespace-nowrap">@_book.Progress().ElapsedTimeFormatted()</dd>
+							<dd class="tw:whitespace-nowrap">@_book.Progress().ElapsedTimeFormatted()</dd>
 						</dl>
 					</div>
 
-					<div class="tw-flex tw-gap-3 tw-items-center">
-						<span class="tw-w-full" style="@Transitions.GetTransitionName("progress-bar", _book.BookId)">
+					<div class="tw:flex tw:gap-3 tw:items-center">
+						<span class="tw:w-full" style="@Transitions.GetTransitionName("progress-bar", _book.BookId)">
 							<MudProgressLinear
 								Color="Color.Primary"
 								Rounded="true"
@@ -97,12 +97,12 @@
 								Value="@((double)_book.Progress().Progress)"/>
 						</span>
 						
-						<span class="tw-text-nowrap">@_book.Progress().Progress.ToString("0.##") %</span>
+						<span class="tw:text-nowrap">@_book.Progress().Progress.ToString("0.##") %</span>
 					</div>
 
 				</MudPaper>
 			}
-			<div class="tw-flex tw-mb-2">
+			<div class="tw:flex tw:mb-2">
 				@if (_book.ISBN10 != null)
 				{
 					<dl id="isbn10">
@@ -118,7 +118,7 @@
 					</dl>
 				}
 			</div>
-			<dl class="tw-grid tw-gap-3 tw-grid-cols-[150px_1fr] tw-items-center tw-text-xl">
+			<dl class="tw:grid tw:gap-3 tw:grid-cols-[150px_1fr] tw:items-center tw:text-xl">
 				@if (_book.Publisher != null)
 				{
 					<dt>@Translations.PUBLISHER</dt>
@@ -127,19 +127,19 @@
 				@if (_book.PublishedDate != null)
 				{
 					<dt>@Translations.PUBLISHED</dt>
-					<dd class="tw-capitalize">@_book.PublishedDate.Value.ToString(_settings.LongDateFormat)</dd>
+					<dd class="tw:capitalize">@_book.PublishedDate.Value.ToString(_settings.LongDateFormat)</dd>
 				}
 				@if (_book.Description != null)
 				{
-					<dt class="tw-col-span-2">@Translations.DESCRIPTION</dt>
-					<dd class="tw-max-w-[800px] md:tw-min-w-[450px] tw-leading-8 tw-col-span-2">@((MarkupString)_book.Description)</dd>
+					<dt class="tw:col-span-2">@Translations.DESCRIPTION</dt>
+					<dd class="tw:max-w-[800px] tw:md:min-w-[450px] tw:leading-8 tw:col-span-2">@((MarkupString)_book.Description)</dd>
 				}
 			</dl>
 
 		}
 		else
 		{
-			<div class="tw-flex tw-gap-3 tw-mb-5">
+			<div class="tw:flex tw:gap-3 tw:mb-5">
 				<MudTooltip Text="Get Metadata">
 					<MudIconButton Icon="@Icons.Material.Rounded.CloudDownload" Variant="Variant.Filled" Color="Color.Tertiary" OnClick="@ShowMetadataDialog"/>
 				</MudTooltip>
@@ -149,27 +149,27 @@
 							<MudIconButton HtmlTag="label"
 							               Variant="Variant.Filled"
 							               Color="Color.Tertiary"
-							               Class="tw-w-full"
+							               Class="tw:w-full"
 							               Icon="@Icons.Material.Filled.Image"/>
 						</ActivatorContent>
 					</MudFileUpload>
 				</MudTooltip>
 				<MudTooltip Text="Replace epub file">
-					<MudFileUpload T="IBrowserFile" FilesChanged="UploadEpubToTempPath" Accept=".epub" Class="!tw-m-0">
+					<MudFileUpload T="IBrowserFile" FilesChanged="UploadEpubToTempPath" Accept=".epub" Class="!tw:m-0">
 						<ActivatorContent>
 							<MudIconButton HtmlTag="label"
 							               Variant="Variant.Filled"
 							               Color="Color.Tertiary"
-							               Class="tw-w-full"
+							               Class="tw:w-full"
 							               Icon="@Icons.Material.Rounded.DriveFileMove"/>
 						</ActivatorContent>
 					</MudFileUpload>
 				</MudTooltip>
 
 			</div>
-			<MudGrid Spacing="4" Class="tw-mb-7">
+			<MudGrid Spacing="4" Class="tw:mb-7">
 				<MudItem xs="12">
-					<MudText Typo="Typo.h5" Class="tw-mb-2">@Translations.PROGRESS</MudText>
+					<MudText Typo="Typo.h5" Class="tw:mb-2">@Translations.PROGRESS</MudText>
 				</MudItem>
 				<MudItem xs="12" md="4">
 					@* <MudDatePicker @bind-Date="_book.Progress().StartDate" Label="@Translations.START_DATE" Variant="Variant.Filled"></MudDatePicker> *@
@@ -188,7 +188,7 @@
 			</MudGrid>
 			<MudGrid Spacing="4" Style="min-width:300px;">
 				<MudItem xs="12">
-					<MudText Typo="Typo.h5" Class="tw-mb-2">Metadata</MudText>
+					<MudText Typo="Typo.h5" Class="tw:mb-2">Metadata</MudText>
 				</MudItem>
 				<MudItem xs="12" md="6">
 					<MudTextField @bind-Value=_book.Title Label="@Translations.TITLE" Variant="Variant.Filled"></MudTextField>
@@ -252,34 +252,34 @@
 				@foreach (var metadata in _metadataList)
 				{
 					<div>
-						<div class="tw-flex tw-items-start">
-							<img src="@metadata.CoverUrl" class="tw-max-w-[200px]" alt="" />
+						<div class="tw:flex tw:items-start">
+							<img src="@metadata.CoverUrl" class="tw:max-w-[200px]" alt="" />
 
-							<div class="tw-flex-1 tw-ml-4">
-								<p class="tw-text-xl">@metadata.Title</p>
-								<p class="tw-text-lg">@metadata.Author</p>
+							<div class="tw:flex-1 tw:ml-4">
+								<p class="tw:text-xl">@metadata.Title</p>
+								<p class="tw:text-lg">@metadata.Author</p>
 								<p>@metadata.Publisher</p>
 								@if(metadata.PublishedDate != null)
 								{
 									<p>@metadata.PublishedDate.Value.ToString(_settings.LongDateFormat)</p>
 								}
-								<div class="tw-flex tw-items-center tw-flex-wrap">
+								<div class="tw:flex tw:items-center tw:flex-wrap">
 									@if (!string.IsNullOrEmpty(metadata.Isbn10))
 									{
 										<MudChip T="MarkupString" Size="Size.Small" Color="Color.Primary">
-											ISBN-10: <span class="tw-ms-1">@metadata.Isbn10</span>
+											ISBN-10: <span class="tw:ms-1">@metadata.Isbn10</span>
 										</MudChip>
 									}
 									@if (!string.IsNullOrEmpty(metadata.Isbn13))
 									{
 										<MudChip T="MarkupString" Size="Size.Small" Color="Color.Primary">
-											ISBN-13: <span class="tw-ms-1">@metadata.Isbn13</span>
+											ISBN-13: <span class="tw:ms-1">@metadata.Isbn13</span>
 										</MudChip>
 									}
 								</div>
 							</div>
 						</div>
-						<p class="tw-mt-4">@((MarkupString)metadata.Description)</p>
+						<p class="tw:mt-4">@((MarkupString)metadata.Description)</p>
 					</div>
 					
 				}

@@ -27,7 +27,7 @@
         <MudTd>@context.Name</MudTd>
         <MudTd>@context.Books.Count()</MudTd>
         <MudTd>
-            <MudIconButton Class="tw-ms-2" ClickPropagation="false" Variant="Variant.Filled" Icon="@((_showDetails[context.SeriesId])? Icons.Material.Outlined.RemoveCircle : Icons.Material.Filled.RemoveRedEye)" OnClick="@(() => _showDetails[context.SeriesId] = !_showDetails[context.SeriesId])"></MudIconButton>
+            <MudIconButton Class="tw:ms-2" ClickPropagation="false" Variant="Variant.Filled" Icon="@((_showDetails[context.SeriesId])? Icons.Material.Outlined.RemoveCircle : Icons.Material.Filled.RemoveRedEye)" OnClick="@(() => _showDetails[context.SeriesId] = !_showDetails[context.SeriesId])"></MudIconButton>
         </MudTd>
     </RowTemplate>
     <RowEditingTemplate>
