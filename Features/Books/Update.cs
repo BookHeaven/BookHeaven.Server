@@ -1,5 +1,6 @@
 ﻿using BookHeaven.Domain;
 using BookHeaven.Domain.Entities;
+using BookHeaven.Domain.Extensions;
 using BookHeaven.Domain.Shared;
 using BookHeaven.Server.Abstractions.Messaging;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +15,15 @@ internal class UpdateBookCommandHandler(IDbContextFactory<DatabaseContext> dbCon
     {
         await using var context = await dbContextFactory.CreateDbContextAsync(cancellationToken);
         
-        context.Books.Update(request.Book);
+        var book = await context.Books
+            .FirstOrDefaultAsync(b => b.BookId == request.Book.BookId, cancellationToken);
+        
+        if (book == null)
+        {
+            return new Error("NOT_FOUND", "Book not found");
+        }
+        
+        book.UpdateFrom(request.Book);
 
         try
         {
