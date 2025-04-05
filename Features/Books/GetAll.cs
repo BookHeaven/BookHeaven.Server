@@ -16,6 +16,7 @@ internal class GetAllBooksQueryHandler(IDbContextFactory<DatabaseContext> dbCont
         var books = await context.Books
             .Include(b => b.Author)
             .Include(b => b.Series)
+            .Include(b => b.Tags)
             .Include(b => b.Progresses.Where(bp => bp.ProfileId == Program.SelectedProfile!.ProfileId))
             .ToListAsync(cancellationToken);
 
@@ -34,10 +35,12 @@ internal class GetAllBooksContainingQueryHandler(IDbContextFactory<DatabaseConte
         var books = await context.Books
             .Include(b => b.Author)
             .Include(b => b.Series)
+            .Include(b => b.Tags)
             .Where(b => 
                 b.Title!.ToUpper().Contains(request.Filter) ||
                 b.Author!.Name!.ToUpper().Contains(request.Filter) ||
-                b.Series!.Name!.ToUpper().Contains(request.Filter))
+                b.Series!.Name!.ToUpper().Contains(request.Filter) ||
+                b.Tags.Any(t => t.Name.ToUpper().Contains(request.Filter)))
             .ToListAsync(cancellationToken);
         return books.Count != 0 ? books : new Error("Error", $"No books found with filter {request.Filter}");
     }

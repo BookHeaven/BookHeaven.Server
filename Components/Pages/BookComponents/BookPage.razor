@@ -41,9 +41,6 @@
 		</MudTooltip>
 	}
 </SectionContent>
-@*<div class="tw:flex tw:gap-3 tw:sticky tw:top-[calc(var(--mud-appbar-height)-var(--mud-appbar-height)/4)] tw:bg-[var(--mud-palette-appbar-background)] tw:backdrop-blur tw:z-10">
-	
-</div>*@
 <div class="tw:mx-auto tw:w-10/12 tw:mt-10 tw:flex tw:flex-wrap tw:gap-10">
 	<div class="tw:w-[200px] tw:mx-auto">
 		<img src="@(_newCoverTempPath ?? _book.CoverUrl())" style="@Transitions.GetTransitionName("img", _book.BookId)" alt="" />
@@ -63,7 +60,33 @@
 					<MudText Typo="Typo.h6" Color="Color.Primary"><span style="@Transitions.GetTransitionName("series", _book.BookId)">@_book.Series.Name - @Translations.BOOK @_book.SeriesIndex?.ToString("0.##")</span></MudText>
 				}
 			</div>
-			@if (_book.ReadingStatus() != BookStatus.New)
+			<div class="tw:flex tw:items-center tw:gap-2 tw:mb-6">
+				@foreach (var tag in _book.Tags.OrderBy(t => t.Name))
+				{
+					<MudChip T="string" Class="tw:m-0" Size="Size.Small" Tag="tag" Text="@tag.Name" Variant="Variant.Outlined" Color="Color.Primary" OnClose="RemoveTagFromBook" />
+				}
+				@if (!_addingTags)
+				{
+					if (_book.Tags.Count > 0)
+					{
+						<MudIconButton Icon="@Icons.Material.Filled.Add" Class="tw:!p-[3px]" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" OnClick="() => _addingTags = true" />
+					}
+					else
+					{
+						<MudButton StartIcon="@Icons.Material.Filled.Add" Variant="Variant.Filled" Size="Size.Small" Color="Color.Primary" OnClick="() => _addingTags = true">Add Tag</MudButton>
+					}
+				}
+				else
+				{
+					<MudFocusTrap>
+						<MudTextField Class="tw:flex-grow-0" Variant="Variant.Outlined" Margin="Margin.Dense" @bind-Value="@_tagNames" @bind-Value:after="@AddTagToBook" />
+					</MudFocusTrap>
+					
+				}
+				
+				
+			</div>
+			if (_book.ReadingStatus() != BookStatus.New)
 			{
 				<MudPaper 
 					Class="tw:mb-5 tw:flex tw:p-5 tw:md:min-w-[350px] tw:w-full tw:lg:w-fit tw:flex-col tw:gap-5" 

@@ -12,6 +12,7 @@ using BookHeaven.Server.Features.Authors;
 using BookHeaven.Server.Features.Books;
 using BookHeaven.Server.Features.BooksProgress;
 using BookHeaven.Server.Features.Seriess;
+using BookHeaven.Server.Features.Tags;
 using BookHeaven.Server.Interfaces;
 using MediatR;
 
@@ -31,6 +32,9 @@ namespace BookHeaven.Server.Components.Pages.BookComponents
 		
 		private ServerSettings _settings = new();
 
+		private bool _addingTags;
+		private string _tagNames = string.Empty;
+		
 		private bool IsEditing => Editing == "edit";
 		private bool _searchingMetadata;
 		
@@ -149,12 +153,14 @@ namespace BookHeaven.Server.Components.Pages.BookComponents
 
 						author = createAuthor.Value;
 					}
-					_book!.AuthorId = author.AuthorId;
+					_book.AuthorId = author.AuthorId;
+					_book.Author = author;
 				}
 			}
 			else
 			{
 				_book.AuthorId = null;
+				_book.Author = null;
 			}
 
 			if (!string.IsNullOrEmpty(_seriesName))
@@ -172,11 +178,13 @@ namespace BookHeaven.Server.Components.Pages.BookComponents
 						series = createSeries.Value;
 					}
 					_book.SeriesId = series.SeriesId;
+					_book.Series = series;
 				}
 			}
 			else
 			{
 				_book.SeriesId = null;
+				_book.Series = null;
 			}
 
 			var updateBook = await Sender.Send(new UpdateBookCommand(_book));
@@ -238,6 +246,38 @@ namespace BookHeaven.Server.Components.Pages.BookComponents
 			_metadataList = await MetadataProviderService.GetMetadataByName(_book.Title!);
 			_searchingMetadata = true;
 			StateHasChanged();
+		}
+		
+		private async Task AddTagToBook()
+		{
+			if (string.IsNullOrEmpty(_tagNames))
+			{
+				return;
+			}
+			var addTags = await Sender.Send(new AddTagsToBook.Command(_tagNames, _book.BookId));
+			if (addTags.IsSuccess)
+			{
+				_book.Tags.AddRange(addTags.Value);
+				_tagNames = string.Empty;
+				_addingTags = false;
+			}
+		}
+		
+		private async Task RemoveTagFromBook(MudChip<string> mudChip)
+		{
+			var tagToRemove = _book.Tags.FirstOrDefault(t => t.TagId == ((Tag)mudChip.Tag!).TagId);
+			if (tagToRemove != null)
+			{
+				var removeTag = await Sender.Send(new RemoveTagFromBook.Command(tagToRemove.TagId, _book.BookId));
+				if (removeTag.IsSuccess)
+				{
+					_book.Tags.Remove(tagToRemove);
+				}
+				else
+				{
+					throw new Exception(removeTag.Error.Description);
+				}
+			}
 		}
 	}
 }

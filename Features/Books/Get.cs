@@ -19,7 +19,11 @@ internal class GetBookQueryHandler(IDbContextFactory<DatabaseContext> dbContextF
         
         await using var context = await dbContextFactory.CreateDbContextAsync(cancellationToken);
         
-        var book = await context.Books.Include(b => b.Author).Include(b => b.Series).FirstOrDefaultAsync(x => x.BookId == request.BookId || x.Title == request.Title, cancellationToken);
+        var book = await context.Books
+            .Include(b => b.Author)
+            .Include(b => b.Series)
+            .Include(b => b.Tags)
+            .FirstOrDefaultAsync(x => x.BookId == request.BookId || x.Title == request.Title, cancellationToken);
         
         return book != null ? book : new Error("Error", "Book not found");
     }
