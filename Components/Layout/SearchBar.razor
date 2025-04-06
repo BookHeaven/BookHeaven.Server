@@ -35,7 +35,7 @@
 		if (string.IsNullOrEmpty(value)) return Array.Empty<SearchItem>();
 		
 		var getBooks = await Sender.Send(
-			new GetAllBooksContainingQuery(value.ToUpper())
+			new GetAllBooks.Query(value.ToUpper())
 			,token);
 
 		if (getBooks.IsFailure)

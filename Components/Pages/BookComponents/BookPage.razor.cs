@@ -67,7 +67,7 @@ namespace BookHeaven.Server.Components.Pages.BookComponents
 			if (_book.BookId == Guid.Empty || Id != _book.BookId)
 			{
 				
-				var getAuthors = await Sender.Send(new GetAllAuthorsQuery());
+				var getAuthors = await Sender.Send(new GetAllAuthors.Query());
 				_authors = getAuthors.Value;
 				
 				var getSeries = await Sender.Send(new GetAllSeriesQuery());
@@ -99,7 +99,7 @@ namespace BookHeaven.Server.Components.Pages.BookComponents
 			}
 			_book = getBook.Value;
 			
-			var getBookProgress = await Sender.Send(new GetBookProgressByProfileQuery(Id, Program.SelectedProfile!.ProfileId));
+			var getBookProgress = await Sender.Send(new GetBookProgressByProfile.Query(Id, Program.SelectedProfile!.ProfileId));
 			_book.Progresses.Add(getBookProgress.Value);
 			
 			if (_book.Author != null)
@@ -196,7 +196,7 @@ namespace BookHeaven.Server.Components.Pages.BookComponents
 			{
 				_book.Progress().Progress = 100;
 			}
-			var updateProgress = await Sender.Send(new UpdateBookProgressCommand(_book.Progress()));
+			var updateProgress = await Sender.Send(new UpdateBookProgress.Command(_book.Progress()));
 			if(updateProgress.IsFailure)
 			{
 				throw new Exception(updateProgress.Error.Description);

@@ -115,7 +115,7 @@ namespace BookHeaven.Server.Services
 				return null;
 			}
 			
-			var getProfiles = await sender.Send(new GetAllProfilesQuery());
+			var getProfiles = await sender.Send(new GetAllProfiles.Query());
 			if (getProfiles.IsFailure)
 			{
 				throw new Exception("Failed to get profiles");

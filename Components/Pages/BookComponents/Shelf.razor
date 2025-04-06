@@ -26,7 +26,7 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		var getBooks = await Sender.Send(new GetAllBooksQuery());
+		var getBooks = await Sender.Send(new GetAllBooks.Query());
 		Books = getBooks.Value.OrderBy(b => b.Author?.Name).ThenBy(b => b.Series?.Name).ThenBy(b => b.SeriesIndex).ToList();
 		IsLoading = false;
 	}

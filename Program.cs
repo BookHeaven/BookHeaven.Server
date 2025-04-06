@@ -12,8 +12,11 @@ using MudBlazor;
 using BookHeaven.Domain;
 using BookHeaven.Domain.Entities;
 using BookHeaven.Server.Abstractions;
+using BookHeaven.Server.Endpoints;
+using BookHeaven.Server.Extensions;
 using BookHeaven.Server.Features.Profiles;
 using MediatR;
+using Microsoft.AspNetCore.Localization;
 using DependencyInjection = BookHeaven.Domain.DependencyInjection;
 
 namespace BookHeaven.Server
@@ -64,7 +67,10 @@ namespace BookHeaven.Server
 			builder.Services.AddScoped<ISettingsManagerService, SettingsManagerService>();
 			builder.Services.AddScoped<IMetadataProviderService, GoogleBooksService>();
 			// builder.Services.AddScoped<IMetadataProviderService, OpenLibraryService>();
-			builder.Services.AddScoped<IFormatService<EpubBook>, EpubService>();	
+			builder.Services.AddScoped<IFormatService<EpubBook>, EpubService>();
+			
+			// Add endpoints
+			builder.Services.AddEndpoints(typeof(Program).Assembly);
 
 			var app = builder.Build();
 			
@@ -129,7 +135,7 @@ namespace BookHeaven.Server
 				// To be changed when the user is able to pick a profile
 				SelectedProfile = defaultProfile;
 			}
-			app.MapControllers();
+			//app.MapControllers();
 
 			app.Use(async (context, next) =>
             {
@@ -142,6 +148,12 @@ namespace BookHeaven.Server
                     await next();
                 }
             });
+			
+			app.MapCultureEndpoint();
+			
+			var mapGroup = app.MapGroup("/api");
+			mapGroup.MapGet("ping", () => Results.Ok());
+			app.MapEndpoints(mapGroup);
 
 			app.Run();
 		}

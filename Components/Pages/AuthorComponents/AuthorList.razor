@@ -32,7 +32,7 @@ OnRowClick="row => NavigationManager.NavigateTo(Urls.GetAuthorUrl(row.Item!.Auth
 
     protected override async Task OnInitializedAsync()
     {
-        var getAuthors = await Sender.Send(new GetAllAuthorsQuery(true));
+        var getAuthors = await Sender.Send(new GetAllAuthors.Query(true));
         if (getAuthors.IsFailure)
         {
             Snackbar.Add(getAuthors.Error.Description!, Severity.Error);
