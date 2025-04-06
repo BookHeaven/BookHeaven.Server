@@ -1,8 +1,3 @@
-using EpubManager;
-using EpubManager.Entities;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Forms;
-using MudBlazor;
 using BookHeaven.Domain.Entities;
 using BookHeaven.Domain.Extensions;
 using BookHeaven.Server.Abstractions;
@@ -14,9 +9,14 @@ using BookHeaven.Server.Features.BooksProgress;
 using BookHeaven.Server.Features.Seriess;
 using BookHeaven.Server.Features.Tags;
 using BookHeaven.Server.Interfaces;
+using EpubManager;
+using EpubManager.Entities;
 using MediatR;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
+using MudBlazor;
 
-namespace BookHeaven.Server.Components.Pages.BookComponents
+namespace BookHeaven.Server.Components.Pages.Books
 {
 	public partial class BookPage
 	{

@@ -1,6 +1,10 @@
 ﻿@attribute [Route(Urls.Settings)]
 @using BookHeaven.Server.Abstractions
+@using BookHeaven.Server.Entities
+@using BookHeaven.Server.Features.Fonts
 @using EpubManager.Entities
+@using BookHeaven.Server.Components.Pages.Settings.Components
+<PageTitle>@Translations.SETTINGS</PageTitle>
 <SectionContent SectionName="TopBar">
 	<MudSpacer />
 	<MudTooltip Text="@Translations.SAVE">
@@ -43,13 +47,12 @@
 	[Inject] private IFormatService<EpubBook> EpubService { get; set; } = null!;
 	[Inject] private ISettingsManagerService SettingsManager { get; set; } = null!;
 	[Inject] private NavigationManager NavigationManager { get; set; } = null!;
-	[Inject] private ISnackbar Snackbar { get; set; } = null!;
 	
 	private readonly List<string> _dateFormats = ["dd/MM/yyyy", "MM/dd/yyyy"];
 	private readonly List<string> _longDateFormats = ["dddd, dd MMMM, yyyy", "dddd, MMMM dd, yyyy"];
-	
-	private Entities.ServerSettings _serverSettings = new();
 
+	private ServerSettings _serverSettings = new();
+	
 	protected override async Task OnInitializedAsync()
 	{
 		_serverSettings = await SettingsManager.LoadSettingsAsync();
