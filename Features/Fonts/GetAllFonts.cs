@@ -9,7 +9,7 @@ namespace BookHeaven.Server.Features.Fonts;
 
 public static class GetAllFonts
 {
-    public sealed record Query : IQuery<List<Font>>;
+    public sealed record Query(string? FamilyName = null) : IQuery<List<Font>>;
 
     internal class QueryHandler(
         IDbContextFactory<DatabaseContext> dbContextFactory,
@@ -18,7 +18,9 @@ public static class GetAllFonts
         public async Task<Result<List<Font>>> Handle(Query request, CancellationToken cancellationToken)
         {
             await using var context = await dbContextFactory.CreateDbContextAsync(cancellationToken);
-            var fonts = await context.Fonts.ToListAsync(cancellationToken);
+            var fonts = await context.Fonts
+                .Where(f => request.FamilyName == null || f.Family == request.FamilyName)
+                .ToListAsync(cancellationToken);
             return fonts;
         }
     }

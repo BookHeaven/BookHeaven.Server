@@ -1,0 +1,53 @@
+﻿@using BookHeaven.Server.Features.Fonts
+<h1 class="tw:mb-3">Font Collection</h1>
+<p class="tw:text-neutral-300">Here you can add fonts to make them available for your devices</p>
+<MudPaper Class="tw:flex tw:gap-2 tw:p-3 tw:mt-2 tw:flex-wrap" Outlined="true">
+	<MudIconButton Icon="@Icons.Material.Filled.Add" Variant="Variant.Filled" Color="Color.Surface" @onclick="async () => await OpenFontDialog()"></MudIconButton>
+	@foreach (var font in Fonts)
+	{
+		<MudButton Class="tw:relative tw:flex tw:items-center tw:justify-center" Color="Color.Surface" Variant="Variant.Filled" @onclick="async () => await OpenFontDialog(font)">
+			<style>
+				@($"@font-face {{font-family: '{font.Family}'; src: url('{font.Url()}');}} span#font-{font.Family} {{ font-family: '{font.Family}';}}")
+			</style>
+			<span id="@($"font-{font.Family}")" class="tw:m-5 tw:capitalize">@font.Family</span>
+		</MudButton>
+	}
+</MudPaper>
+
+@code {
+	[Inject] private ISender Sender { get; set; } = null!;
+	[Inject] private IDialogService DialogService { get; set; } = null!;
+	
+	private List<Font> _fontVariants = [];
+	private IEnumerable<Font> Fonts => _fontVariants.GroupBy(f => f.Family).Select(f => f.First(variant => variant.Style == "all" || variant is { Style: "normal", Weight: "normal" })).OrderBy(f => f.Family);
+
+	protected override async Task OnInitializedAsync()
+	{
+		var getFonts = await Sender.Send(new GetAllFonts.Query());
+		if (getFonts.IsSuccess)
+		{
+			_fontVariants = getFonts.Value;
+		}
+	}
+	
+	private async Task OpenFontDialog(Font? font = null)
+	{
+		var parameters = new DialogParameters<FontDialog> { { x => x.Family, font?.Family }};
+		var dialog = await DialogService.ShowAsync<FontDialog>((font is null ? "ADD" : "VIEW") + " FONT", parameters, FontDialog.Options);
+		var result = await dialog.Result;
+		if (!result!.Canceled)
+		{
+			if (result.Data is List<Font> variants)
+			{
+				_fontVariants.AddRange(variants);
+			}
+			else if(font is not null)
+			{
+				var removed = _fontVariants.Where(f => f.Family == font.Family);
+				_fontVariants = _fontVariants.Except(removed).ToList();
+				StateHasChanged();
+			}
+		}
+	}
+
+}

@@ -1,0 +1,215 @@
+﻿@using BookHeaven.Server.Features.Fonts
+<MudDialog>
+	<DialogContent>
+		<MudTextField Class="tw:mb-5" Label="Font Name" HelperText="It can be whatever you want" Variant="Variant.Filled" @bind-Value="_fontFamily"/>
+
+		<MudFileUpload
+			T="IReadOnlyList<IBrowserFile>"
+			@bind-Files="_files"
+			AppendMultipleFiles
+			Hidden="false"
+			InputClass="tw:absolute tw:inset-0 tw:opacity-0 tw:overflow-hidden"
+			OnFilesChanged="OnFilesChanged"
+			Accept=".ttf, .otf, .woff, .woff2"
+			@ondrop="() => _dropZoneActive = false"
+			@ondragenter="() => _dropZoneActive = true"
+			@ondragleave="() => _dropZoneActive = false"
+			@ondragend="() => _dropZoneActive = false">
+			<ActivatorContent>
+				<MudPaper Height="@DropZoneHeight" Class="@DropZoneClass" Outlined="true">
+					<MudStack Class="tw:select-none">
+						<MudText Color="Color.Secondary">Drop font files here</MudText>
+						<MudText Color="Color.Secondary">- OR -</MudText>
+						<MudText Color="Color.Secondary">Click to open file picker</MudText>
+					</MudStack>
+				</MudPaper>
+			</ActivatorContent>
+		</MudFileUpload>
+		@if (_variants.Count > 0)
+		{
+			<MudText Typo="Typo.h6" Class="tw:mt-5">Variants</MudText>
+			<div class="tw:grid tw:grid-cols-[2fr_120px_120px_50px] tw:items-center tw:justify-center tw:p-2 tw:gap-5">
+				@foreach (var variant in _variants.OrderByDescending(v => v.Style).ThenByDescending(v => v.Weight))
+				{
+					<MudText>@variant.FileName</MudText>
+					<MudSelect Label="Style" @bind-Value="variant.Style" Variant="Variant.Filled" Margin="Margin.Dense">
+						@foreach (var style in _styles)
+						{
+							<MudSelectItem Value="@style">@style</MudSelectItem>
+						}
+					</MudSelect>
+					<MudSelect Label="Weight" @bind-Value="variant.Weight" Variant="Variant.Filled" Margin="Margin.Dense">
+						@foreach (var weight in _weights)
+						{
+							<MudSelectItem Value="@weight">@weight</MudSelectItem>
+						}
+					</MudSelect>
+					<div class="mx-auto">
+						<MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" @onclick="() => _variants.Remove(variant)"/>
+					</div>
+
+				}
+			</div>
+		}
+		@if (_variants.Count > 0)
+		{
+			<MudPaper Class="tw:mt-3" Outlined="true">
+				<style>
+					@foreach (var variant in _variants)
+					{
+						@variant.GetFontFace();
+					}
+
+					#font-@_variants.First().Family p {
+						font-family: '@_variants.First().Family';
+						font-size: 16px;
+						margin-bottom: 10px;
+					}
+				</style>
+				<MudExpansionPanels Outlined="false" Elevation="0">
+					<MudExpansionPanel Class="tw:bg-neutral-300 tw:!text-black" Text="Preview">
+						<div id="font-@_variants.First().Family" class="tw:font-normal tw:not-italic">
+							<span class="tw:text-neutral-700 tw:uppercase">Regular</span>
+							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi at. </p>
+							<span class="tw:text-neutral-700 tw:uppercase">Bold</span>
+							<p class="tw:!font-bold">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi at.</p>
+							<span class="tw:text-neutral-700 tw:uppercase">Italic</span>
+							<p class="tw:!italic">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi at.</p>
+							<span class="tw:text-neutral-700 tw:uppercase">Bold Italic</span>
+							<p class="tw:!font-bold tw:!italic">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi at.</p>
+							<span class="tw:text-neutral-700 tw:uppercase">Sample</span>
+							<p class="tw:text-justify tw:text-pretty tw:italic tw:m-6 tw:mt-2">A wonderful serenity has taken possession of my entire soul, like these sweet mornings of spring which I enjoy with my whole heart.</p>
+							<p class="tw:text-justify tw:text-pretty tw:indent-4">I am alone, and feel the charm of existence in this spot, which was created for the bliss of souls like mine. I am so happy, my dear friend, so absorbed in the exquisite sense of mere tranquil existence, that I neglect my talents. I should be incapable of drawing a single stroke at the present moment.</p>
+						</div>
+					</MudExpansionPanel>
+				</MudExpansionPanels>
+			</MudPaper>
+		}
+	</DialogContent>
+	<DialogActions>
+		@if (!string.IsNullOrEmpty(Family))
+		{
+			<MudButton Class="tw:me-auto" OnClick="async () => await DeleteFont()" Color="Color.Error">Delete</MudButton>
+		}
+		<MudButton OnClick="() => MudDialog.Cancel()" Color="Color.Warning">Cancel</MudButton>
+		<MudButton OnClick="async () => await Save()" Color="Color.Primary">Save</MudButton>
+	</DialogActions>
+</MudDialog>
+
+@code {
+	[Inject] IDialogService DialogService { get; set; } = null!;
+	[Inject] ISender Sender { get; set; } = null!;
+	[Inject] ISnackbar Snackbar { get; set; } = null!;
+	
+	[CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = null!;
+	[Parameter] public string? Family { get; set; }
+	
+	public static DialogOptions Options = new() { FullWidth = true };
+	
+	private readonly List<Font> _variants = [];
+	private IReadOnlyList<IBrowserFile> _files = [];
+	
+	private readonly List<string> _styles = ["all", "normal", "italic"];
+	private readonly List<string> _weights = ["all", "normal", "bold"];
+	
+	private string _fontFamily = string.Empty;
+
+	private bool _dropZoneActive;
+	private string DropZoneClass => $"tw:flex tw:items-center tw:justify-center tw:text-center tw:p-5 tw:rounded-xl border-2 border-dashed tw:transition-[height] {(_dropZoneActive ? "mud-border-primary" : "")}";
+	private string DropZoneHeight => _variants.Count > 0 ? "150px" : "300px";
+
+	protected override async Task OnInitializedAsync()
+	{
+		if (!string.IsNullOrEmpty(Family))
+		{
+			var getVariants = await Sender.Send(new GetAllFonts.Query(Family));
+			if (getVariants.IsSuccess)
+			{
+				_variants.AddRange(getVariants.Value);
+			}
+			_fontFamily = Family;
+		}
+	}
+
+	private void OnFilesChanged(InputFileChangeEventArgs e)
+	{
+		var files = e.GetMultipleFiles();
+		foreach (var file in files)
+		{
+			if (string.IsNullOrEmpty(_fontFamily))
+			{
+				if (files.Count == 1)
+				{
+					_fontFamily = file.Name;
+				}
+				else if(file.Name.Contains("-"))
+				{
+					_fontFamily = file.Name.Split("-")[0].Trim();
+				}
+			}
+			var variant = new Font();
+			if (files.Count == 1)
+			{
+				variant.Style = "all";
+				variant.Weight = "all";
+			}
+			else
+			{
+				variant.Style = file.Name.ToLower().Contains("italic") ? "italic" : "normal";
+				variant.Weight = file.Name.ToLower().Contains("bold") ? "bold" : "normal";
+			}
+			variant.FileName = file.Name;
+			_variants.Add(variant);
+		}
+	}
+
+	private async Task DeleteFont()
+	{
+		var result = await DialogService.ShowMessageBox("Warning", "Do you really want to delete this font?", yesText: "Yes", noText: "No");
+		if (result == true)
+		{
+			var deleteFont = await Sender.Send(new DeleteFont.Command(Family!));
+			if (deleteFont.IsFailure)
+			{
+				Snackbar.Add(deleteFont.Error.Description!, Severity.Error);
+				return;
+			}
+			MudDialog.Close();
+		}
+	}
+
+	private async Task Save()
+	{
+		if (!string.IsNullOrEmpty(Family))
+		{
+			Snackbar.Add("Font editing not implemented yet", Severity.Info);
+			return;
+		}
+		if (string.IsNullOrEmpty(_fontFamily))
+		{
+			Snackbar.Add("Font family name is required", Severity.Error);
+			return;
+		}
+		
+		if (_variants.Count == 0)
+		{
+			Snackbar.Add("At least one font file is required", Severity.Error);
+			return;
+		}
+
+		foreach (var variant in _variants)
+		{
+			variant.Family = _fontFamily;
+			var addFont = await Sender.Send(new AddFont.Command(variant, _files.First(f => f.Name == variant.FileName)));
+			if (addFont.IsFailure)
+			{
+				Snackbar.Add(addFont.Error.Description!, Severity.Error);
+				return;
+			}
+		}
+
+		MudDialog.Close(_variants);
+	}
+	
+	
+}

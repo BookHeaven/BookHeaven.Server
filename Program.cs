@@ -28,6 +28,7 @@ namespace BookHeaven.Server
 		public static readonly string BooksPath = Path.Combine(AppDataPath, "books");
 		public static readonly string CoversPath = Path.Combine(AppDataPath, "covers");
 		public static readonly string DatabasePath = Path.Combine(AppDataPath, "database");
+		public static readonly string FontsPath = Path.Combine(AppDataPath, "fonts");
 		public static Profile? SelectedProfile { get; set; }
 		
 		public static void Main(string[] args)
@@ -39,6 +40,7 @@ namespace BookHeaven.Server
 			Directory.CreateDirectory(BooksPath);
 			Directory.CreateDirectory(CoversPath);
 			Directory.CreateDirectory(DatabasePath);
+			Directory.CreateDirectory(FontsPath);
 
 			// Add services to the container.
 			builder.Services.AddRazorComponents()
