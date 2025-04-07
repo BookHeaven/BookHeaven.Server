@@ -40,13 +40,13 @@ public class UdpBroadcastServer(ILogger<UdpBroadcastServer> logger)
             var messageBytes = Encoding.UTF8.GetBytes(_message);
 
             
-            await udpClient.SendAsync(messageBytes, messageBytes.Length, broadcastAddress);
-            logger.LogInformation($"Broadcasted message {_message}");
             
+            logger.LogInformation($"Broadcasting message {_message}");
             var acknowledged = false;
             while (!acknowledged)
             {
-                logger.LogInformation("Waiting for ACK...");
+                await udpClient.SendAsync(messageBytes, messageBytes.Length, broadcastAddress);
+                
                 var ackResult = await udpClient.ReceiveAsync();
                 var ackMessage = Encoding.UTF8.GetString(ackResult.Buffer);
                 if (ackMessage == Broadcast.ACK_MESSAGE)
@@ -56,6 +56,7 @@ public class UdpBroadcastServer(ILogger<UdpBroadcastServer> logger)
                 }
                 else
                 {
+                    logger.LogInformation("Waiting for ACK...");
                     await Task.Delay(2000);
                 }
             }
