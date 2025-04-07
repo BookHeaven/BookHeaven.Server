@@ -17,11 +17,15 @@ public class UdpBroadcastServer(ILogger<UdpBroadcastServer> logger)
             return;
         }
         
-        using var udpClient = new UdpClient(Broadcast.BROADCAST_PORT);
-        logger.LogInformation("Waiting for clients...");
-
+        using var udpClient = new UdpClient
+        {
+            EnableBroadcast = true
+        };
+        udpClient.Client.Bind(new IPEndPoint(IPAddress.Any, Broadcast.BROADCAST_PORT));
+        
         while (true)
         {
+            logger.LogInformation("Waiting for clients...");
             var result = await udpClient.ReceiveAsync();
             var receivedMessage = Encoding.UTF8.GetString(result.Buffer);
 
@@ -31,35 +35,28 @@ public class UdpBroadcastServer(ILogger<UdpBroadcastServer> logger)
                 continue;
             }
             
-            logger.LogInformation($"Received discover broadcast from {result.RemoteEndPoint.Address}:{result.RemoteEndPoint.Port}");
+            logger.LogInformation($"Received discover broadcast from {result.RemoteEndPoint.Address}");
             var broadcastAddress = new IPEndPoint(IPAddress.Broadcast, Broadcast.BROADCAST_PORT);
             var messageBytes = Encoding.UTF8.GetBytes(_message);
 
-            using var responseClient = new UdpClient
-            {
-                EnableBroadcast = true
-            };
-
+            
+            await udpClient.SendAsync(messageBytes, messageBytes.Length, broadcastAddress);
+            logger.LogInformation($"Broadcasted message {_message}");
+            
             var acknowledged = false;
             while (!acknowledged)
             {
-                await responseClient.SendAsync(messageBytes, messageBytes.Length, broadcastAddress);
-                logger.LogInformation($"Broadcasted message {_message}");
-
-                udpClient.Client.ReceiveTimeout = 2000;
-                try
+                logger.LogInformation("Waiting for ACK...");
+                var ackResult = await udpClient.ReceiveAsync();
+                var ackMessage = Encoding.UTF8.GetString(ackResult.Buffer);
+                if (ackMessage == Broadcast.ACK_MESSAGE)
                 {
-                    var ackResult = await udpClient.ReceiveAsync();
-                    var ackMessage = Encoding.UTF8.GetString(ackResult.Buffer);
-                    if (ackMessage == Broadcast.ACK_MESSAGE)
-                    {
-                        logger.LogInformation($"Received ACK from {ackResult.RemoteEndPoint.Address}:{ackResult.RemoteEndPoint.Port}");
-                        acknowledged = true;
-                    }
+                    logger.LogInformation($"Received ACK from {ackResult.RemoteEndPoint.Address}");
+                    acknowledged = true;
                 }
-                catch (SocketException)
+                else
                 {
-                    logger.LogInformation("Waiting for ACK...");
+                    await Task.Delay(2000);
                 }
             }
         }
