@@ -142,17 +142,11 @@ namespace BookHeaven.Server.Components.Pages.Books
 			{
 				if (_book.Author?.Name != _authorName)
 				{
-					var author = _authors.FirstOrDefault(a => a.Name == _authorName);
-					if (author == null)
-					{
-						var createAuthor = await Sender.Send(new CreateAuthorCommand(_authorName));
-						if(createAuthor.IsFailure)
-						{
-							throw new Exception(createAuthor.Error.Description);
-						}
-
-						author = createAuthor.Value;
-					}
+					var author = _authors.FirstOrDefault(a => a.Name == _authorName) ??
+								new Author
+								{
+									Name = _authorName
+								};;
 					_book.AuthorId = author.AuthorId;
 					_book.Author = author;
 				}
@@ -167,16 +161,11 @@ namespace BookHeaven.Server.Components.Pages.Books
 			{
 				if (_book.Series?.Name != _seriesName)
 				{
-					var series = _series.FirstOrDefault(a => a.Name == _seriesName);
-					if (series == null)
-					{
-						var createSeries = await Sender.Send(new CreateSeriesCommand(_seriesName));
-						if(createSeries.IsFailure)
-						{
-							throw new Exception(createSeries.Error.Description);
-						}
-						series = createSeries.Value;
-					}
+					var series = _series.FirstOrDefault(a => a.Name == _seriesName) ??
+								new Series
+								{
+									Name = _seriesName
+								};
 					_book.SeriesId = series.SeriesId;
 					_book.Series = series;
 				}
