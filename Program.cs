@@ -11,10 +11,10 @@ using System.Text.Json.Serialization;
 using MudBlazor;
 using BookHeaven.Domain;
 using BookHeaven.Domain.Entities;
+using BookHeaven.Domain.Features.Profiles;
 using BookHeaven.Server.Abstractions;
 using BookHeaven.Server.Endpoints;
 using BookHeaven.Server.Extensions;
-using BookHeaven.Server.Features.Profiles;
 using MediatR;
 using Microsoft.AspNetCore.Localization;
 using DependencyInjection = BookHeaven.Domain.DependencyInjection;
@@ -58,12 +58,7 @@ namespace BookHeaven.Server
 				config.SnackbarConfiguration.PreventDuplicates = false;
 			});
 
-			builder.Services.AddDomain(DatabasePath, DependencyInjection.DatabaseInjectionType.Factory);
-
-			builder.Services.AddMediatR(config =>
-			{
-				config.RegisterServicesFromAssembly(typeof(Program).Assembly);
-			});
+			builder.Services.AddDomain(DatabasePath);
 			
 			builder.Services.AddEpubManager();
 			builder.Services.AddScoped<ISettingsManagerService, SettingsManagerService>();

@@ -1,39 +1,13 @@
-﻿using BookHeaven.Domain;
-using BookHeaven.Domain.Entities;
-using BookHeaven.Domain.Shared;
+﻿using BookHeaven.Domain.Entities;
+using BookHeaven.Domain.Features.BooksProgress;
 using BookHeaven.Server.Abstractions.Api;
-using BookHeaven.Server.Abstractions.Messaging;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
-namespace BookHeaven.Server.Features.BooksProgress;
+namespace BookHeaven.Server.Endpoints.BooksProgress;
 
-public static class UpdateBookProgress
+public static class Update
 {
-    public sealed record Command(BookProgress BookProgress) : ICommand;
-
-    internal class Handler(IDbContextFactory<DatabaseContext> dbContextFactory) : ICommandHandler<Command>
-    {
-        public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
-        {
-            await using var context = await dbContextFactory.CreateDbContextAsync(cancellationToken);
-
-            context.BooksProgress.Update(request.BookProgress);
-
-            try
-            {
-                await context.SaveChangesAsync(cancellationToken);
-            }
-            catch (DbUpdateException)
-            {
-                return Result.Failure(new Error("Error", "An error occurred while updating the book progress"));
-            }
-
-            return Result.Success();
-        }
-    }
-    
     public class Endpoint : IEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)
@@ -57,7 +31,7 @@ public static class UpdateBookProgress
 				
             logger.LogInformation("Updating progress");
 				
-            var updateProgress = await sender.Send(new Command(progress));
+            var updateProgress = await sender.Send(new UpdateBookProgress.Command(progress));
             if (updateProgress.IsFailure)
             {
                 logger.LogError(updateProgress.Error.Description);

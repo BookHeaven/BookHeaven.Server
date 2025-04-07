@@ -3,12 +3,12 @@ using EpubManager.Entities;
 using Microsoft.AspNetCore.Components.Forms;
 using BookHeaven.Server.Interfaces;
 using System.Globalization;
+using BookHeaven.Domain.Features.Authors;
+using BookHeaven.Domain.Features.Books;
+using BookHeaven.Domain.Features.BooksProgress;
+using BookHeaven.Domain.Features.Profiles;
+using BookHeaven.Domain.Features.Seriess;
 using BookHeaven.Domain.Helpers;
-using BookHeaven.Server.Features.Authors;
-using BookHeaven.Server.Features.Books;
-using BookHeaven.Server.Features.BooksProgress;
-using BookHeaven.Server.Features.Profiles;
-using BookHeaven.Server.Features.Seriess;
 using MediatR;
 
 namespace BookHeaven.Server.Services

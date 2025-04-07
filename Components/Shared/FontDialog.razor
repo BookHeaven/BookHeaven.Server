@@ -1,4 +1,4 @@
-﻿@using BookHeaven.Server.Features.Fonts
+﻿@using BookHeaven.Domain.Features.Fonts
 <MudDialog>
 	<DialogContent>
 		<MudTextField Class="tw:mb-5" Label="Font Name" HelperText="It can be whatever you want" Variant="Variant.Filled" @bind-Value="_fontFamily"/>
@@ -174,6 +174,11 @@
 				Snackbar.Add(deleteFont.Error.Description!, Severity.Error);
 				return;
 			}
+			var folder = Path.Combine(Program.FontsPath, Family!);
+			if (Directory.Exists(folder))
+			{
+				Directory.Delete(folder, true);
+			}
 			MudDialog.Close();
 		}
 	}
@@ -200,12 +205,23 @@
 		foreach (var variant in _variants)
 		{
 			variant.Family = _fontFamily;
-			var addFont = await Sender.Send(new AddFont.Command(variant, _files.First(f => f.Name == variant.FileName)));
+			var addFont = await Sender.Send(new AddFont.Command(variant));
 			if (addFont.IsFailure)
 			{
 				Snackbar.Add(addFont.Error.Description!, Severity.Error);
 				return;
 			}
+
+			var file = _files.First(f => f.Name == variant.FileName);
+			var filePath = variant.FilePath(Program.FontsPath);
+
+			if (!Directory.Exists(variant.FolderPath(Program.FontsPath)))
+			{
+				Directory.CreateDirectory(variant.FolderPath(Program.FontsPath));
+			}
+
+			await using var fileStream = File.Create(filePath);
+			await file.OpenReadStream(maxAllowedSize: 1048576 * 3).CopyToAsync(fileStream);
 		}
 
 		MudDialog.Close(_variants);

@@ -1,5 +1,5 @@
 ﻿@using BookHeaven.Domain.Enums
-@using BookHeaven.Server.Features.Books
+@using BookHeaven.Domain.Features.Books
 @attribute [Route(Urls.Shelf)]
 
 @implements IDisposable
@@ -26,7 +26,7 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		var getBooks = await Sender.Send(new GetAllBooks.Query());
+		var getBooks = await Sender.Send(new GetAllBooks.Query(Program.SelectedProfile!.ProfileId));
 		Books = getBooks.Value.OrderBy(b => b.Author?.Name).ThenBy(b => b.Series?.Name).ThenBy(b => b.SeriesIndex).ToList();
 		IsLoading = false;
 	}

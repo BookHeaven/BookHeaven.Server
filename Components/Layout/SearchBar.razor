@@ -1,4 +1,4 @@
-﻿@using BookHeaven.Server.Features.Books
+﻿@using BookHeaven.Domain.Features.Books
 <MudAutocomplete
 	@ref="_autocomplete"
 	Class="!tw:mx-2"
@@ -35,7 +35,7 @@
 		if (string.IsNullOrEmpty(value)) return Array.Empty<SearchItem>();
 		
 		var getBooks = await Sender.Send(
-			new GetAllBooks.Query(value.ToUpper())
+			new GetAllBooks.Query(Program.SelectedProfile!.ProfileId,value.ToUpper())
 			,token);
 
 		if (getBooks.IsFailure)
