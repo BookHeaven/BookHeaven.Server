@@ -7,6 +7,7 @@ namespace BookHeaven.Server.Services;
 
 public class UdpBroadcastServer(ILogger<UdpBroadcastServer> logger)
 {
+    private readonly int _maxRetries = 5;
     private readonly string _message = $"{Broadcast.SERVER_URL_MESSAGE_PREFIX}{Environment.GetEnvironmentVariable("SERVER_URL")}";
 
     public async Task StartAsync()
@@ -43,21 +44,30 @@ public class UdpBroadcastServer(ILogger<UdpBroadcastServer> logger)
             
             logger.LogInformation($"Broadcasting message {_message} to {broadcastAddress.Address}");
             var acknowledged = false;
+            var retries = 0;
             while (!acknowledged)
             {
                 await udpClient.SendAsync(messageBytes, messageBytes.Length, broadcastAddress);
                 
-                var ackResult = await udpClient.ReceiveAsync();
+                var task = udpClient.ReceiveAsync();
+                
+                var index = Task.WaitAny([task], TimeSpan.FromSeconds(5));
+                if (index < 0)
+                {
+                    logger.LogInformation($"Client {broadcastAddress.Address} hasn't responded, resending broadcast...");
+                    if (++retries >= _maxRetries)
+                    {
+                        logger.LogInformation($"Client {broadcastAddress.Address} hasn't responded after {_maxRetries} retries, stopping broadcast.");
+                        break;
+                    }
+                    continue;
+                }
+                var ackResult = task.Result;
                 var ackMessage = Encoding.UTF8.GetString(ackResult.Buffer);
                 if (ackMessage == Broadcast.ACK_MESSAGE)
                 {
                     logger.LogInformation($"Received ACK from {broadcastAddress.Address}");
                     acknowledged = true;
-                }
-                else
-                {
-                    logger.LogInformation("Waiting for ACK...");
-                    await Task.Delay(2000);
                 }
             }
         }
