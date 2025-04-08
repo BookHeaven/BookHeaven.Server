@@ -51,7 +51,7 @@ public class UdpBroadcastServer(ILogger<UdpBroadcastServer> logger)
                 var ackMessage = Encoding.UTF8.GetString(ackResult.Buffer);
                 if (ackMessage == Broadcast.ACK_MESSAGE)
                 {
-                    logger.LogInformation($"Received ACK from {ackResult.RemoteEndPoint.Address}");
+                    logger.LogInformation($"Received ACK from {broadcastAddress.Address}");
                     acknowledged = true;
                 }
                 else
