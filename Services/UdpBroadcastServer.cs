@@ -29,19 +29,19 @@ public class UdpBroadcastServer(ILogger<UdpBroadcastServer> logger)
             var result = await udpClient.ReceiveAsync();
             var receivedMessage = Encoding.UTF8.GetString(result.Buffer);
 
-            if (receivedMessage != Broadcast.DISCOVER_MESSAGE)
+            if (!receivedMessage.StartsWith(Broadcast.DISCOVER_MESSAGE_PREFIX))
             {
                 await Task.Delay(2000);
                 continue;
             }
             
-            logger.LogInformation($"Received discover broadcast from {result.RemoteEndPoint.Address}");
-            var broadcastAddress = new IPEndPoint(IPAddress.Broadcast, Broadcast.BROADCAST_PORT);
+            var clientIp = receivedMessage[Broadcast.DISCOVER_MESSAGE_PREFIX.Length..];
+            
+            logger.LogInformation($"Received discover broadcast from {clientIp}");
+            var broadcastAddress = new IPEndPoint(IPAddress.Parse(clientIp), Broadcast.BROADCAST_PORT);
             var messageBytes = Encoding.UTF8.GetBytes(_message);
-
             
-            
-            logger.LogInformation($"Broadcasting message {_message}");
+            logger.LogInformation($"Broadcasting message {_message} to {broadcastAddress.Address}");
             var acknowledged = false;
             while (!acknowledged)
             {
