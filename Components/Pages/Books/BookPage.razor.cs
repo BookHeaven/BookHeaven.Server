@@ -70,7 +70,7 @@ namespace BookHeaven.Server.Components.Pages.Books
 				var getAuthors = await Sender.Send(new GetAllAuthors.Query());
 				_authors = getAuthors.Value;
 				
-				var getSeries = await Sender.Send(new GetAllSeriesQuery());
+				var getSeries = await Sender.Send(new GetAllSeries.Query());
 				_series = getSeries.Value;
 
 				await LoadBook();
@@ -92,7 +92,7 @@ namespace BookHeaven.Server.Components.Pages.Books
 			_authorName = null;
 			_seriesName = null;
 			
-			var getBook = await Sender.Send(new GetBookQuery(Id));
+			var getBook = await Sender.Send(new GetBook.Query(Id));
 			if (getBook.IsFailure)
 			{
 				return;
@@ -176,7 +176,7 @@ namespace BookHeaven.Server.Components.Pages.Books
 				_book.Series = null;
 			}
 
-			var updateBook = await Sender.Send(new UpdateBookCommand(_book));
+			var updateBook = await Sender.Send(new UpdateBook.Command(_book));
 			if(updateBook.IsFailure)
 			{
 				throw new Exception(updateBook.Error.Description);

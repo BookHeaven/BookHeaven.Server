@@ -81,7 +81,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var getAllSeries = await Sender.Send(new GetAllSeriesQuery(true));
+        var getAllSeries = await Sender.Send(new GetAllSeries.Query(true));
         if (getAllSeries.IsFailure)
         {
             Snackbar.Add(getAllSeries.Error.Description!, Severity.Error);
@@ -93,7 +93,7 @@
     
     private async Task CommitEdit(Series series)
     {
-        var updateSeries = await Sender.Send(new UpdateSeriesCommand(series));
+        var updateSeries = await Sender.Send(new UpdateSeries.Command(series));
         if (updateSeries.IsFailure)
         {
             Snackbar.Add(updateSeries.Error.Description!, Severity.Error);

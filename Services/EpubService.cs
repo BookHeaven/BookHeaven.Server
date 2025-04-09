@@ -52,17 +52,17 @@ namespace BookHeaven.Server.Services
 			var epubBook = await GetMetadata(path);
 			// Book? book = await databaseService.GetBy<Book>(x => x.Title!.Equals(epubBook.Metadata.Title));
 			
-			var getBook = await sender.Send(new GetBookQuery(null, epubBook.Metadata.Title));
+			var getBook = await sender.Send(new GetBook.Query(null, epubBook.Metadata.Title));
 			
 			if (getBook.IsSuccess)
 			{
 				return getBook.Value.BookId;
 			}
 			
-			var getAuthor = await sender.Send(new GetAuthorQuery(new AuthorRequest {Name = epubBook.Metadata.Author}));
+			var getAuthor = await sender.Send(new GetAuthor.Query(new GetAuthor.Filter {Name = epubBook.Metadata.Author}));
 			if (getAuthor.IsFailure)
 			{
-				var createAuthor = await sender.Send(new CreateAuthorCommand(epubBook.Metadata.Author));
+				var createAuthor = await sender.Send(new CreateAuthor.Command(epubBook.Metadata.Author));
 				if (createAuthor.IsFailure)
 				{
 					return null;
@@ -76,10 +76,10 @@ namespace BookHeaven.Server.Services
 			
 			if (epubBook.Metadata.Series != null)
 			{
-				var getSeries = await sender.Send(new GetSeriesQuery(null, epubBook.Metadata.Series));
+				var getSeries = await sender.Send(new GetSeries.Query(null, epubBook.Metadata.Series));
 				if (getSeries.IsFailure)
 				{
-					var createSeries = await sender.Send(new CreateSeriesCommand(epubBook.Metadata.Series));
+					var createSeries = await sender.Send(new CreateSeries.Command(epubBook.Metadata.Series));
 					if (createSeries.IsFailure)
 					{
 						return null;
@@ -94,7 +94,7 @@ namespace BookHeaven.Server.Services
 			var isbnIdentifiers = epubBook.Metadata.Identifiers.Where(x => x.Scheme == "ISBN").ToList();
 			
 			var createBook = await sender.Send(
-				new CreateBookCommand(
+				new CreateBook.Command(
 					AuthorId: authorId!.Value,
 					SeriesId: seriesId,
 					SeriesIndex: epubBook.Metadata.SeriesIndex,
@@ -123,7 +123,7 @@ namespace BookHeaven.Server.Services
 
 			foreach (var profile in getProfiles.Value)
 			{
-				await sender.Send(new CreateBookProgressCommand(createBook.Value, profile.ProfileId));
+				await sender.Send(new CreateBookProgress.Command(createBook.Value, profile.ProfileId));
 			}
 			
 			await StoreCover(epubBook.Cover, GetCoverPath(Program.CoversPath, createBook.Value)!);

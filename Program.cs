@@ -117,10 +117,10 @@ public class Program
 			Profile defaultProfile;
 			var sender = scope.ServiceProvider.GetRequiredService<ISender>();
 
-			var profileQuery = await sender.Send(new GetDefaultProfileQuery());
+			var profileQuery = await sender.Send(new GetDefaultProfile.Query());
 			if(profileQuery.IsFailure)
 			{
-				var createProfile = await sender.Send(new CreateProfileCommand("Default"));
+				var createProfile = await sender.Send(new CreateProfile.Command("Default"));
 				if (createProfile.IsFailure)
 				{
 					throw new Exception(createProfile.Error.Description);

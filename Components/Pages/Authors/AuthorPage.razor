@@ -84,7 +84,7 @@
 	{
 		if (_author.AuthorId == Guid.Empty || Id != _author.AuthorId)
 		{
-			var getAuthor = await Sender.Send(new GetAuthorQuery(new AuthorRequest {AuthorId = Id, IncludeBooks = true}));
+			var getAuthor = await Sender.Send(new GetAuthor.Query(new GetAuthor.Filter {AuthorId = Id, IncludeBooks = true}));
 			if (getAuthor.IsFailure)
 			{
 				return;	
@@ -107,7 +107,7 @@
 
 	private async Task Save()
 	{
-		var updateAuthor = await Sender.Send(new UpdateAuthorCommand(_author));
+		var updateAuthor = await Sender.Send(new UpdateAuthor.Command(_author));
 		if (updateAuthor.IsFailure)
 		{
 			return;
