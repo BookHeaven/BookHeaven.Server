@@ -51,8 +51,8 @@ public class UdpBroadcastServer(ILogger<UdpBroadcastServer> logger)
                 
                 var task = udpClient.ReceiveAsync();
                 
-                var index = Task.WaitAny([task], TimeSpan.FromSeconds(5));
-                if (index < 0)
+                var completedTask = await Task.WhenAny(task, Task.Delay(TimeSpan.FromSeconds(5)));
+                if (completedTask != task)
                 {
                     logger.LogInformation($"Client {broadcastAddress.Address} hasn't responded, resending broadcast...");
                     if (++retries >= _maxRetries)
