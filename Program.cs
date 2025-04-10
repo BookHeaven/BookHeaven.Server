@@ -15,6 +15,7 @@ using BookHeaven.Server.Abstractions;
 using BookHeaven.Server.Endpoints;
 using BookHeaven.Server.Extensions;
 using MediatR;
+using Microsoft.AspNetCore.DataProtection;
 
 namespace BookHeaven.Server;
 
@@ -96,8 +97,19 @@ public class Program
 		app.MapStaticAssets();
 		app.UseStaticFiles(new StaticFileOptions
 		{
-			FileProvider = new PhysicalFileProvider(AppDataPath),
-			ContentTypeProvider = provider
+			FileProvider = new PhysicalFileProvider(BooksPath),
+			ContentTypeProvider = provider,
+			RequestPath = "/books"
+		});
+		app.UseStaticFiles(new StaticFileOptions
+		{
+			FileProvider = new PhysicalFileProvider(CoversPath),
+			RequestPath = "/covers"
+		});
+		app.UseStaticFiles(new StaticFileOptions
+		{
+			FileProvider = new PhysicalFileProvider(FontsPath),
+			RequestPath = "/fonts"
 		});
 			
 		app.UseAntiforgery();
