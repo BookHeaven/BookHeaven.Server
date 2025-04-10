@@ -20,7 +20,7 @@ public static class ApiUpdateProfileSettings
             ISender sender,
             ILogger<ApiGetAllProfiles.Endpoint> logger)
         {
-            var existingSettings = await sender.Send(new GetProfileSettings.Query(profileSettings.ProfileSettingsId));
+            var existingSettings = await sender.Send(new GetProfileSettings.Query(profileSettings.ProfileId));
             if (existingSettings.IsFailure)
             {
                 await sender.Send(new AddProfileSettings.Command(profileSettings));
