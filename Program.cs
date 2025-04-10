@@ -80,7 +80,7 @@ public class Program
 		// Configure the HTTP request pipeline.
 		if (!app.Environment.IsDevelopment())
 		{
-			app.UseExceptionHandler("/Error");
+			app.UseExceptionHandler("/Error", createScopeForErrors: true);
 			/*app.UseHsts();
 			app.UseHttpsRedirection();*/
 		}
