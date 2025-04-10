@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BookHeaven.Server.Endpoints.BooksProgress;
 
-public static class Update
+public static class ApiUpdateBookProgress
 {
     public class Endpoint : IEndpoint
     {

@@ -4,7 +4,7 @@ using MediatR;
 
 namespace BookHeaven.Server.Endpoints.Profiles;
 
-public static class GetAll
+public static class ApiGetAllProfiles
 {
     public class Endpoint : IEndpoint
     {
@@ -17,7 +17,7 @@ public static class GetAll
             ISender sender,
             ILogger<Endpoint> logger)
         {
-            var getProfiles = await sender.Send(new GetAllProfiles.Query());
+            var getProfiles = await sender.Send(new GetAllProfiles.Query(true));
             if (getProfiles.IsSuccess)
             {
                 return Results.Ok(getProfiles.Value);

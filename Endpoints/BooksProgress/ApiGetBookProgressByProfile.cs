@@ -4,7 +4,7 @@ using MediatR;
 
 namespace BookHeaven.Server.Endpoints.BooksProgress;
 
-public static class GetByProfile
+public static class ApiGetBookProgressByProfile
 {
     public class Endpoint : IEndpoint
     {

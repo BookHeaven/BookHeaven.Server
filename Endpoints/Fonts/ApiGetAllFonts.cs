@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BookHeaven.Server.Endpoints.Fonts;
 
-public static class GetAll
+public static class ApiGetAllFonts
 {
     public class Endpoint : IEndpoint
     {

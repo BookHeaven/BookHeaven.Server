@@ -4,7 +4,7 @@ using MediatR;
 
 namespace BookHeaven.Server.Endpoints.Books;
 
-public static class GetAll
+public static class ApiGetAllBooks
 {
     public class Endpoint : IEndpoint
     {

@@ -4,7 +4,7 @@ using MediatR;
 
 namespace BookHeaven.Server.Endpoints.Authors;
 
-public static class GetAll
+public static class ApiGetAllAuthors
 {
     public class Endpoint : IEndpoint
     {
