@@ -42,6 +42,12 @@ public class Program
 		
 		builder.Services.AddRazorComponents()
 			.AddInteractiveServerComponents();
+		
+		builder.Services.AddDataProtection()
+			.SetApplicationName("BookHeaven")
+			.PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(AppDataPath, "keys")))
+			.SetDefaultKeyLifetime(TimeSpan.FromDays(14));
+		
 		builder.Services.AddControllers().AddJsonOptions(x =>
 		{
 			x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
