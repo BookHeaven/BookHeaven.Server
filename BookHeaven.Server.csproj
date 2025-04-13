@@ -50,7 +50,6 @@
   </ItemGroup>
 
   <ItemGroup>
-	<PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
 	<PackageReference Include="Google.Apis.Books.v1" Version="1.68.0.3331" />
 	<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.3" />
 	<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.3">
