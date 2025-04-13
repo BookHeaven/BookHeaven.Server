@@ -18,6 +18,12 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
+      
+    - name: Setup node js
+      uses: actions/setup-node@v3
+      with:
+        node-version: latest
+        cache: 'npm'
 
     - name: Move Server to BookHeaven directory
       run: |
@@ -36,6 +42,14 @@ jobs:
         git clone https://${{ secrets.PAT_TOKEN }}@github.com/BookHeaven/BookHeaven.Domain.git temp/BookHeaven.Domain
         mkdir -p BookHeaven/BookHeaven.Domain
         mv temp/BookHeaven.Domain/* BookHeaven/BookHeaven.Domain/
+        
+    - name: Install npm packages
+      working-directory: .\BookHeaven\BookHeaven.Server
+      run: npm ci
+
+    - name: Build tailwindcss
+      working-directory: .\BookHeaven\BookHeaven.Server
+      run: npm run tailwindcss:build
 
     - name: Build Docker image
       run: docker build ./BookHeaven --build-arg GOOGLE_BOOKS_API_KEY=${{ secrets.GOOGLE_BOOKS_API_KEY }} --file BookHeaven/BookHeaven.Server/Dockerfile --tag ${{env.REGISTRY}}/${{ env.IMAGE_NAME }}:latest
