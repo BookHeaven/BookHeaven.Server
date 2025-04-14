@@ -44,11 +44,11 @@ jobs:
         mv temp/BookHeaven.Domain/* BookHeaven/BookHeaven.Domain/
         
     - name: Install npm packages
-      working-directory: .\BookHeaven\BookHeaven.Server
+      working-directory: ./BookHeaven/BookHeaven.Server
       run: npm ci
 
     - name: Build tailwindcss
-      working-directory: .\BookHeaven\BookHeaven.Server
+      working-directory: ./BookHeaven/BookHeaven.Server
       run: npm run tailwindcss:build
 
     - name: Build Docker image
