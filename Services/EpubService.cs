@@ -17,7 +17,7 @@ namespace BookHeaven.Server.Services
 	{
 		public async Task<EpubBook> GetMetadata(string path)
 		{
-			return await epubReader.ReadMetadata(path);
+			return await epubReader.ReadMetadataAsync(path);
 		}
 
 		public async Task<Guid?> LoadFromFile(IBrowserFile file)
