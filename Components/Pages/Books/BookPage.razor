@@ -195,12 +195,10 @@
 					<MudText Typo="Typo.h5" Class="tw:mb-2">@Translations.PROGRESS</MudText>
 				</MudItem>
 				<MudItem xs="12" md="4">
-					@* <MudDatePicker @bind-Date="_book.Progress().StartDate" Label="@Translations.START_DATE" Variant="Variant.Filled"></MudDatePicker> *@
 					<MudDateOffsetPicker @bind-NullableValue="_book.Progress().StartDate" Label="@Translations.START_DATE" Required="false" />
 				</MudItem>
 				<MudItem xs="12" md="4">
 					<MudDateOffsetPicker @bind-NullableValue="_book.Progress().EndDate" Label="@Translations.END_DATE" Required="false" />
-					@* <MudDatePicker @bind-Date="_book.Progress().EndDate" Label="@Translations.END_DATE" Variant="Variant.Filled"></MudDatePicker> *@
 				</MudItem>
 				<MudItem xs="12" md="4">
 					<MudTextField @bind-Value="_book.Progress().ElapsedTime" HelperText="Hours:Minutes" Label="@Translations.READ_TIME" Variant="Variant.Filled" Converter="_timeReadConverter" Clearable="true"></MudTextField>

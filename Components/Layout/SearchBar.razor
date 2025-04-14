@@ -13,7 +13,7 @@
 	SearchFunc="Search">
 	<ItemTemplate Context="i">
 		<div class="tw:flex tw:items-center tw:gap-2">
-			<img src="@i.Image" class="tw:w-14" alt="" />
+			<img src="@i!.Image" class="tw:w-14" alt="" />
 			<div class="tw:grid">
 				<MudText Typo="Typo.body2" Color="Color.Default">@i.Title</MudText>
 				<MudText Typo="Typo.caption" Color="Color.Secondary">@i.Author</MudText>
@@ -29,7 +29,7 @@
 	private SearchItem? _searchItem;
 	private MudAutocomplete<SearchItem> _autocomplete = null!;
 	
-	private async Task<IEnumerable<SearchItem>> Search(string value, CancellationToken token)
+	private async Task<IEnumerable<SearchItem?>> Search(string value, CancellationToken token)
 	{
 		
 		if (string.IsNullOrEmpty(value)) return Array.Empty<SearchItem>();
