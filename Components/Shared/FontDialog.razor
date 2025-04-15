@@ -213,11 +213,11 @@
 			}
 
 			var file = _files.First(f => f.Name == variant.FileName);
-			var filePath = variant.FilePath(Program.FontsPath);
+			var filePath = variant.FilePath();
 
-			if (!Directory.Exists(variant.FolderPath(Program.FontsPath)))
+			if (!Directory.Exists(variant.FolderPath()))
 			{
-				Directory.CreateDirectory(variant.FolderPath(Program.FontsPath));
+				Directory.CreateDirectory(variant.FolderPath());
 			}
 
 			await using var fileStream = File.Create(filePath);

@@ -38,7 +38,7 @@ namespace BookHeaven.Server.Components.Pages.Books
 		private bool IsEditing => Editing == "edit";
 		private bool _searchingMetadata;
 		
-		private bool CoverExists => File.Exists(_book.CoverPath(Program.CoversPath));
+		private bool CoverExists => File.Exists(_book.CoverPath());
 
 		private Book _book = new();
 		private List<Author> _authors = [];
@@ -193,12 +193,12 @@ namespace BookHeaven.Server.Components.Pages.Books
 			
 			if(_newCoverTempPath != null)
 			{
-				await EpubService.StoreCover(await File.ReadAllBytesAsync(_newCoverTempPath), _book.CoverPath(Program.CoversPath)!);
+				await EpubService.StoreCover(await File.ReadAllBytesAsync(_newCoverTempPath), _book.CoverPath()!);
 				File.Delete(_newCoverTempPath);
 			}
 			if(_newEpubTempPath != null)
 			{
-				await EpubService.StoreBook(_newEpubTempPath, _book.EpubPath(Program.BooksPath));
+				await EpubService.StoreBook(_newEpubTempPath, _book.EpubPath());
 				File.Delete(_newEpubTempPath);
 			}
 
@@ -220,10 +220,10 @@ namespace BookHeaven.Server.Components.Pages.Books
 				SeriesIndex = _book.SeriesIndex
 			};
 
-			await EpubWriter.ReplaceMetadata(_book.EpubPath(Program.BooksPath), metadata);
+			await EpubWriter.ReplaceMetadata(_book.EpubPath(), metadata);
 			if(_newCoverTempPath != null)
 			{
-				await EpubWriter.ReplaceCover(_book.EpubPath(Program.BooksPath), _book.CoverPath(Program.CoversPath));
+				await EpubWriter.ReplaceCover(_book.EpubPath(), _book.CoverPath());
 			}
 			_newCoverTempPath = null;
 			_newEpubTempPath = null;

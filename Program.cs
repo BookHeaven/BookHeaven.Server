@@ -9,6 +9,7 @@ using BookHeaven.Server.Services;
 using System.Text.Json.Serialization;
 using MudBlazor;
 using BookHeaven.Domain;
+using BookHeaven.Domain.Abstractions;
 using BookHeaven.Domain.Entities;
 using BookHeaven.Domain.Features.Profiles;
 using BookHeaven.Server.Abstractions;
@@ -61,9 +62,10 @@ public class Program
 			config.SnackbarConfiguration.PreventDuplicates = false;
 		});
 
-		builder.Services.AddDomain(DatabasePath);
+		builder.Services.AddDomain(BooksPath, CoversPath, FontsPath, DatabasePath);
 		builder.Services.AddEpubManager();
-			
+
+		builder.Services.AddTransient<IAlertService, AlertService>();
 		builder.Services.AddScoped<ISettingsManagerService, SettingsManagerService>();
 		builder.Services.AddScoped<IMetadataProviderService, GoogleBooksService>();
 		// builder.Services.AddScoped<IMetadataProviderService, OpenLibraryService>();

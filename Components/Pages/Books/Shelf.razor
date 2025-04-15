@@ -1,5 +1,6 @@
 ﻿@using BookHeaven.Domain.Enums
 @using BookHeaven.Domain.Features.Books
+@using BookHeaven.Domain.Services
 @attribute [Route(Urls.Shelf)]
 
 @implements IDisposable
@@ -7,27 +8,23 @@
 <PageTitle>@Translations.SHELF</PageTitle>
 
 <ScrollToTop />
-<MudChipSet T="BookStatus" @bind-SelectedValue="CurrentFilter" Class="tw:mb-3 tw:mx-2" CheckMark>
+<MudChipSet T="BookStatus" @bind-SelectedValue="BookManager.Filter" Class="tw:mb-3 tw:mx-2" CheckMark>
 	<MudChip Value="BookStatus.All" Variant="Variant.Text" Color="Color.Primary">All</MudChip>	
 	<MudChip Value="BookStatus.New" Variant="Variant.Text" Color="Color.Primary">New</MudChip>
 	<MudChip Value="BookStatus.Reading" Variant="Variant.Text" Color="Color.Primary">Reading</MudChip>
 	<MudChip Value="BookStatus.Finished" Variant="Variant.Text" Color="Color.Primary">Finished</MudChip>
 </MudChipSet>
-<BookGrid Books="FilteredBooks" Center="true" />
+<BookGrid Books="BookManager.Books" Center="true" />
 
 @code {
 	[Inject] private NavigationManager NavigationManager { get; set; } = null!;
-	[Inject] private ISender Sender { get; set; } = null!;
 	[Inject] private IJSRuntime JsRuntime { get; set; } = null!;
+	[Inject] private BookManager BookManager { get; set; } = null!;
 	private bool IsLoading { get; set; } = true;
-	private List<Book> Books { get; set; } = [];
-	private BookStatus CurrentFilter { get; set; } = BookStatus.All;
-	private List<Book> FilteredBooks => CurrentFilter == BookStatus.All ? Books : Books.Where(b => b.ReadingStatus() == CurrentFilter).ToList();
 
 	protected override async Task OnInitializedAsync()
 	{
-		var getBooks = await Sender.Send(new GetAllBooks.Query(Program.SelectedProfile!.ProfileId));
-		Books = getBooks.Value.OrderBy(b => b.Author?.Name).ThenBy(b => b.Series?.Name).ThenBy(b => b.SeriesIndex).ToList();
+		await BookManager.GetBooks(Program.SelectedProfile!.ProfileId);
 		IsLoading = false;
 	}
 
