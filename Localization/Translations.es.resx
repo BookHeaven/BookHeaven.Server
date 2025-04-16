@@ -210,4 +210,7 @@
   <data name="LONG_DATE_FORMAT" xml:space="preserve">
     <value>Formato de fecha largo</value>
   </data>
+  <data name="LAST_READ" xml:space="preserve">
+    <value>Última lectura</value>
+  </data>
 </root>

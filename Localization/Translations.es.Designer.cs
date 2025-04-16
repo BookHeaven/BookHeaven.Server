@@ -186,6 +186,15 @@ namespace BookHeaven.Server.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Última lectura.
+        /// </summary>
+        public static string LAST_READ {
+            get {
+                return ResourceManager.GetString("LAST_READ", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Formato de fecha largo.
         /// </summary>
         public static string LONG_DATE_FORMAT {

@@ -100,7 +100,7 @@
 							@switch (_book.ReadingStatus())
 							{
 								case BookStatus.Reading:
-									<dt>Last read</dt>
+									<dt>@Translations.LAST_READ</dt>
 									<dd>@_book.Progress().LastRead?.ToString(_settings.DateFormat)</dd>
 									break;
 								case BookStatus.Finished:
