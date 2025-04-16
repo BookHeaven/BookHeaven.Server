@@ -1,5 +1,5 @@
 using BookHeaven.Server.Constants;
-using EpubManager.Entities;
+using BookHeaven.EpubManager.Entities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;

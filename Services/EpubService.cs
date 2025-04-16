@@ -1,5 +1,5 @@
-﻿using EpubManager;
-using EpubManager.Entities;
+﻿using BookHeaven.EpubManager;
+using BookHeaven.EpubManager.Entities;
 using Microsoft.AspNetCore.Components.Forms;
 using BookHeaven.Server.Interfaces;
 using System.Globalization;

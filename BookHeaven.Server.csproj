@@ -76,9 +76,13 @@
     <None Include="wwwroot\img\logo.svg" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\EpubManager\EpubManager.csproj" />
+  <ItemGroup Condition="'$(UseNuget)' != 'true'">
+    <ProjectReference Include="..\BookHeaven.EpubManager\BookHeaven.EpubManager.csproj" />
     <ProjectReference Include="..\BookHeaven.Domain\BookHeaven.Domain.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(UseNuget)' == 'true'">
+    <PackageReference Include="BookHeaven.Domain" Version="1.0.0" />
+    <PackageReference Include="BookHeaven.EpubManager" Version="1.0.0" />
   </ItemGroup>
 
 	<PropertyGroup>
