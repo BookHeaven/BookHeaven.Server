@@ -97,12 +97,17 @@
 							<dd>@_book.Progress().StartDate?.ToString(_settings.DateFormat)</dd>
 						</dl>
 						<dl>
-							<dt>@Translations.END_DATE</dt>
-							@if (_book.Progress().EndDate != null)
+							@switch (_book.ReadingStatus())
 							{
-								<dd>@_book.Progress().EndDate!.Value.ToString(_settings.DateFormat)</dd>
+								case BookStatus.Reading:
+									<dt>Last read</dt>
+									<dd>@_book.Progress().LastRead?.ToString(_settings.DateFormat)</dd>
+									break;
+								case BookStatus.Finished:
+									<dt>@Translations.END_DATE</dt>
+									<dd>@_book.Progress().EndDate?.ToString(_settings.DateFormat)</dd>
+									break;
 							}
-
 						</dl>
 
 						<dl>
