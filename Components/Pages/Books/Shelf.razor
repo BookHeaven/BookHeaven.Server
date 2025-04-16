@@ -14,7 +14,7 @@
 	<MudChip Value="BookStatus.Reading" Variant="Variant.Text" Color="Color.Primary">Reading</MudChip>
 	<MudChip Value="BookStatus.Finished" Variant="Variant.Text" Color="Color.Primary">Finished</MudChip>
 </MudChipSet>
-<BookGrid Books="BookManager.Books" Center="true" />
+<BookGrid Books="BookManager.Books.OrderBy(b => b.Author?.Name).ThenBy(b => b.Series?.Name).ThenBy(b => b.SeriesIndex).ToList()" Center="true" />
 
 @code {
 	[Inject] private NavigationManager NavigationManager { get; set; } = null!;
