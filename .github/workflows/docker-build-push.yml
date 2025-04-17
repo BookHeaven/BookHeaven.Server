@@ -33,9 +33,9 @@ jobs:
 
     - name: Clone EpubManager
       run: |
-        git clone https://${{ secrets.PAT_TOKEN }}@github.com/HeasHeartfire/EpubManager.git temp/EpubManager
-        mkdir -p BookHeaven/EpubManager
-        mv temp/EpubManager/* BookHeaven/EpubManager/
+        git clone https://${{ secrets.PAT_TOKEN }}@github.com/BookHeaven/BookHeaven.EpubManager.git temp/BookHeaven.EpubManager
+        mkdir -p BookHeaven/BookHeaven.EpubManager
+        mv temp/BookHeaven.EpubManager/* BookHeaven/BookHeaven.EpubManager/
         
     - name: Clone BookHeaven.Domain
       run: |
