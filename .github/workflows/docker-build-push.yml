@@ -53,10 +53,11 @@ jobs:
       
     - name: Get version
       id: get-version
+      working-directory: ./BookHeaven/BookHeaven.Server
       run: |
         sudo apt-get update
         sudo apt-get install -y libxml2-utils
-        VERSION=$(xmllint --xpath "string(//Project/PropertyGroup/Version)" ./BookHeaven/BookHeaven.Server.csproj)
+        VERSION=$(xmllint --xpath "string(//Project/PropertyGroup/Version)" ./BookHeaven.Server.csproj)
         echo "Version: $VERSION"
         echo "VERSION=$VERSION" >> $GITHUB_ENV
 
