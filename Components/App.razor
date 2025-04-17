@@ -13,12 +13,11 @@
     <title>BookHeaven</title>
     <HeadOutlet @rendermode="@InteractiveServer" />
 </head>
-
-<body>
-<Routes @rendermode="new InteractiveServerRenderMode(prerender:false)"/>
-<script src="@Assets["_content/MudBlazor/MudBlazor.min.js"]"></script>
-<script src="@Assets["_framework/blazor.web.js"]"></script>
-<script>
+<body class="tw:bg-[rgba(29,32,43,1)]">
+    <Routes @rendermode="new InteractiveServerRenderMode(prerender:false)"/>
+    <script src="@Assets["_content/MudBlazor/MudBlazor.min.js"]"></script>
+    <script src="@Assets["_framework/blazor.web.js"]"></script>
+    <script>
         window.scrollToTop = () => {
             let main = document.querySelector(".mud-layout");
             let path = window.location.pathname;
