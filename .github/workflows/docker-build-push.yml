@@ -50,12 +50,25 @@ jobs:
     - name: Build tailwindcss
       working-directory: ./BookHeaven/BookHeaven.Server
       run: npm run tailwindcss:build
+      
+    - name: Get version
+      id: get-version
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libxml2-utils
+        VERSION=$(xmllint --xpath "string(//Project/PropertyGroup/Version)" ./BookHeaven/BookHeaven.Server.csproj)
+        echo "Version: $VERSION"
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
 
     - name: Build Docker image
-      run: docker build ./BookHeaven --build-arg GOOGLE_BOOKS_API_KEY=${{ secrets.GOOGLE_BOOKS_API_KEY }} --file BookHeaven/BookHeaven.Server/Dockerfile --tag ${{env.REGISTRY}}/${{ env.IMAGE_NAME }}:latest
+      run: docker build ./BookHeaven \
+        --build-arg GOOGLE_BOOKS_API_KEY=${{ secrets.GOOGLE_BOOKS_API_KEY }} \
+        --file BookHeaven/BookHeaven.Server/Dockerfile \
+        --tag ${{env.REGISTRY}}/${{ env.IMAGE_NAME }}:latest
+        --tag ${{env.REGISTRY}}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
 
     - name: Log in to GitHub Container Registry
       run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.repository_owner }}" --password-stdin
 
     - name: Push Docker image
-      run: docker push ${{env.REGISTRY}}/${{ env.IMAGE_NAME }}:latest
+      run: docker push ${{env.REGISTRY}}/${{ env.IMAGE_NAME }} --all-tags
