@@ -100,7 +100,7 @@ namespace BookHeaven.Server.Services
 					SeriesIndex: epubBook.Metadata.SeriesIndex,
 					Title: epubBook.Metadata.Title,
 					Description: epubBook.Metadata.Description,
-					PublishedDate: DateTime.TryParseExact(epubBook.Metadata.PublishDate, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var tempDate) ? tempDate : DateTime.MinValue,
+					PublishedDate: DateTime.TryParse(epubBook.Metadata.PublishDate, out var tempDate) ? tempDate : DateTime.MinValue,
 					Publisher: epubBook.Metadata.Publisher,
 					Language: epubBook.Metadata.Language,
 					Isbn10: isbnIdentifiers.FirstOrDefault(x => x.Value.Length == 10)?.Value.Split(":").Last(),
