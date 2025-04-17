@@ -66,7 +66,7 @@ jobs:
         docker build ./BookHeaven \
         --build-arg GOOGLE_BOOKS_API_KEY=${{ secrets.GOOGLE_BOOKS_API_KEY }} \
         --file BookHeaven/BookHeaven.Server/Dockerfile \
-        --tag ${{env.REGISTRY}}/${{ env.IMAGE_NAME }}:latest
+        --tag ${{env.REGISTRY}}/${{ env.IMAGE_NAME }}:latest \
         --tag ${{env.REGISTRY}}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
 
     - name: Log in to GitHub Container Registry
