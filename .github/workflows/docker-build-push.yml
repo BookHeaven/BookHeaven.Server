@@ -62,7 +62,8 @@ jobs:
         echo "VERSION=$VERSION" >> $GITHUB_ENV
 
     - name: Build Docker image
-      run: docker build ./BookHeaven \
+      run: |
+        docker build ./BookHeaven \
         --build-arg GOOGLE_BOOKS_API_KEY=${{ secrets.GOOGLE_BOOKS_API_KEY }} \
         --file BookHeaven/BookHeaven.Server/Dockerfile \
         --tag ${{env.REGISTRY}}/${{ env.IMAGE_NAME }}:latest
