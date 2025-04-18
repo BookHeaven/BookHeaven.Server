@@ -1,0 +1,9 @@
+﻿<SectionContent SectionName="TopBar">
+	<div class="tw:flex tw:items-center tw:gap-3 tw:py-2 tw:lg:absolute tw:lg:-translate-y-1/2 tw:lg:top-1/2">
+		@ChildContent
+	</div>
+</SectionContent>
+
+@code {
+	[Parameter] public RenderFragment ChildContent { get; set; } = null!;
+}

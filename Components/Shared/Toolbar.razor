@@ -1,0 +1,9 @@
+﻿<SectionContent SectionName="Toolbar">
+	<div class="tw:flex tw:gap-3 tw:sticky tw:top-16 tw:lg:top-23">
+		@ChildContent
+	</div>
+</SectionContent>
+
+@code {
+	[Parameter] public RenderFragment ChildContent { get; set; } = null!;
+}

@@ -4,12 +4,12 @@
 @using BookHeaven.EpubManager.Entities
 @using BookHeaven.Server.Components.Pages.Settings.Components
 <PageTitle>@Translations.SETTINGS</PageTitle>
-<SectionContent SectionName="TopBar">
+<Toolbar>
 	<MudSpacer />
 	<MudTooltip Text="@Translations.SAVE">
 		<MudIconButton Icon="@Icons.Material.Filled.Save" Color="Color.Primary" OnClick="Save"/>
 	</MudTooltip>
-</SectionContent>
+</Toolbar>
 <div class="tw:mx-auto tw:w-10/12 tw:flex tw:flex-col tw:gap-10">
 	<section>
 		<h1 class="tw:mb-3">Library</h1>

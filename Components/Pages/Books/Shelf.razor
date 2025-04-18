@@ -7,13 +7,31 @@
 <PageTitle>@Translations.SHELF</PageTitle>
 
 <ScrollToTop />
-<MudChipSet T="BookStatus" @bind-SelectedValue="BookManager.Filter" Class="tw:mb-3 tw:mx-2" CheckMark>
-	<MudChip Value="BookStatus.All" Variant="Variant.Text" Color="Color.Primary">All</MudChip>	
-	<MudChip Value="BookStatus.New" Variant="Variant.Text" Color="Color.Primary">New</MudChip>
-	<MudChip Value="BookStatus.Reading" Variant="Variant.Text" Color="Color.Primary">Reading</MudChip>
-	<MudChip Value="BookStatus.Finished" Variant="Variant.Text" Color="Color.Primary">Finished</MudChip>
-</MudChipSet>
-<BookGrid Books="BookManager.Books.OrderBy(b => b.Author?.Name).ThenBy(b => b.Series?.Name).ThenBy(b => b.SeriesIndex).ToList()" Center="true" />
+<Topbar>
+	<MudChipSet T="BookStatus" @bind-SelectedValue="BookManager.Filter" Class="tw:mx-2" CheckMark>
+		<MudChip Value="BookStatus.All" Variant="Variant.Text" Color="Color.Primary">All</MudChip>	
+		<MudChip Value="BookStatus.New" Variant="Variant.Text" Color="Color.Primary">New</MudChip>
+		<MudChip Value="BookStatus.Reading" Variant="Variant.Text" Color="Color.Primary">Reading</MudChip>
+		<MudChip Value="BookStatus.Finished" Variant="Variant.Text" Color="Color.Primary">Finished</MudChip>
+	</MudChipSet>
+</Topbar>
+@if (BookManager.IsEmpty)
+{
+	
+	return;
+}
+
+@if (BookManager.Books.Count > 0)
+{
+	<BookGrid Books="BookManager.Books.OrderBy(b => b.Author?.Name).ThenBy(b => b.Series?.Name).ThenBy(b => b.SeriesIndex).ToList()" Center="true" />
+}
+else
+{
+	<div class="tw:absolute tw:inset-0 tw:flex tw:items-center tw:justify-center">
+		No books matching the selected filter.
+	</div>
+}
+
 
 @code {
 	[Inject] private NavigationManager NavigationManager { get; set; } = null!;

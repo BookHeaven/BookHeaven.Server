@@ -1,4 +1,8 @@
-﻿<MudNavMenu Margin="Margin.Dense" Class="tw:p-4" Color="Color.Primary" Rounded="true">
+﻿<div class="tw:flex tw:items-center tw:py-1 tw:lg:py-3 tw:px-5">
+    <img src="@Assets["/img/logo.svg"]" class="tw:w-[48px]" alt=""/>
+    <MudText Typo="Typo.h6" Class="tw:text-white tw:ms-2">BookHeaven</MudText>
+</div>
+<MudNavMenu Margin="Margin.Dense" Class="tw:p-4" Color="Color.Primary" Rounded="true">
     <MudNavLink Href="@Urls.Shelf" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Rounded.AutoStories">@Translations.SHELF</MudNavLink>
     <MudNavLink Href="@Urls.Authors" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Rounded.Portrait">@Translations.AUTHORS</MudNavLink>
     <MudNavLink Href="@Urls.Series" Match="NavLinkMatch.All" Icon="@Icons.Material.Rounded.Label">@Translations.SERIES_PLURAL</MudNavLink>
