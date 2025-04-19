@@ -71,7 +71,7 @@ public class Program
 		// builder.Services.AddScoped<IMetadataProviderService, OpenLibraryService>();
 		builder.Services.AddScoped<IFormatService<EpubBook>, EpubService>();
 
-		builder.Services.AddSingleton<UdpBroadcastServer>();
+		builder.Services.AddHostedService<UdpBroadcastServer>();
 			
 		// Add endpoints
 		builder.Services.AddEndpoints(typeof(Program).Assembly);
@@ -124,12 +124,6 @@ public class Program
 
 		app.MapRazorComponents<App>()
 			.AddInteractiveServerRenderMode();
-
-		using (var scope = app.Services.CreateScope())
-		{
-			var udpBroadcastServer = scope.ServiceProvider.GetRequiredService<UdpBroadcastServer>();
-			_ = udpBroadcastServer.StartAsync();
-		}
 
 		using (var scope = app.Services.CreateScope())
 		{

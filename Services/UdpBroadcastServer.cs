@@ -5,12 +5,12 @@ using BookHeaven.Domain.Constants;
 
 namespace BookHeaven.Server.Services;
 
-public class UdpBroadcastServer(ILogger<UdpBroadcastServer> logger)
+public class UdpBroadcastServer(ILogger<UdpBroadcastServer> logger) : BackgroundService
 {
     private readonly int _maxRetries = 5;
     private readonly string _message = $"{Broadcast.SERVER_URL_MESSAGE_PREFIX}{Environment.GetEnvironmentVariable("SERVER_URL")}";
 
-    public async Task StartAsync()
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         if (Environment.GetEnvironmentVariable("SERVER_URL") == null)
         {
@@ -18,16 +18,14 @@ public class UdpBroadcastServer(ILogger<UdpBroadcastServer> logger)
             return;
         }
         
-        using var udpClient = new UdpClient
-        {
-            EnableBroadcast = true
-        };
+        using var udpClient = new UdpClient();
+        udpClient.EnableBroadcast = true;
         udpClient.Client.Bind(new IPEndPoint(IPAddress.Any, Broadcast.BROADCAST_PORT));
         
         while (true)
         {
             logger.LogInformation("Waiting for clients...");
-            var result = await udpClient.ReceiveAsync();
+            var result = await udpClient.ReceiveAsync(stoppingToken);
             var receivedMessage = Encoding.UTF8.GetString(result.Buffer);
 
             if (!receivedMessage.StartsWith(Broadcast.DISCOVER_MESSAGE_PREFIX))
