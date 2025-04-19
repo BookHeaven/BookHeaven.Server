@@ -1,5 +1,4 @@
 ﻿using BookHeaven.EpubManager;
-using BookHeaven.EpubManager.Entities;
 using Microsoft.AspNetCore.Components.Forms;
 using BookHeaven.Server.Interfaces;
 using System.Globalization;
@@ -9,6 +8,8 @@ using BookHeaven.Domain.Features.BooksProgress;
 using BookHeaven.Domain.Features.Profiles;
 using BookHeaven.Domain.Features.Seriess;
 using BookHeaven.Domain.Helpers;
+using BookHeaven.EpubManager.Epub.Entities;
+using BookHeaven.EpubManager.Epub.Services;
 using MediatR;
 
 namespace BookHeaven.Server.Services

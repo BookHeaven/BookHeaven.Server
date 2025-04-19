@@ -1,5 +1,4 @@
 using BookHeaven.EpubManager;
-using BookHeaven.EpubManager.Entities;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.FileProviders;
 using MudBlazor.Services;
@@ -12,6 +11,7 @@ using BookHeaven.Domain;
 using BookHeaven.Domain.Abstractions;
 using BookHeaven.Domain.Entities;
 using BookHeaven.Domain.Features.Profiles;
+using BookHeaven.EpubManager.Epub.Entities;
 using BookHeaven.Server.Abstractions;
 using BookHeaven.Server.Endpoints;
 using BookHeaven.Server.Extensions;
