@@ -7,11 +7,47 @@ BookHeaven Server is part of the BookHeaven "ecosystem", which aims to provide a
 It allows to organize your books into authors and series, as well as add tags for filtering purposes.</br>
 You can also add fonts so they can be easily downloaded and used by your devices.
 
-## Disclaimer
+## Quick notes
 - Only epub format is supported as of right now and there are currently no plans to support other formats.
 - While the progress sync is completely functional and the UI is pretty enough, the "managing" part still needs a bit more of love. That being said, I want to keep things simple.
 - There's no web reader, reading is done through the client app.
 
+## Features
+- **Modern and responsive UI**
+- **Metadata handling (title, author, etc)**. Metadata is read from the ebook itself and editable at any time. Any changes, including the cover, are persisted into the file as well.
+- **Progress tracking**[^1]. You can check the progress of your books at any given time, but also set it manually.
+- **Font types management**[^2]. Any font that you configure will be made available for your devices to easily download and use.
+
+[^1]: Progress tracking includes start date, last read date, percentage, elapsed time as well as finished date.
+[^2]: Fonts can be split up into any combination of styles (regular, italic) and weights (normal, bold) or you can also use a single font file for everything.
+
 ## Supported UI Languages
 - English
 - Spanish
+
+## Getting Started
+Setting the server up is pretty straightforward using docker.<br/>
+Here's a sample compose.yml file.
+
+```
+services:
+  bookheaven:
+    image: ghcr.io/bookheaven/bookheaven-server:latest
+    container_name: bookheaven
+    volumes:
+      - ./data:/app/data
+    ports:
+      # web ui
+      - 8080:8080
+      # auto discovery, changing the default port is not supported for now since it's hardcoded in the client
+      - 27007:27007/udp
+    environment:
+      # required for auto discovery
+      - SERVER_URL=https://bookheaven.yourdomain.tld
+      - TZ=Europe/Madrid
+    user: 1000:1000
+    restart: unless-stopped
+```
+
+## API definition
+Coming soon
