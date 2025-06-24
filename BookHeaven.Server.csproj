@@ -81,8 +81,8 @@
     <ProjectReference Include="..\BookHeaven.Domain\BookHeaven.Domain.csproj" />
   </ItemGroup>
   <ItemGroup Condition="'$(UseNuget)' == 'true'">
-    <PackageReference Include="BookHeaven.Domain" Version="1.0.3" />
-    <PackageReference Include="BookHeaven.EpubManager" Version="1.0.3" />
+    <PackageReference Include="BookHeaven.Domain" Version="1.0.4" />
+    <PackageReference Include="BookHeaven.EpubManager" Version="1.0.4" />
   </ItemGroup>
 
 	<PropertyGroup>
