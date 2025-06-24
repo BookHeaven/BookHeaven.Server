@@ -51,8 +51,8 @@
 
   <ItemGroup>
 	<PackageReference Include="Google.Apis.Books.v1" Version="1.68.0.3331" />
-	<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.3" />
-	<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.3">
+	<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.6" />
+	<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.6">
 	  <PrivateAssets>all</PrivateAssets>
 	  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	</PackageReference>
