@@ -84,7 +84,7 @@
 	{
 		if (_author.AuthorId == Guid.Empty || Id != _author.AuthorId)
 		{
-			var getAuthor = await Sender.Send(new GetAuthor.Query(new GetAuthor.Filter {AuthorId = Id, IncludeBooks = true}));
+			var getAuthor = await Sender.Send(new GetAuthor.Query(new GetAuthor.Filter {AuthorId = Id, ProfileId = Program.SelectedProfile!.ProfileId, IncludeBooks = true}));
 			if (getAuthor.IsFailure)
 			{
 				return;	
