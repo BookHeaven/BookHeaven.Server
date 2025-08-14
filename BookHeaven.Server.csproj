@@ -51,12 +51,12 @@
 
   <ItemGroup>
 	<PackageReference Include="Google.Apis.Books.v1" Version="1.68.0.3331" />
-	<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.6" />
-	<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.6">
+	<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.8" />
+	<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.8">
 	  <PrivateAssets>all</PrivateAssets>
 	  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	</PackageReference>
-    <PackageReference Include="MudBlazor" Version="8.10.0" />
+    <PackageReference Include="MudBlazor" Version="8.11.0" />
     <PackageReference Include="OpenLibrary.NET" Version="0.1.3" />
     <PackageReference Include="Toolbelt.Blazor.ViewTransition" Version="1.0.4" />
   </ItemGroup>
