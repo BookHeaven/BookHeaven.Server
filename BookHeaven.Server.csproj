@@ -82,7 +82,7 @@
   </ItemGroup>
   <ItemGroup Condition="'$(UseNuget)' == 'true'">
     <PackageReference Include="BookHeaven.Domain" Version="1.0.5" />
-    <PackageReference Include="BookHeaven.EpubManager" Version="1.0.5" />
+    <PackageReference Include="BookHeaven.EpubManager" Version="1.0.6" />
   </ItemGroup>
 
 	<PropertyGroup>
