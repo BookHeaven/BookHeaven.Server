@@ -1,7 +1,7 @@
 ﻿@using BookHeaven.Domain.Features.Books
 <MudAutocomplete
 	@ref="_autocomplete"
-	Class="!tw:mx-2"
+	Class="!mx-2"
 	Placeholder="Search"
 	Margin="Margin.Dense"
 	Variant="Variant.Outlined"
@@ -12,9 +12,9 @@
 	TextUpdateSuppression="false"
 	SearchFunc="Search">
 	<ItemTemplate Context="i">
-		<div class="tw:flex tw:items-center tw:gap-2">
-			<img src="@i!.Image" class="tw:w-14" alt="" />
-			<div class="tw:grid">
+		<div class="flex items-center gap-2">
+			<img src="@i!.Image" class="w-14" alt="" />
+			<div class="grid">
 				<MudText Typo="Typo.body2" Color="Color.Default">@i.Title</MudText>
 				<MudText Typo="Typo.caption" Color="Color.Secondary">@i.Author</MudText>
 				<MudText Typo="Typo.caption" Color="Color.Primary">@i.Series</MudText>

@@ -1,15 +1,15 @@
 ﻿@using BookHeaven.Domain.Features.Fonts
-<h1 class="tw:mb-3">Font Collection</h1>
-<p class="tw:text-neutral-300">Here you can add fonts to make them available for your devices</p>
-<MudPaper Class="tw:flex tw:gap-2 tw:p-3 tw:mt-2 tw:flex-wrap" Outlined="true">
+<h1 class="mb-3">Font Collection</h1>
+<p class="text-neutral-300">Here you can add fonts to make them available for your devices</p>
+<MudPaper Class="flex gap-2 p-3 mt-2 flex-wrap" Outlined="true">
 	<MudIconButton Icon="@Icons.Material.Filled.Add" Variant="Variant.Filled" Color="Color.Surface" @onclick="async () => await OpenFontDialog()"></MudIconButton>
 	@foreach (var font in Fonts)
 	{
-		<MudButton Class="tw:relative tw:flex tw:items-center tw:justify-center" Color="Color.Surface" Variant="Variant.Filled" @onclick="async () => await OpenFontDialog(font)">
+		<MudButton Class="relative flex items-center justify-center" Color="Color.Surface" Variant="Variant.Filled" @onclick="async () => await OpenFontDialog(font)">
 			<style>
 				@($"@font-face {{font-family: '{font.Family}'; src: url('{font.Url()}');}} span#font-{font.Family} {{ font-family: '{font.Family}';}}")
 			</style>
-			<span id="@($"font-{font.Family}")" class="tw:m-5 tw:capitalize">@font.Family</span>
+			<span id="@($"font-{font.Family}")" class="m-5 capitalize">@font.Family</span>
 		</MudButton>
 	}
 </MudPaper>

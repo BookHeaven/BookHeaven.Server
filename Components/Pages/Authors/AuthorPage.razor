@@ -28,12 +28,12 @@
 		</MudTooltip>
 	}
 </Toolbar>
-<div class="tw:container tw:px-4 tw:py-5 tw:mx-auto">
-	<div class="tw:flex tw:flex-wrap tw:gap-5 tw:lg:gap-10 tw:mb-10">
-		<div class="tw:w-[250px] tw:rounded tw:overflow-hidden tw:mx-auto">
+<div class="container px-4 py-5 mx-auto">
+	<div class="flex flex-wrap gap-5 lg:gap-10 mb-10">
+		<div class="w-[250px] rounded overflow-hidden mx-auto">
 			@if (string.IsNullOrEmpty(_author.ImageUrl))
 			{
-				<div class="tw:h-[375px] tw:bg-slate-600 tw:flex tw:flex-col tw:items-center tw:justify-center">
+				<div class="h-[375px] bg-slate-600 flex flex-col items-center justify-center">
 					<MudIcon Icon="@Icons.Material.Rounded.PersonOff" Size="Size.Large"/>
 					<span>No image</span>
 				</div>
@@ -42,11 +42,11 @@
 			{
 				<img src="@_author.ImageUrl" alt=""/>
 			}
-			<div class="tw:p-2 tw:bg-slate-700">
-				<p class="tw:text-center">@BooksRead finished out of @_author.Books.Count</p>
+			<div class="p-2 bg-slate-700">
+				<p class="text-center">@BooksRead finished out of @_author.Books.Count</p>
 			</div>
 		</div>
-		<div class="tw:flex-1">
+		<div class="flex-1">
 			@if (!IsEditing)
 			{
 				<h1>@_author.Name</h1>
@@ -62,7 +62,7 @@
 	</div>
 	@if (!IsEditing)
 	{
-		<h2 class="tw:mb-5">@_author.Books.Count @(_author.Books.Count > 1 ? "books" : "book")</h2>
+		<h2 class="mb-5">@_author.Books.Count @(_author.Books.Count > 1 ? "books" : "book")</h2>
 		<BookGrid Books="_author.Books.OrderBy(b => b.Author?.Name).ThenBy(b => b.Series?.Name).ThenBy(b => b.SeriesIndex).ToList()" />
 	}
 	

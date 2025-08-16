@@ -6,6 +6,7 @@ public static class Urls
 	public const string Authors = "/authors";
 	public const string Series = "/series";
 	public const string Settings = "/settings";
+	public const string Profiles = "/profiles";
 
 	public static string GetBookUrl(Guid bookId)
 	{

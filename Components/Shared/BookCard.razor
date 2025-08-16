@@ -1,17 +1,17 @@
 ﻿@using BookHeaven.Server.Helpers
 <MudCard Elevation="4"
-         Class="tw:group tw:overflow-hidden tw:flex tw:flex-col tw:hover:cursor-pointer"
+         Class="group overflow-hidden flex flex-col hover:cursor-pointer"
          @onclick="@(() => NavigationManager.NavigateTo(Urls.GetBookUrl(Book.BookId)))">
 
 
-	<div class="tw:h-[250px] tw:overflow-hidden">
-		<span class="tw:h-full" style="@Transitions.GetTransitionName("img", Book.BookId)">
-			<MudCardMedia Image="@Book.CoverUrl()" Class="tw:transition-transform tw:!h-full tw:duration-150 tw:group-hover:scale-105"/>
+	<div class="h-[250px] overflow-hidden">
+		<span class="h-full" style="@Transitions.GetTransitionName("img", Book.BookId)">
+			<MudCardMedia Image="@Book.CoverUrl()" Class="transition-transform !h-full duration-150 group-hover:scale-105"/>
 		</span>
 	</div>
 	<MudCardContent
-		Class="tw:flex-1 tw:relative tw:flex tw:flex-col tw:gap-1 tw:transition-colors tw:group-hover:bg-slate-700">
-						<span class="tw:absolute tw:z-10 tw:bottom-0 tw:inset-x-0" style="@Transitions.GetTransitionName("progress-bar", Book.BookId)">
+		Class="flex-1 relative flex flex-col gap-1 transition-colors group-hover:bg-slate-700">
+						<span class="absolute z-10 bottom-0 inset-x-0" style="@Transitions.GetTransitionName("progress-bar", Book.BookId)">
 							<MudProgressLinear
 								Color="Color.Primary"
 								Size="Size.Small"

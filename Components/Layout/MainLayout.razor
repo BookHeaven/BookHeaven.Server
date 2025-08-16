@@ -1,16 +1,17 @@
 ﻿@inherits LayoutComponentBase
-<MudThemeProvider Theme="_theme" IsDarkMode="true"/>
+<MudThemeProvider Theme="Program.Theme" IsDarkMode="true"/>
 <MudPopoverProvider />
 <MudSnackbarProvider />
 <MudDialogProvider />
 <PageTitle>BookHeaven</PageTitle>
-<div class="tw:flex tw:h-full tw:overflow-hidden tw:relative">
-    <MudDrawer @bind-Open="_drawerOpen" Class="tw:lg:!static" Elevation="0">
-        <NavMenu />
+<div class="flex h-full overflow-hidden relative">
+    <MudDrawer @bind-Open="_drawerOpen" Class="lg:!static" Elevation="0">
+        <Logo />
+        <NavMenu/>
     </MudDrawer>
-    <main class="tw:flex tw:flex-col tw:w-full tw:overflow-y-auto">
-        <div class="tw:sticky tw:top-0 tw:backdrop-blur tw:py-1 tw:lg:py-3 tw:z-20 tw:bg-(--mud-palette-appbar-background)" style="view-transition-name:appbar;">
-            <div class="tw:flex tw:items-center">
+    <main class="flex flex-col w-full overflow-y-auto">
+        <div class="sticky top-0 backdrop-blur py-1 lg:py-3 z-20 bg-(--mud-palette-appbar-background)" style="view-transition-name:appbar;">
+            <div class="flex items-center me-0 2xl:me-5">
                 <MudHidden Breakpoint="Breakpoint.MdAndUp">
                     <MudIconButton Icon="@Icons.Material.Filled.Menu" Edge="Edge.False" OnClick="@((e) => DrawerToggle())"/>
                 </MudHidden>
@@ -20,7 +21,7 @@
                     Spacing="1">
                     <SearchBar/>
 
-                    <MudFileUpload T="IBrowserFile" FilesChanged="UploadBook" Class="!tw:m-0">
+                    <MudFileUpload T="IBrowserFile" FilesChanged="UploadBook" Class="!m-0">
                         <ActivatorContent>
                             <MudIconButton HtmlTag="label" Icon="@Icons.Material.Filled.UploadFile" Color="Color.Secondary"/>
                         </ActivatorContent>
@@ -29,7 +30,7 @@
             </div>
             <SectionOutlet SectionName="TopBar" />
         </div>
-        <div class="tw:py-2 tw:lg:py-5 tw:md:px-7 tw:relative tw:flex-1">
+        <div class="py-2 lg:py-5 md:px-7 relative flex-1">
             <SectionOutlet SectionName="Toolbar" />
             @Body
         </div>
