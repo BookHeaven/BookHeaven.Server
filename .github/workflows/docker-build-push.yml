@@ -52,9 +52,6 @@ jobs:
     - name: Build tailwindcss
       working-directory: ./BookHeaven/BookHeaven.Server
       run: npm run tailwindcss:build
-      
-    - name: Install Nerdbank.GitVersioning
-      run: dotnet tool install --global nbgv
 
     - name: Get version
       id: get-version
