@@ -1,4 +1,5 @@
 ﻿@using BookHeaven.Domain.Features.Books
+@using BookHeaven.Server.Abstractions
 <MudAutocomplete
 	@ref="_autocomplete"
 	Class="!mx-2"
@@ -26,16 +27,24 @@
 @code {
 	[Inject] private NavigationManager NavigationManager { get; set; } = null!;
 	[Inject] private ISender Sender { get; set; } = null!;
+	[Inject] private ISessionService SessionService { get; set; } = null!;
 	private SearchItem? _searchItem;
 	private MudAutocomplete<SearchItem> _autocomplete = null!;
-	
+	private Guid _profileId;
+
+
+	protected override async Task OnInitializedAsync()
+	{
+		_profileId = await SessionService.GetAsync<Guid>(SessionKey.SelectedProfileId);
+	}
+
 	private async Task<IEnumerable<SearchItem?>> Search(string value, CancellationToken token)
 	{
 		
-		if (string.IsNullOrEmpty(value)) return Array.Empty<SearchItem>();
+		if (string.IsNullOrEmpty(value)) return [];
 		
 		var getBooks = await Sender.Send(
-			new GetAllBooks.Query(Program.SelectedProfile!.ProfileId,value.ToUpper())
+			new GetAllBooks.Query(_profileId,value.ToUpper())
 			,token);
 
 		if (getBooks.IsFailure)

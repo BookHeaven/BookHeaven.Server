@@ -1,5 +1,6 @@
 ﻿@using BookHeaven.Domain.Enums
 @using BookHeaven.Domain.Features.Authors
+@using BookHeaven.Server.Abstractions
 @attribute [Route($"{Urls.Authors}/{{Id:guid}}")]
 @attribute [Route($"{Urls.Authors}/{{Id:guid}}/{{Editing}}")]
 
@@ -71,20 +72,27 @@
 @code {
 	[Inject] private ISender Sender { get; set; } = null!;
 	[Inject] private NavigationManager NavigationManager { get; set; } = null!;
+	[Inject] private ISessionService SessionService { get; set; } = null!;
 	[Parameter] public Guid Id { get; set; }
 	[Parameter] public string? Editing { get; set; }
 	
 	private bool _isLoaded;
 	private Author _author = new();
 	private bool IsEditing => Editing == "edit";
+	private Guid _profileId;
 	
 	private int BooksRead => _author.Books.Count(book => book.ReadingStatus() == BookStatus.Finished);
+
+	protected override async Task OnInitializedAsync()
+	{
+		_profileId = await SessionService.GetAsync<Guid>(SessionKey.SelectedProfileId);
+	}
 
 	protected override async Task OnParametersSetAsync()
 	{
 		if (_author.AuthorId == Guid.Empty || Id != _author.AuthorId)
 		{
-			var getAuthor = await Sender.Send(new GetAuthor.Query(new GetAuthor.Filter {AuthorId = Id, ProfileId = Program.SelectedProfile!.ProfileId, IncludeBooks = true}));
+			var getAuthor = await Sender.Send(new GetAuthor.Query(new GetAuthor.Filter {AuthorId = Id, ProfileId = _profileId, IncludeBooks = true}));
 			if (getAuthor.IsFailure)
 			{
 				return;	

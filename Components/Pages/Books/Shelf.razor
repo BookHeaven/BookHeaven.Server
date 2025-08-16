@@ -1,5 +1,6 @@
 ﻿@using BookHeaven.Domain.Enums
 @using BookHeaven.Domain.Services
+@using BookHeaven.Server.Abstractions
 @attribute [Route(Urls.Shelf)]
 
 @implements IDisposable
@@ -37,11 +38,14 @@ else
 	[Inject] private NavigationManager NavigationManager { get; set; } = null!;
 	[Inject] private IJSRuntime JsRuntime { get; set; } = null!;
 	[Inject] private BookManager BookManager { get; set; } = null!;
+	[Inject] private ISessionService SessionService { get; set; } = null!;
 	private bool IsLoading { get; set; } = true;
 
 	protected override async Task OnInitializedAsync()
 	{
-		await BookManager.GetBooks(Program.SelectedProfile!.ProfileId);
+		var profileId = await SessionService.GetAsync<Guid>(SessionKey.SelectedProfileId);
+		
+		await BookManager.GetBooks(profileId);
 		IsLoading = false;
 	}
 

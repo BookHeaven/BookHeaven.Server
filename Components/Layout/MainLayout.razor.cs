@@ -1,4 +1,5 @@
 using BookHeaven.EpubManager.Epub.Entities;
+using BookHeaven.Server.Abstractions;
 using BookHeaven.Server.Constants;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -12,9 +13,25 @@ namespace BookHeaven.Server.Components.Layout
     {
         [Inject] private NavigationManager NavigationManager { get; set; } = null!;
         [Inject] private IFormatService<EpubBook> EpubService { get; set; } = null!;
+        [Inject] private ISessionService SessionService { get; set; } = null!;
         [Inject] private ISnackbar Snackbar { get; set; } = null!;
-        
+
+        private bool _checkingProfile = true;
         private bool _drawerOpen = true;
+        
+        protected override async Task OnInitializedAsync()
+        {
+            var profileId = await SessionService.GetAsync<Guid>(SessionKey.SelectedProfileId);
+            if (profileId == Guid.Empty)
+            {
+                NavigationManager.NavigateTo(Urls.Profiles);
+            }
+            else
+            {
+                _checkingProfile = false;
+                StateHasChanged();
+            }
+        }
 
         private void DrawerToggle()
         {

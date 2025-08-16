@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using BookHeaven.Domain.Entities;
 using BookHeaven.Domain.Extensions;
 using BookHeaven.Domain.Features.Authors;
@@ -27,10 +28,12 @@ namespace BookHeaven.Server.Components.Pages.Books
 		[Inject] private IEpubWriter EpubWriter { get; set; } = null!;
 		[Inject] private NavigationManager NavigationManager { get; set; } = null!;
 		[Inject] private ISettingsManagerService SettingsManager { get; set; } = null!;
+		[Inject] private ISessionService SessionService { get; set; } = null!;
 
 		[Parameter] public Guid Id { get; set; }
 		[Parameter] public string? Editing { get; set; }
-		
+
+		private Guid _profileId;
 		private ServerSettings _settings = new();
 
 		private bool _addingTags;
@@ -61,6 +64,7 @@ namespace BookHeaven.Server.Components.Pages.Books
 		protected override async Task OnInitializedAsync()
 		{
 			_settings = await SettingsManager.LoadSettingsAsync();
+			_profileId = await SessionService.GetAsync<Guid>(SessionKey.SelectedProfileId);
 		}
 
 		protected override async Task OnParametersSetAsync()
@@ -100,7 +104,7 @@ namespace BookHeaven.Server.Components.Pages.Books
 			}
 			_book = getBook.Value;
 			
-			var getBookProgress = await Sender.Send(new GetBookProgressByProfile.Query(Id, Program.SelectedProfile!.ProfileId));
+			var getBookProgress = await Sender.Send(new GetBookProgressByProfile.Query(Id, _profileId));
 			_book.Progresses.Add(getBookProgress.Value);
 			
 			if (_book.Author != null)

@@ -1,4 +1,5 @@
 ﻿@using BookHeaven.Domain.Features.Profiles
+@using BookHeaven.Server.Abstractions
 @attribute [Route(Urls.Profiles)]
 @layout SimpleLayout
 
@@ -10,7 +11,7 @@
 		@foreach (var profile in _profiles)
 		{
 			<button 
-				class="size-44 rounded-full flex items-center justify-center bg-slate-500 active:scale-95 @(profile.ProfileId == Program.SelectedProfile?.ProfileId ? "outline-4 outline-(--mud-palette-primary) shadow-[0_0_25px_var(--mud-palette-primary)]" : "")" 
+				class="size-44 rounded-full flex items-center justify-center bg-slate-500 hover:bg-slate-400 transition-colors active:scale-95  @(profile.ProfileId == _selectedProfileId ? "outline-4 outline-(--mud-palette-primary) shadow-[0_0_25px_var(--mud-palette-primary)]" : "")" 
 				@onclick="() => SelectProfile(profile)">
 				<span class="text-2xl">@profile.Name</span>
 			</button>
@@ -22,9 +23,11 @@
 </div>
 
 @code {
+	[Inject] private ISessionService SessionService { get; set; } = null!;
 	[Inject] private ISender Sender { get; set; } = null!;
 	[Inject] private NavigationManager NavigationManager { get; set; } = null!;
 	
+	private Guid _selectedProfileId;
 	private List<Profile> _profiles = [];
 
 	protected override async Task OnInitializedAsync()
@@ -39,11 +42,13 @@
 			// Handle error, e.g., show a message to the user
 			Console.WriteLine("Failed to load profiles: " + getProfiles.Error);
 		}
+		
+		_selectedProfileId = await SessionService.GetAsync<Guid>(SessionKey.SelectedProfileId);
 	}
 
-	private void SelectProfile(Profile profile)
+	private async Task SelectProfile(Profile profile)
 	{
-		Program.SelectedProfile = profile;
+		await SessionService.SetAsync(SessionKey.SelectedProfileId, profile.ProfileId);
 		NavigationManager.NavigateTo(Urls.Shelf);
 	}
 

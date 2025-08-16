@@ -28,7 +28,6 @@ public class Program
 	public static readonly string CoversPath = Path.Combine(AppDataPath, "covers");
 	public static readonly string DatabasePath = Path.Combine(AppDataPath, "database");
 	public static readonly string FontsPath = Path.Combine(AppDataPath, "fonts");
-	public static Profile? SelectedProfile { get; set; }
 	
 	public static readonly MudTheme Theme = new()
 	{
@@ -100,6 +99,7 @@ public class Program
 		builder.Services.AddScoped<IMetadataProviderService, GoogleBooksService>();
 		// builder.Services.AddScoped<IMetadataProviderService, OpenLibraryService>();
 		builder.Services.AddScoped<IFormatService<EpubBook>, EpubService>();
+		builder.Services.AddScoped<ISessionService, SessionService>();
 
 		builder.Services.AddHostedService<UdpBroadcastServer>();
 			
@@ -158,7 +158,6 @@ public class Program
 		using (var scope = app.Services.CreateScope())
 		{
 			// Create default profile if it doesn't exist
-			Profile defaultProfile;
 			var sender = scope.ServiceProvider.GetRequiredService<ISender>();
 
 			var profileQuery = await sender.Send(new GetDefaultProfile.Query());
@@ -169,15 +168,7 @@ public class Program
 				{
 					throw new Exception(createProfile.Error.Description);
 				}
-				defaultProfile = createProfile.Value;
 			}
-			else
-			{
-				defaultProfile = profileQuery.Value;
-			}
-				
-			// To be changed when the user is able to pick a profile
-			SelectedProfile = defaultProfile;
 		}
 
 		app.Use(async (context, next) =>
