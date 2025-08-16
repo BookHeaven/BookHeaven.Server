@@ -18,6 +18,8 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Fetch all history for accurate versioning
       
     - name: Setup node js
       uses: actions/setup-node@v3
@@ -51,13 +53,14 @@ jobs:
       working-directory: ./BookHeaven/BookHeaven.Server
       run: npm run tailwindcss:build
       
+    - name: Install Nerdbank.GitVersioning
+      run: dotnet tool install --global nbgv
+
     - name: Get version
       id: get-version
       working-directory: ./BookHeaven/BookHeaven.Server
       run: |
-        sudo apt-get update
-        sudo apt-get install -y libxml2-utils
-        VERSION=$(xmllint --xpath "string(//Project/PropertyGroup/Version)" ./BookHeaven.Server.csproj)
+        VERSION=$(nbgv get-version | grep NuGetPackageVersion | cut -d ':' -f2 | xargs)
         echo "Version: $VERSION"
         echo "VERSION=$VERSION" >> $GITHUB_ENV
 
