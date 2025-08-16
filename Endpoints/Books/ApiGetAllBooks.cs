@@ -17,7 +17,7 @@ public static class ApiGetAllBooks
             ISender sender,
             ILogger<Endpoint> logger)
         {
-            var getBooks = await sender.Send(new GetAllBooks.Query(Program.SelectedProfile!.ProfileId));
+            var getBooks = await sender.Send(new GetAllBooks.Query());
             if (getBooks.IsSuccess)
             {
                 return Results.Ok(getBooks.Value);
