@@ -1,0 +1,50 @@
+﻿@using BookHeaven.Domain.Features.Profiles
+@attribute [Route(Urls.Profiles)]
+@layout SimpleLayout
+
+<PageTitle>Profiles</PageTitle>
+
+<div class="flex flex-col justify-center h-full">
+	<h1 class="text-center mb-10">Select your profile</h1>
+	<div class="flex items-center justify-center gap-10">
+		@foreach (var profile in _profiles)
+		{
+			<button 
+				class="size-44 rounded-full flex items-center justify-center bg-slate-500 active:scale-95 @(profile.ProfileId == Program.SelectedProfile?.ProfileId ? "outline-4 outline-(--mud-palette-primary) shadow-[0_0_25px_var(--mud-palette-primary)]" : "")" 
+				@onclick="() => SelectProfile(profile)">
+				<span class="text-2xl">@profile.Name</span>
+			</button>
+		}
+		<button class="size-44 rounded-full flex items-center justify-center text-slate-400 bg-slate-700">
+			<MudIcon Icon="@Icons.Material.Filled.Add" Class="size-24" />
+		</button>
+	</div>
+</div>
+
+@code {
+	[Inject] private ISender Sender { get; set; } = null!;
+	[Inject] private NavigationManager NavigationManager { get; set; } = null!;
+	
+	private List<Profile> _profiles = [];
+
+	protected override async Task OnInitializedAsync()
+	{
+		var getProfiles = await Sender.Send(new GetAllProfiles.Query());
+		if (getProfiles.IsSuccess)
+		{
+			_profiles = getProfiles.Value;
+		}
+		else
+		{
+			// Handle error, e.g., show a message to the user
+			Console.WriteLine("Failed to load profiles: " + getProfiles.Error);
+		}
+	}
+
+	private void SelectProfile(Profile profile)
+	{
+		Program.SelectedProfile = profile;
+		NavigationManager.NavigateTo(Urls.Shelf);
+	}
+
+}
