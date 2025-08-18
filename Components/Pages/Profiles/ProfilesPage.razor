@@ -1,4 +1,6 @@
-﻿@using BookHeaven.Domain.Features.Profiles
+﻿@using System.Text.Json
+@using System.Text.Json.Serialization
+@using BookHeaven.Domain.Features.Profiles
 @using BookHeaven.Server.Abstractions
 @attribute [Route(Urls.Profiles)]
 @layout SimpleLayout
@@ -10,18 +12,29 @@
 	return;
 }
 
-@if (_layout == Layout.Select)
-{
-	<SectionContent SectionName="Tools">
-		<MudButton Variant="Variant.Outlined" OnClick="() => _layout = Layout.Manage">
-			Manage Profiles
-		</MudButton>
-	</SectionContent>
-}
+<SectionContent SectionName="Tools">
+
+	@switch (_layout)
+	{
+		case Layout.Select:
+			<MudButton Variant="Variant.Outlined" OnClick="() => _layout = Layout.Manage">
+				Manage Profiles
+			</MudButton>
+			break;
+		case Layout.Manage:
+			<MudButton
+				OnClick="() => _layout = Layout.Select"
+				Class="w-[150px]"
+				Variant="Variant.Outlined">
+				Done
+			</MudButton>
+			break;
+	}
+</SectionContent>
 
 
-<div class="flex flex-col justify-center h-full">
-	<h1 class="text-center text-4xl">
+<div class="flex flex-col items-center h-full">
+	<h1 class="text-center text-2xl md:text-4xl animate-fade-in mt-10">
 		@switch (_layout)
 		{
 			case Layout.Select:
@@ -32,17 +45,25 @@
 				break;
 		}
 	</h1>
-	<div class="flex items-center justify-center gap-10 my-30">
+	<div class="grid grid-cols-2 lg:grid-cols-4 items-center gap-10 mt-20 2xl:mt-30">
 		@foreach (var profile in _profiles)
 		{
 			<button
-				class="animate-zoom-in animate-duration-300 size-44 rounded-full flex items-center justify-center bg-slate-500 hover:bg-slate-400 transition-colors active:scale-95  @(profile.ProfileId == _selectedProfileId ? "outline-4 outline-(--mud-palette-primary) shadow-[0_0_25px_var(--mud-palette-primary)]" : "")"
+				class="relative group animate-zoom-in animate-duration-300 size-32 md:size-44 rounded-full flex items-center justify-center bg-slate-600 transition-all active:scale-95 outline-(--mud-palette-primary) hover:outline-4  @(profile.ProfileId == _selectedProfileId ? "outline-4 shadow-[0_0_25px_var(--mud-palette-primary)]" : "")"
 				@onclick="() => SelectProfile(profile)">
-				<span class="text-2xl">@profile.Name</span>
+				<span class="text-lg 2xl:text-2xl">@profile.Name</span>
+				@if (_layout is Layout.Manage)
+				{
+					<span class="absolute end-0 bottom-0 size-12 bg-slate-700 group-hover:bg-slate-200 group-hover:text-slate-700 flex items-center justify-center rounded-full transition-colors">
+						<MudIcon Icon="@Icons.Material.Filled.Edit" />
+					</span>
+				}
 			</button>
 		}
-		<button class="animate-zoom-in animate-duration-300 size-44 rounded-full flex items-center justify-center text-slate-400 bg-slate-700">
-			<MudIcon Icon="@Icons.Material.Filled.Add" Class="size-24"/>
+		<button 
+			@onclick="() => NavigationManager.NavigateTo(Urls.CreateProfile)"
+			class="animate-zoom-in animate-duration-300 size-32 md:size-44 rounded-full flex items-center justify-center text-slate-400 bg-slate-700 hover:bg-slate-600 hover:text-slate-300 transition-colors">
+			<MudIcon Icon="@Icons.Material.Filled.Add" Class="size-12 2xl:size-24"/>
 		</button>
 	</div>
 </div>
@@ -89,9 +110,8 @@
 				NavigationManager.NavigateTo(Urls.Shelf);
 				break;
 			case Layout.Manage:
-				_selectedProfileId = profile.ProfileId;
+				NavigationManager.NavigateTo(Urls.GetProfileUrl(profile.ProfileId));
 				break;
 		}
 	}
-
 }
