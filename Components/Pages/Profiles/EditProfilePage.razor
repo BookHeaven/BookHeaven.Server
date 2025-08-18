@@ -1,0 +1,117 @@
+﻿@using BookHeaven.Domain.Features.Profiles
+@attribute [Route($"{Urls.Profiles}/{{Id:guid}}")]
+@attribute [Route(Urls.CreateProfile)]
+@layout SimpleLayout
+
+@if (_profile is null)
+{
+	return;
+}
+
+@if (_profile.ProfileId != Guid.Empty)
+{
+	<SectionContent SectionName="Tools">
+		<MudButton
+			StartIcon="@Icons.Material.Filled.Delete"
+			OnClick="Delete"
+			Variant="Variant.Outlined"
+			Color="Color.Error">
+			Delete
+		</MudButton>
+	</SectionContent>
+}
+
+<div class="w-[400px] mx-auto">
+	<h1 class="text-center text-2xl md:text-4xl animate-fade-in mt-10">
+		@if (_profile.ProfileId == Guid.Empty)
+		{
+			@:Create Profile
+		}
+		else
+		{
+			@:Edit Profile
+		}
+	</h1>
+	<MudTextField 
+		Required="true"
+		Class="mt-20 2xl:mt-30"
+		Label="Name" 
+		@bind-Value="_profile.Name"
+		Variant="Variant.Outlined"/>
+	<MudButton
+		OnClick="Save"
+		Class="mt-10"
+		Variant="Variant.Filled"
+		Color="Color.Primary"
+		FullWidth="true">
+		Save
+	</MudButton>
+</div>
+
+
+@code {
+	[Inject] private ISender Sender { get; set; } = null!;
+	[Inject] private NavigationManager NavigationManager { get; set; } = null!;
+	[Inject] private IDialogService DialogService { get; set; } = null!;
+	
+	[Parameter] public Guid? Id { get; set; }
+
+	private Profile? _profile = new();
+
+	protected override async Task OnInitializedAsync()
+	{
+		if (Id is not null)
+		{
+			var getProfile = await Sender.Send(new GetProfileById.Query(Id.Value));
+			if (getProfile.IsSuccess)
+			{
+				_profile = getProfile.Value;
+			}
+			else
+			{
+				// Handle error, e.g., redirect or show a message
+				Console.WriteLine(getProfile.Error);
+			}
+		}
+	}
+
+	private async Task Save()
+	{
+		if(string.IsNullOrEmpty(_profile!.Name)) return;
+		
+		
+		if (_profile!.ProfileId == Guid.Empty)
+		{
+			var createProfile = await Sender.Send(new CreateProfile.Command(_profile.Name));
+		}
+		else
+		{
+			var updateProfile = await Sender.Send(new UpdateProfileName.Command(_profile.ProfileId, _profile.Name));
+		}
+		NavigationManager.NavigateTo(Urls.Profiles);
+	}
+	
+	private async Task Delete()
+	{
+
+		var result = await DialogService.ShowMessageBox(
+			"Warning",
+			"Are you sure you want to delete this profile? This action cannot be undone. You will lose all data associated with this profile, including progress.",
+			yesText: "Yes",
+			cancelText: "No");
+		
+		if (result is not true) return;
+
+		var deleteProfile = await Sender.Send(new DeleteProfile.Command(_profile!.ProfileId));
+		if (deleteProfile.IsSuccess)
+		{
+			NavigationManager.NavigateTo(Urls.Profiles);
+		}
+		else
+		{
+			Console.WriteLine(deleteProfile.Error);
+			// Handle error, e.g., show a message to the user
+		}
+	}
+
+}
