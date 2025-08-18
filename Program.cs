@@ -52,7 +52,7 @@ public class Program
 			ActionDisabled = "#595959",
 			HoverOpacity = 0.1,
 			PrimaryContrastText = "#000000",
-			TertiaryContrastText = "#000000",
+			TertiaryContrastText = "#FFFFFF",
 			SecondaryContrastText = "#000000",
 			WarningContrastText = "#000000",
 			TableLines = "#4a5d6d"
