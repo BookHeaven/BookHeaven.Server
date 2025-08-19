@@ -219,4 +219,19 @@
   <data name="SHELF_FILTER_NO_RESULTS" xml:space="preserve">
     <value>No hay libros que coincidan con el filtro actual</value>
   </data>
+  <data name="PROFILES" xml:space="preserve">
+    <value>Perfiles</value>
+  </data>
+  <data name="PROFILES_MANAGE" xml:space="preserve">
+    <value>Administrar perfiles</value>
+  </data>
+  <data name="DONE" xml:space="preserve">
+    <value>Listo</value>
+  </data>
+  <data name="PROFILES_CREATE_FIRST" xml:space="preserve">
+    <value>Crea tu primer perfil</value>
+  </data>
+  <data name="PROFILES_SELECT" xml:space="preserve">
+    <value>Selecciona tu perfil</value>
+  </data>
 </root>

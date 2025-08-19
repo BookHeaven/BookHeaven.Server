@@ -5,7 +5,7 @@
 @attribute [Route(Urls.Profiles)]
 @layout SimpleLayout
 
-<PageTitle>Profiles</PageTitle>
+<PageTitle>@Translations.PROFILES</PageTitle>
 
 @if (!_isLoaded)
 {
@@ -18,7 +18,7 @@
 	{
 		case Layout.Select:
 			<MudButton Variant="Variant.Outlined" OnClick="() => _layout = Layout.Manage">
-				Manage Profiles
+				@Translations.PROFILES_MANAGE
 			</MudButton>
 			break;
 		case Layout.Manage:
@@ -26,7 +26,7 @@
 				OnClick="() => _layout = Layout.Select"
 				Class="w-[150px]"
 				Variant="Variant.Outlined">
-				Done
+				@Translations.DONE
 			</MudButton>
 			break;
 	}
@@ -40,15 +40,15 @@
 			case Layout.Select:
 				if (_profiles.Count == 0)
 				{
-					@:Create your first profile
+					@Translations.PROFILES_CREATE_FIRST
 				}
 				else
 				{
-					@:Select your profile
+					@Translations.PROFILES_SELECT
 				}
 				break;
 			case Layout.Manage:
-				@:Manage profiles
+				@Translations.PROFILES_MANAGE
 				break;
 		}
 	</h1>

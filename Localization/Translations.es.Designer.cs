@@ -141,6 +141,15 @@ namespace BookHeaven.Server.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Listo.
+        /// </summary>
+        public static string DONE {
+            get {
+                return ResourceManager.GetString("DONE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Descargar.
         /// </summary>
         public static string DOWNLOAD {
@@ -209,6 +218,42 @@ namespace BookHeaven.Server.Localization {
         public static string NAME {
             get {
                 return ResourceManager.GetString("NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Perfiles.
+        /// </summary>
+        public static string PROFILES {
+            get {
+                return ResourceManager.GetString("PROFILES", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Crea tu primer perfil.
+        /// </summary>
+        public static string PROFILES_CREATE_FIRST {
+            get {
+                return ResourceManager.GetString("PROFILES_CREATE_FIRST", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Administrar perfiles.
+        /// </summary>
+        public static string PROFILES_MANAGE {
+            get {
+                return ResourceManager.GetString("PROFILES_MANAGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selecciona tu perfil.
+        /// </summary>
+        public static string PROFILES_SELECT {
+            get {
+                return ResourceManager.GetString("PROFILES_SELECT", resourceCulture);
             }
         }
         
