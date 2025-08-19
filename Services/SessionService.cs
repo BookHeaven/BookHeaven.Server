@@ -17,12 +17,25 @@ public class SessionService(ProtectedLocalStorage storage) : ISessionService
 
     public async Task<T?> GetAsync<T>(SessionKey key)
     {
-        var result = await storage.GetAsync<T>(key.ToString());
-        return result.Success ? result.Value : default;
+        try
+        {
+            var result = await storage.GetAsync<T>(key.ToString());
+            return result.Success ? result.Value : default;
+        }
+        catch (Exception ex)
+        {
+            return default;
+        }
+        
     }
 
     public async Task RemoveAsync(SessionKey key)
     {
-        await storage.DeleteAsync(key.ToString());
+        try
+        {
+            await storage.DeleteAsync(key.ToString());
+        }
+        catch {}
+        
     }
 }
