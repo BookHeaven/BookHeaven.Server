@@ -24,10 +24,10 @@
 
 <Topbar>
 	<MudChipSet T="BookStatus" @bind-SelectedValue="BookManager.Filter" Class="mx-2" CheckMark>
-		<MudChip Value="BookStatus.All" Variant="Variant.Text" Color="Color.Primary">All</MudChip>	
-		<MudChip Value="BookStatus.New" Variant="Variant.Text" Color="Color.Primary">New</MudChip>
-		<MudChip Value="BookStatus.Reading" Variant="Variant.Text" Color="Color.Primary">Reading</MudChip>
-		<MudChip Value="BookStatus.Finished" Variant="Variant.Text" Color="Color.Primary">Finished</MudChip>
+		<MudChip Value="BookStatus.All" Variant="Variant.Text" Color="Color.Primary">@BookStatus.All.StringValue()</MudChip>	
+		<MudChip Value="BookStatus.New" Variant="Variant.Text" Color="Color.Primary">@BookStatus.New.StringValue()</MudChip>
+		<MudChip Value="BookStatus.Reading" Variant="Variant.Text" Color="Color.Primary">@BookStatus.Reading.StringValue()</MudChip>
+		<MudChip Value="BookStatus.Finished" Variant="Variant.Text" Color="Color.Primary">@BookStatus.Finished.StringValue()</MudChip>
 	</MudChipSet>
 </Topbar>
 
