@@ -17,7 +17,7 @@
 @if (BookManager.IsEmpty)
 {
 	<div class="absolute inset-0 flex items-center justify-center">
-		<span class="text-4xl">Your shelf is empty</span>
+		<span class="text-4xl">@Translations.SHELF_EMPTY</span>
 	</div>
 	return;
 }
@@ -38,7 +38,7 @@
 else
 {
 	<div class="absolute inset-0 flex items-center justify-center">
-		<span class="text-4xl">No books matching the selected filter</span>
+		<span class="text-4xl">@Translations.SHELF_FILTER_NO_RESULTS</span>
 	</div>
 }
 

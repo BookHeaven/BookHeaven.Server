@@ -312,6 +312,24 @@ namespace BookHeaven.Server.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Tu estantería está vacía.
+        /// </summary>
+        public static string SHELF_EMPTY {
+            get {
+                return ResourceManager.GetString("SHELF_EMPTY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No hay libros que coincidan con el filtro actual.
+        /// </summary>
+        public static string SHELF_FILTER_NO_RESULTS {
+            get {
+                return ResourceManager.GetString("SHELF_FILTER_NO_RESULTS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Fecha Inicio.
         /// </summary>
         public static string START_DATE {

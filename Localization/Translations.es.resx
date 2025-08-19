@@ -213,4 +213,10 @@
   <data name="LAST_READ" xml:space="preserve">
     <value>Última lectura</value>
   </data>
+  <data name="SHELF_EMPTY" xml:space="preserve">
+    <value>Tu estantería está vacía</value>
+  </data>
+  <data name="SHELF_FILTER_NO_RESULTS" xml:space="preserve">
+    <value>No hay libros que coincidan con el filtro actual</value>
+  </data>
 </root>

@@ -213,4 +213,10 @@
   <data name="LAST_READ" xml:space="preserve">
     <value>Last read</value>
   </data>
+  <data name="SHELF_EMPTY" xml:space="preserve">
+    <value>Your shelf is empty</value>
+  </data>
+  <data name="SHELF_FILTER_NO_RESULTS" xml:space="preserve">
+    <value>No books matching the selected filter</value>
+  </data>
 </root>
