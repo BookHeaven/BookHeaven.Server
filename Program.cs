@@ -155,22 +155,6 @@ public class Program
 		app.MapRazorComponents<App>()
 			.AddInteractiveServerRenderMode();
 
-		using (var scope = app.Services.CreateScope())
-		{
-			// Create default profile if it doesn't exist
-			var sender = scope.ServiceProvider.GetRequiredService<ISender>();
-
-			var profileQuery = await sender.Send(new GetDefaultProfile.Query());
-			if(profileQuery.IsFailure)
-			{
-				var createProfile = await sender.Send(new CreateProfile.Command("Default"));
-				if (createProfile.IsFailure)
-				{
-					throw new Exception(createProfile.Error.Description);
-				}
-			}
-		}
-
 		app.Use(async (context, next) =>
 		{
 			if (context.Request.Path == "/")
