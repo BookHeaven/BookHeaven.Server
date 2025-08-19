@@ -16,11 +16,6 @@ namespace BookHeaven.Server.Services
 {
 	public class EpubService(IEpubReader epubReader, ISender sender, ILogger<EpubService> logger) : IFormatService<EpubBook>
 	{
-		public async Task<EpubBook> GetMetadata(string path)
-		{
-			return await epubReader.ReadMetadataAsync(path);
-		}
-
 		public async Task<Guid?> LoadFromFile(IBrowserFile file)
 		{
 			Guid? id;
@@ -50,7 +45,7 @@ namespace BookHeaven.Server.Services
 			Guid? seriesId = null;
 			
 			
-			var epubBook = await GetMetadata(path);
+			var epubBook = await epubReader.ReadMetadataAsync(path);
 			// Book? book = await databaseService.GetBy<Book>(x => x.Title!.Equals(epubBook.Metadata.Title));
 			
 			var getBook = await sender.Send(new GetBook.Query(null, epubBook.Metadata.Title));
