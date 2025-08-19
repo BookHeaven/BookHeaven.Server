@@ -54,7 +54,7 @@ else
 	{
 		var profileId = await SessionService.GetAsync<Guid>(SessionKey.SelectedProfileId);
 		
-		await BookManager.GetBooks(profileId);
+		await BookManager.GetBooksAsync(profileId);
 		IsLoading = false;
 	}
 
