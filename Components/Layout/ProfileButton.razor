@@ -1,0 +1,21 @@
+﻿@using BookHeaven.Domain.Features.Profiles
+@using BookHeaven.Server.Abstractions
+<div class="flex items-center justify-between px-5 mt-auto m-5 border-2 border-slate-700 rounded-lg">
+	<span>@ProfileName</span>
+	<MudIconButton Icon="@Icons.Material.Filled.Person" Edge="Edge.End" Href="@Urls.Profiles" Color="Color.Secondary" />
+</div>
+
+@code {
+	[Inject] private ISessionService SessionService { get; set; } = null!;
+	[Inject] private ISender Sender { get; set; } = null!;
+	
+	private string ProfileName { get; set; } = string.Empty;
+
+	protected override async Task OnInitializedAsync()
+	{
+		var profileId = await SessionService.GetAsync<Guid>(SessionKey.SelectedProfileId);
+		var getProfile = await Sender.Send(new GetProfileById.Query(profileId));
+		ProfileName = getProfile.Value.Name ?? "Unknown Profile";
+	}
+
+}
