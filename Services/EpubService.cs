@@ -144,16 +144,20 @@ namespace BookHeaven.Server.Services
 		public async Task StoreCover(byte[]? image, string dest)
 		{
 			if (image == null) return;
+			var dir = Path.GetDirectoryName(dest);
+			if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir)) Directory.CreateDirectory(dir);
 			await File.WriteAllBytesAsync(dest, image);
 		}
 
 		public async Task StoreBook(string? sourcePath, string dest)
 		{
 			if (sourcePath == null) return;
-            await using var source = File.OpenRead(sourcePath);
-            await using var destination = File.Create(dest);
-            await source.CopyToAsync(destination);
-        }
+			var dir = Path.GetDirectoryName(dest);
+			if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir)) Directory.CreateDirectory(dir);
+			await using var source = File.OpenRead(sourcePath);
+			await using var destination = File.Create(dest);
+			await source.CopyToAsync(destination);
+		}
 		
 		public static string? GetBookPath(string booksPath, Guid bookId, bool checkPath = false)
 		{
