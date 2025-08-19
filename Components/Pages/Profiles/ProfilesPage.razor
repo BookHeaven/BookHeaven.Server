@@ -38,7 +38,14 @@
 		@switch (_layout)
 		{
 			case Layout.Select:
-				@:Select your profile
+				if (_selectedProfileId == Guid.Empty)
+				{
+					@:Create your first profile
+				}
+				else
+				{
+					@:Select your profile
+				}
 				break;
 			case Layout.Manage:
 				@:Manage profiles
@@ -60,11 +67,15 @@
 				}
 			</button>
 		}
-		<button 
-			@onclick="() => NavigationManager.NavigateTo(Urls.CreateProfile)"
-			class="animate-zoom-in animate-duration-300 size-32 md:size-44 rounded-full flex items-center justify-center text-slate-400 bg-slate-700 hover:bg-slate-600 hover:text-slate-300 transition-colors">
-			<MudIcon Icon="@Icons.Material.Filled.Add" Class="size-12 2xl:size-24"/>
-		</button>
+		@if (_layout is Layout.Select)
+		{
+			<button 
+				@onclick="() => NavigationManager.NavigateTo(Urls.CreateProfile)"
+				class="animate-zoom-in animate-duration-300 size-32 md:size-44 rounded-full flex items-center justify-center text-slate-400 bg-slate-700 hover:bg-slate-600 hover:text-slate-300 transition-colors">
+				<MudIcon Icon="@Icons.Material.Filled.Add" Class="size-12 2xl:size-24"/>
+			</button>
+		}
+		
 	</div>
 </div>
 
