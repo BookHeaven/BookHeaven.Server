@@ -222,6 +222,33 @@ namespace BookHeaven.Server.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Crear perfil.
+        /// </summary>
+        public static string PROFILE_CREATE {
+            get {
+                return ResourceManager.GetString("PROFILE_CREATE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¿De verdad quieres eliminar este perfil? Perderás el progreso de todos los libros para este perfil. Esta acción no se puede deshacer..
+        /// </summary>
+        public static string PROFILE_DELETE_WARNING_MESSAGE {
+            get {
+                return ResourceManager.GetString("PROFILE_DELETE_WARNING_MESSAGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Editar perfil.
+        /// </summary>
+        public static string PROFILE_EDIT {
+            get {
+                return ResourceManager.GetString("PROFILE_EDIT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Perfiles.
         /// </summary>
         public static string PROFILES {

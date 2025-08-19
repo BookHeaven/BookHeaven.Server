@@ -234,4 +234,13 @@
   <data name="PROFILES_SELECT" xml:space="preserve">
     <value>Select your profile</value>
   </data>
+  <data name="PROFILE_CREATE" xml:space="preserve">
+    <value>Create profile</value>
+  </data>
+  <data name="PROFILE_EDIT" xml:space="preserve">
+    <value>Edit profile</value>
+  </data>
+  <data name="PROFILE_DELETE_WARNING_MESSAGE" xml:space="preserve">
+    <value>Are you sure you want to delete this profile? You will lose all progress associated with it. This action cannot be undone.</value>
+  </data>
 </root>

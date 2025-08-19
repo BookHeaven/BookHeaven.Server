@@ -16,7 +16,7 @@
 			OnClick="Delete"
 			Variant="Variant.Outlined"
 			Color="Color.Error">
-			Delete
+			@Domain.Localization.Translations.DELETE
 		</MudButton>
 	</SectionContent>
 }
@@ -25,17 +25,17 @@
 	<h1 class="text-center text-2xl md:text-4xl animate-fade-in mt-10">
 		@if (_profile.ProfileId == Guid.Empty)
 		{
-			@:Create Profile
+			@Translations.PROFILE_CREATE
 		}
 		else
 		{
-			@:Edit Profile
+			@Translations.PROFILE_EDIT
 		}
 	</h1>
 	<MudTextField 
 		Required="true"
 		Class="mt-20 2xl:mt-30"
-		Label="Name" 
+		Label="@Translations.NAME" 
 		@bind-Value="_profile.Name"
 		Variant="Variant.Outlined"/>
 	<MudButton
@@ -44,7 +44,7 @@
 		Variant="Variant.Filled"
 		Color="Color.Primary"
 		FullWidth="true">
-		Save
+		@Translations.SAVE
 	</MudButton>
 </div>
 
@@ -95,10 +95,10 @@
 	{
 
 		var result = await DialogService.ShowMessageBox(
-			"Warning",
-			"Are you sure you want to delete this profile? This action cannot be undone. You will lose all data associated with this profile, including progress.",
-			yesText: "Yes",
-			cancelText: "No");
+			Domain.Localization.Translations.WARNING,
+			Translations.PROFILE_DELETE_WARNING_MESSAGE,
+			yesText: Domain.Localization.Translations.YES,
+			cancelText: Domain.Localization.Translations.NO);
 		
 		if (result is not true) return;
 

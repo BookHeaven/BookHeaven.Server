@@ -234,4 +234,13 @@
   <data name="PROFILES_SELECT" xml:space="preserve">
     <value>Selecciona tu perfil</value>
   </data>
+  <data name="PROFILE_CREATE" xml:space="preserve">
+    <value>Crear perfil</value>
+  </data>
+  <data name="PROFILE_EDIT" xml:space="preserve">
+    <value>Editar perfil</value>
+  </data>
+  <data name="PROFILE_DELETE_WARNING_MESSAGE" xml:space="preserve">
+    <value>¿De verdad quieres eliminar este perfil? Perderás el progreso de todos los libros para este perfil. Esta acción no se puede deshacer.</value>
+  </data>
 </root>
