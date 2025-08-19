@@ -225,10 +225,10 @@ namespace BookHeaven.Server.Components.Pages.Books
 				SeriesIndex = _book.SeriesIndex
 			};
 
-			await EpubWriter.ReplaceMetadata(_book.EpubPath(), metadata);
+			await EpubWriter.ReplaceMetadataAsync(_book.EpubPath(), metadata);
 			if(_newCoverTempPath != null)
 			{
-				await EpubWriter.ReplaceCover(_book.EpubPath(), _book.CoverPath());
+				await EpubWriter.ReplaceCoverAsync(_book.EpubPath(), _book.CoverPath());
 			}
 			_newCoverTempPath = null;
 			_newEpubTempPath = null;
