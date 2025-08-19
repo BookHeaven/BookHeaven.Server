@@ -8,6 +8,20 @@
 <PageTitle>@Translations.SHELF</PageTitle>
 
 <ScrollToTop />
+
+@if (IsLoading)
+{
+	return;
+}
+
+@if (BookManager.IsEmpty)
+{
+	<div class="absolute inset-0 flex items-center justify-center">
+		<span class="text-4xl">Your shelf is empty</span>
+	</div>
+	return;
+}
+
 <Topbar>
 	<MudChipSet T="BookStatus" @bind-SelectedValue="BookManager.Filter" Class="mx-2" CheckMark>
 		<MudChip Value="BookStatus.All" Variant="Variant.Text" Color="Color.Primary">All</MudChip>	
@@ -16,11 +30,6 @@
 		<MudChip Value="BookStatus.Finished" Variant="Variant.Text" Color="Color.Primary">Finished</MudChip>
 	</MudChipSet>
 </Topbar>
-@if (BookManager.IsEmpty)
-{
-	
-	return;
-}
 
 @if (BookManager.Books.Count > 0)
 {
@@ -29,7 +38,7 @@
 else
 {
 	<div class="absolute inset-0 flex items-center justify-center">
-		No books matching the selected filter.
+		<span class="text-4xl">No books matching the selected filter</span>
 	</div>
 }
 
