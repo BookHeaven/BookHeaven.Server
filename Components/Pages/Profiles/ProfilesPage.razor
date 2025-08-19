@@ -38,7 +38,7 @@
 		@switch (_layout)
 		{
 			case Layout.Select:
-				if (_selectedProfileId == Guid.Empty)
+				if (_profiles.Count == 0)
 				{
 					@:Create your first profile
 				}
