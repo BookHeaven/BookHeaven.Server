@@ -20,7 +20,21 @@ jobs:
       uses: actions/checkout@v4
       with:
         fetch-depth: 0  # Fetch all history for accurate versioning
-      
+
+    - name: Get version
+      id: get-version
+      run: |
+        VERSION=$(nbgv get-version | grep NuGetPackageVersion | cut -d ':' -f2 | xargs)
+        echo "Version: $VERSION"
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+    - name: Check if Docker image version exists
+      run: |
+        if docker manifest inspect ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }} > /dev/null 2>&1; then
+          echo "Version ${{ env.VERSION }} already exists. Exiting run."
+          exit 0
+        fi
+
     - name: Setup node js
       uses: actions/setup-node@v3
       with:
@@ -52,14 +66,6 @@ jobs:
     - name: Build tailwindcss
       working-directory: ./BookHeaven/BookHeaven.Server
       run: npm run tailwindcss:build
-
-    - name: Get version
-      id: get-version
-      working-directory: ./BookHeaven/BookHeaven.Server
-      run: |
-        VERSION=$(nbgv get-version | grep NuGetPackageVersion | cut -d ':' -f2 | xargs)
-        echo "Version: $VERSION"
-        echo "VERSION=$VERSION" >> $GITHUB_ENV
 
     - name: Build Docker image
       run: |
