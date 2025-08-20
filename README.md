@@ -14,6 +14,7 @@ You can also add fonts so they can be easily downloaded and used by your devices
 
 ## Features
 - **Modern and responsive UI**
+- **Auto discovery**: The server can be discovered by the client app automatically, so you don't have to manually configure it.
 - **Metadata handling (title, author, etc)**. Metadata is read from the ebook itself and editable at any time. Any changes, including the cover, are persisted into the file as well.
 - **Progress tracking**[^1]. You can check the progress of your books at any given time, but also set it manually.
 - **Font types management**[^2]. Any font that you configure will be made available for your devices to easily download and use.
@@ -51,3 +52,32 @@ services:
 
 ## API definition
 Coming soon
+
+## Screenshots
+Bear in mind that the UI and features are still a work in progress, so the screenshots may might differ slightly.
+<table>
+    <tr>
+        <td>
+            <img src="screenshots/profiles.png" alt="Profiles" />
+        </td>
+        <td>
+            <img src="screenshots/shelf.png" alt="Shelf" />
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <img src="screenshots/book.png" alt="Book page" />
+        </td>
+        <td>
+            <img src="screenshots/book_edit.png" alt="Book editing" />
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <img src="screenshots/settings.png" alt="Settings" />
+        </td>
+        <td>
+            <img src="screenshots/settings_font.png" alt="Font management" />
+        </td>
+    </tr>
+</table>
