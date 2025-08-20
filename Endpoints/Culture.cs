@@ -1,22 +1,29 @@
-﻿using Microsoft.AspNetCore.Localization;
+﻿using BookHeaven.Server.Abstractions.Api;
+using Microsoft.AspNetCore.Localization;
 
 namespace BookHeaven.Server.Endpoints;
 
 public static class Culture
 {
-    public static void MapCultureEndpoint(this IEndpointRouteBuilder app)
+    public class Endpoint : IEndpoint
     {
-        app.MapGet("/culture/set", (string? culture, string redirectUri, HttpContext context) =>
+        public void MapEndpoint(IEndpointRouteBuilder app)
         {
-            if (culture != null)
-            {
-                context.Response.Cookies.Append(
-                    CookieRequestCultureProvider.DefaultCookieName,
-                    CookieRequestCultureProvider.MakeCookieValue(
-                        new RequestCulture(culture, culture)));
-            }
+            app.MapGet(
+                    "/culture/set",
+                    (string? culture, string redirectUri, HttpContext context) =>
+                    {
+                        if (culture != null)
+                        {
+                            context.Response.Cookies.Append(
+                                CookieRequestCultureProvider.DefaultCookieName,
+                                CookieRequestCultureProvider.MakeCookieValue(
+                                    new RequestCulture(culture, culture)));
+                        }
 
-            return Results.Redirect(redirectUri);
-        });
+                        return Results.Redirect(redirectUri);
+                    })
+                .ExcludeFromDescription();
+        }
     }
 }

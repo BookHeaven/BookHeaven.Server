@@ -12,7 +12,15 @@ public static class ApiUpdateProfileSettings
     {
         public void MapEndpoint(IEndpointRouteBuilder app)
         {
-            app.MapPost("/profile/settings/update", ApiHandler);
+            app.MapPut("/profile/settings/update", ApiHandler)
+                .WithName("UpdateProfileSettings")
+                .WithSummary("Updates the profile settings for a given profile ID.")
+                .WithDescription("This endpoint allows you to update the profile settings for a specific profile. " +
+                                 "If the profile settings do not exist, they will be created.")
+                .Produces(StatusCodes.Status200OK)
+                .ProducesProblem(StatusCodes.Status500InternalServerError)
+                .Accepts<ProfileSettings>("application/json")
+                .WithTags("Profiles");
         }
         
         private static async Task<IResult> ApiHandler(

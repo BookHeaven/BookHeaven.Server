@@ -12,7 +12,14 @@ public static class ApiUpdateBookProgress
     {
         public void MapEndpoint(IEndpointRouteBuilder app)
         {
-            app.MapPost("/progress/update", ApiHandler);
+            app.MapPut("/progress/update", ApiHandler)
+                .WithName("UpdateBookProgress")
+                .WithTags("Book Progress")
+                .Produces(StatusCodes.Status200OK)
+                .ProducesProblem(StatusCodes.Status500InternalServerError)
+                .Accepts<BookProgress>("application/json")
+                .WithSummary("Updates the reading progress of a book for a user profile.")
+                .WithDescription("This endpoint allows updating the last read timestamp of a book's progress. If the provided last read time is older than or equal to the existing one, the update is skipped.");
         }
 
         private static async Task<IResult> ApiHandler(

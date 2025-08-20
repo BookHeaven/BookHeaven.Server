@@ -1,4 +1,5 @@
-﻿using BookHeaven.Domain.Features.Profiles;
+﻿using BookHeaven.Domain.Entities;
+using BookHeaven.Domain.Features.Profiles;
 using BookHeaven.Server.Abstractions.Api;
 using MediatR;
 
@@ -10,7 +11,13 @@ public static class ApiGetAllProfiles
     {
         public void MapEndpoint(IEndpointRouteBuilder app)
         {
-            app.MapGet("/profiles", ApiHandler);
+            app.MapGet("/profiles", ApiHandler)
+                .WithName("GetAllProfiles")
+                .WithTags("Profiles")
+                .Produces<List<Profile>>()
+                .ProducesProblem(StatusCodes.Status500InternalServerError)
+                .WithSummary("Get all profiles")
+                .WithDescription("Returns a list of all profiles in the system.");
         }
         
         private static async Task<IResult> ApiHandler(

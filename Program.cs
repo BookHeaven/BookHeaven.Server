@@ -17,6 +17,7 @@ using BookHeaven.Server.Endpoints;
 using BookHeaven.Server.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.DataProtection;
+using Scalar.AspNetCore;
 
 namespace BookHeaven.Server;
 
@@ -106,6 +107,8 @@ public class Program
 		// Add endpoints
 		builder.Services.AddEndpoints(typeof(Program).Assembly);
 
+		builder.Services.AddOpenApi();
+
 		var app = builder.Build();
 			
 		var supportedCultures = new[]{ "en-US", "es-ES" };
@@ -166,12 +169,14 @@ public class Program
 				await next();
 			}
 		});
-			
-		app.MapCultureEndpoint();
-			
-		var mapGroup = app.MapGroup("/api");
-		mapGroup.MapGet("ping", () => Results.Ok());
-		app.MapEndpoints(mapGroup);
+		
+		app.MapEndpoints();
+
+		if (app.Environment.IsDevelopment())
+		{
+			app.MapOpenApi();
+			app.MapScalarApiReference();
+		}
 
 		await app.RunAsync();
 	}

@@ -10,7 +10,13 @@ public static class ApiGetAllBooks
     {
         public void MapEndpoint(IEndpointRouteBuilder app)
         {
-            app.MapGet("/books", ApiHandler);
+            app.MapGet("/books", ApiHandler)
+                .WithName("GetAllBooks")
+                .WithTags("Books")
+                .WithSummary("Get all books")
+                .WithDescription("Retrieves a list of all books in the system.")
+                .Produces<List<Domain.Entities.Book>>()
+                .ProducesProblem(StatusCodes.Status500InternalServerError);
         }
         
         private static async Task<IResult> ApiHandler(
