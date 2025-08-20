@@ -69,6 +69,6 @@
 	private async Task Save()
 	{
 		await SettingsManager.SaveSettingsAsync(_serverSettings);
-		NavigationManager.NavigateTo($"Culture/Set?culture={Uri.EscapeDataString(_serverSettings.Culture)}&redirectUri={Uri.EscapeDataString(Urls.Settings)}", forceLoad: true);
+		NavigationManager.NavigateTo($"api/culture/set?culture={Uri.EscapeDataString(_serverSettings.Culture)}&redirectUri={Uri.EscapeDataString(Urls.Settings)}", forceLoad: true);
 	}
 }
