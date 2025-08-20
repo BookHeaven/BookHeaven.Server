@@ -41,6 +41,10 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Translations.resx</DependentUpon>
     </Compile>
+    <Compile Remove="screenshots\**" />
+    <EmbeddedResource Remove="screenshots\**" />
+    <Content Remove="screenshots\**" />
+    <None Remove="screenshots\**" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="wwwroot\logo.svg" />
