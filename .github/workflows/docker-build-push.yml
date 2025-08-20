@@ -7,14 +7,13 @@ on:
 jobs:
   check-version:
     runs-on: ubuntu-latest
+    continue-on-error: false
     outputs:
       version: ${{ steps.get-version.outputs.version }}
       exists: ${{ steps.check-image.outputs.exists }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Get version
         id: get-version
@@ -22,11 +21,14 @@ jobs:
           VERSION=$(nbgv get-version | grep NuGetPackageVersion | cut -d ':' -f2 | xargs)
           echo "Version: $VERSION"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
+          
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.repository_owner }}" --password-stdin
 
       - name: Check if Docker image version exists
         id: check-image
         run: |
-          if docker manifest inspect ghcr.io/bookheaven/bookheaven-server:${{ steps.get-version.outputs.version }} > /dev/null 2>&1; then
+          if docker pull ghcr.io/bookheaven/bookheaven-server:${{ steps.get-version.outputs.version }} > /dev/null 2>&1; then
             echo "exists=true" >> $GITHUB_OUTPUT
           else
             echo "exists=false" >> $GITHUB_OUTPUT
@@ -43,8 +45,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+        
       - name: Setup node js
         uses: actions/setup-node@v3
         with:
