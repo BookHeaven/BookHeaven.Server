@@ -46,33 +46,39 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        
+
       - name: Setup node js
         uses: actions/setup-node@v3
         with:
           node-version: latest
           cache: 'npm'
+          
       - name: Move Server to BookHeaven directory
         run: |
           mkdir -p BookHeaven/BookHeaven.Server
           shopt -s extglob
           mv !(BookHeaven) BookHeaven/BookHeaven.Server/
+          
       - name: Clone EpubManager
         run: |
           git clone https://${{ secrets.PAT_TOKEN }}@github.com/BookHeaven/BookHeaven.EpubManager.git temp/BookHeaven.EpubManager
           mkdir -p BookHeaven/BookHeaven.EpubManager
           mv temp/BookHeaven.EpubManager/* BookHeaven/BookHeaven.EpubManager/
+          
       - name: Clone BookHeaven.Domain
         run: |
           git clone https://${{ secrets.PAT_TOKEN }}@github.com/BookHeaven/BookHeaven.Domain.git temp/BookHeaven.Domain
           mkdir -p BookHeaven/BookHeaven.Domain
           mv temp/BookHeaven.Domain/* BookHeaven/BookHeaven.Domain/
+          
       - name: Install npm packages
         working-directory: ./BookHeaven/BookHeaven.Server
         run: npm ci
+        
       - name: Build tailwindcss
         working-directory: ./BookHeaven/BookHeaven.Server
         run: npm run tailwindcss:build
+        
       - name: Build Docker image
         run: |
           docker build ./BookHeaven \
@@ -80,7 +86,9 @@ jobs:
           --file BookHeaven/BookHeaven.Server/Dockerfile \
           --tag ${{env.REGISTRY}}/${{ env.IMAGE_NAME }}:latest \
           --tag ${{env.REGISTRY}}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
+          
       - name: Log in to GitHub Container Registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.repository_owner }}" --password-stdin
+        
       - name: Push Docker image
         run: docker push ${{env.REGISTRY}}/${{ env.IMAGE_NAME }} --all-tags
