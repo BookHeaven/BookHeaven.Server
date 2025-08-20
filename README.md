@@ -54,7 +54,7 @@ services:
 Coming soon
 
 ## Screenshots
-Bear in mind that the UI and features are still a work in progress, so the screenshots may might differ slightly.
+Bear in mind that the UI and features are still a work in progress, so the screenshots may differ slightly.
 <table>
     <tr>
         <td>
