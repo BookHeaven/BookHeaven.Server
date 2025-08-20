@@ -16,6 +16,7 @@ You can also add fonts so they can be easily downloaded and used by your devices
 - **Modern and responsive UI**
 - **Auto discovery**: The server can be discovered by the client app automatically, so you don't have to manually configure it.
 - **Metadata handling (title, author, etc)**. Metadata is read from the ebook itself and editable at any time. Any changes, including the cover, are persisted into the file as well.
+- **Metadata fetching**. You can fetch metadata from the internet, which will update the book's metadata and cover (WIP, very experimental).
 - **Progress tracking**[^1]. You can check the progress of your books at any given time, but also set it manually.
 - **Font types management**[^2]. Any font that you configure will be made available for your devices to easily download and use.
 
