@@ -5,78 +5,80 @@ on:
       - main
 
 jobs:
-  build:
+  check-version:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
+    outputs:
+      version: ${{ steps.get-version.outputs.version }}
+      exists: ${{ steps.check-image.outputs.exists }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
+      - name: Get version
+        id: get-version
+        run: |
+          VERSION=$(nbgv get-version | grep NuGetPackageVersion | cut -d ':' -f2 | xargs)
+          echo "Version: $VERSION"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Check if Docker image version exists
+        id: check-image
+        run: |
+          if docker manifest inspect ghcr.io/bookheaven/bookheaven-server:${{ steps.get-version.outputs.version }} > /dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+  build-and-push:
+    runs-on: ubuntu-latest
+    needs: check-version
+    if: needs.check-version.outputs.exists == 'false'
     env:
       REGISTRY: ghcr.io
       IMAGE_NAME: bookheaven/bookheaven-server
-
+      VERSION: ${{ needs.check-version.outputs.version }}
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0  # Fetch all history for accurate versioning
-
-    - name: Get version
-      id: get-version
-      run: |
-        VERSION=$(nbgv get-version | grep NuGetPackageVersion | cut -d ':' -f2 | xargs)
-        echo "Version: $VERSION"
-        echo "VERSION=$VERSION" >> $GITHUB_ENV
-
-    - name: Check if Docker image version exists
-      run: |
-        if docker manifest inspect ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }} > /dev/null 2>&1; then
-          echo "Version ${{ env.VERSION }} already exists. Exiting run."
-          exit 0
-        fi
-
-    - name: Setup node js
-      uses: actions/setup-node@v3
-      with:
-        node-version: latest
-        cache: 'npm'
-
-    - name: Move Server to BookHeaven directory
-      run: |
-        mkdir -p BookHeaven/BookHeaven.Server
-        shopt -s extglob
-        mv !(BookHeaven) BookHeaven/BookHeaven.Server/
-
-    - name: Clone EpubManager
-      run: |
-        git clone https://${{ secrets.PAT_TOKEN }}@github.com/BookHeaven/BookHeaven.EpubManager.git temp/BookHeaven.EpubManager
-        mkdir -p BookHeaven/BookHeaven.EpubManager
-        mv temp/BookHeaven.EpubManager/* BookHeaven/BookHeaven.EpubManager/
-        
-    - name: Clone BookHeaven.Domain
-      run: |
-        git clone https://${{ secrets.PAT_TOKEN }}@github.com/BookHeaven/BookHeaven.Domain.git temp/BookHeaven.Domain
-        mkdir -p BookHeaven/BookHeaven.Domain
-        mv temp/BookHeaven.Domain/* BookHeaven/BookHeaven.Domain/
-        
-    - name: Install npm packages
-      working-directory: ./BookHeaven/BookHeaven.Server
-      run: npm ci
-
-    - name: Build tailwindcss
-      working-directory: ./BookHeaven/BookHeaven.Server
-      run: npm run tailwindcss:build
-
-    - name: Build Docker image
-      run: |
-        docker build ./BookHeaven \
-        --build-arg GOOGLE_BOOKS_API_KEY=${{ secrets.GOOGLE_BOOKS_API_KEY }} \
-        --file BookHeaven/BookHeaven.Server/Dockerfile \
-        --tag ${{env.REGISTRY}}/${{ env.IMAGE_NAME }}:latest \
-        --tag ${{env.REGISTRY}}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
-
-    - name: Log in to GitHub Container Registry
-      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.repository_owner }}" --password-stdin
-
-    - name: Push Docker image
-      run: docker push ${{env.REGISTRY}}/${{ env.IMAGE_NAME }} --all-tags
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup node js
+        uses: actions/setup-node@v3
+        with:
+          node-version: latest
+          cache: 'npm'
+      - name: Move Server to BookHeaven directory
+        run: |
+          mkdir -p BookHeaven/BookHeaven.Server
+          shopt -s extglob
+          mv !(BookHeaven) BookHeaven/BookHeaven.Server/
+      - name: Clone EpubManager
+        run: |
+          git clone https://${{ secrets.PAT_TOKEN }}@github.com/BookHeaven/BookHeaven.EpubManager.git temp/BookHeaven.EpubManager
+          mkdir -p BookHeaven/BookHeaven.EpubManager
+          mv temp/BookHeaven.EpubManager/* BookHeaven/BookHeaven.EpubManager/
+      - name: Clone BookHeaven.Domain
+        run: |
+          git clone https://${{ secrets.PAT_TOKEN }}@github.com/BookHeaven/BookHeaven.Domain.git temp/BookHeaven.Domain
+          mkdir -p BookHeaven/BookHeaven.Domain
+          mv temp/BookHeaven.Domain/* BookHeaven/BookHeaven.Domain/
+      - name: Install npm packages
+        working-directory: ./BookHeaven/BookHeaven.Server
+        run: npm ci
+      - name: Build tailwindcss
+        working-directory: ./BookHeaven/BookHeaven.Server
+        run: npm run tailwindcss:build
+      - name: Build Docker image
+        run: |
+          docker build ./BookHeaven \
+          --build-arg GOOGLE_BOOKS_API_KEY=${{ secrets.GOOGLE_BOOKS_API_KEY }} \
+          --file BookHeaven/BookHeaven.Server/Dockerfile \
+          --tag ${{env.REGISTRY}}/${{ env.IMAGE_NAME }}:latest \
+          --tag ${{env.REGISTRY}}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.repository_owner }}" --password-stdin
+      - name: Push Docker image
+        run: docker push ${{env.REGISTRY}}/${{ env.IMAGE_NAME }} --all-tags
