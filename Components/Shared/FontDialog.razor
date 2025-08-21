@@ -214,10 +214,11 @@
 
 			var file = _files.First(f => f.Name == variant.FileName);
 			var filePath = variant.FilePath();
+			var folderPath = Path.GetDirectoryName(filePath);
 
-			if (!Directory.Exists(variant.FolderPath()))
+			if (!Directory.Exists(folderPath))
 			{
-				Directory.CreateDirectory(variant.FolderPath());
+				Directory.CreateDirectory(folderPath!);
 			}
 
 			await using var fileStream = File.Create(filePath);
