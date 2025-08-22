@@ -52,7 +52,7 @@
 				break;
 		}
 	</h1>
-	<div class="grid grid-cols-2 lg:grid-cols-4 items-center gap-10 mt-20 2xl:mt-30">
+	<div class="grid @(_profiles.Count == 0 ? "grid-cols-1" : "grid-cols-2 lg:grid-cols-4") items-center gap-10 mt-20 2xl:mt-30">
 		@foreach (var profile in _profiles)
 		{
 			<button
