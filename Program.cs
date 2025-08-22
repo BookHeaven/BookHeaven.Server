@@ -101,6 +101,7 @@ public class Program
 		// builder.Services.AddScoped<IMetadataProviderService, OpenLibraryService>();
 		builder.Services.AddScoped<IFormatService<EpubBook>, EpubService>();
 		builder.Services.AddScoped<ISessionService, SessionService>();
+		builder.Services.AddSingleton<EventsService>();
 
 		builder.Services.AddHostedService<UdpBroadcastServer>();
 			
