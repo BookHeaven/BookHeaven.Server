@@ -12,6 +12,7 @@ public class UdpBroadcastServer(ILogger<UdpBroadcastServer> logger) : Background
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        await Task.Yield();
         if (Environment.GetEnvironmentVariable("SERVER_URL") == null)
         {
             logger.LogError("SERVER_URL environment variable is not set, can't start broadcast.");
