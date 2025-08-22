@@ -9,7 +9,6 @@ using BookHeaven.Domain.Features.Tags;
 using BookHeaven.Server.Abstractions;
 using BookHeaven.Server.Constants;
 using BookHeaven.Server.Entities;
-using BookHeaven.Server.Interfaces;
 using BookHeaven.EpubManager;
 using BookHeaven.EpubManager.Epub.Entities;
 using BookHeaven.EpubManager.Epub.Services;
