@@ -3,19 +3,14 @@ using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.FileProviders;
 using MudBlazor.Services;
 using BookHeaven.Server.Components;
-using BookHeaven.Server.Interfaces;
 using BookHeaven.Server.Services;
 using System.Text.Json.Serialization;
 using MudBlazor;
 using BookHeaven.Domain;
 using BookHeaven.Domain.Abstractions;
-using BookHeaven.Domain.Entities;
-using BookHeaven.Domain.Features.Profiles;
 using BookHeaven.EpubManager.Epub.Entities;
 using BookHeaven.Server.Abstractions;
-using BookHeaven.Server.Endpoints;
 using BookHeaven.Server.Extensions;
-using MediatR;
 using Microsoft.AspNetCore.DataProtection;
 using Scalar.AspNetCore;
 
@@ -96,14 +91,16 @@ public class Program
 		builder.Services.AddEpubManager();
 
 		builder.Services.AddTransient<IAlertService, AlertService>();
+		builder.Services.AddTransient<IFormatService<EpubBook>, EpubService>();
 		builder.Services.AddScoped<ISettingsManagerService, SettingsManagerService>();
 		builder.Services.AddScoped<IMetadataProviderService, GoogleBooksService>();
 		// builder.Services.AddScoped<IMetadataProviderService, OpenLibraryService>();
-		builder.Services.AddScoped<IFormatService<EpubBook>, EpubService>();
 		builder.Services.AddScoped<ISessionService, SessionService>();
 		builder.Services.AddSingleton<EventsService>();
 
+		// Background services
 		builder.Services.AddHostedService<UdpBroadcastServer>();
+		builder.Services.AddHostedService<ImportFolderWatcher>();
 			
 		// Add endpoints
 		builder.Services.AddEndpoints(typeof(Program).Assembly);
