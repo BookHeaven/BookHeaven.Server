@@ -48,18 +48,29 @@ else
 	[Inject] private IJSRuntime JsRuntime { get; set; } = null!;
 	[Inject] private BookManager BookManager { get; set; } = null!;
 	[Inject] private ISessionService SessionService { get; set; } = null!;
+	[Inject] private EventsService EventsService { get; set; } = null!;
+	
 	private bool IsLoading { get; set; } = true;
+	private Guid ProfileId { get; set; }
 
 	protected override async Task OnInitializedAsync()
 	{
-		var profileId = await SessionService.GetAsync<Guid>(SessionKey.SelectedProfileId);
+		EventsService.OnBookAdded += OnBookAdded;
+		ProfileId = await SessionService.GetAsync<Guid>(SessionKey.SelectedProfileId);
 		
-		await BookManager.GetBooksAsync(profileId);
+		await BookManager.GetBooksAsync(ProfileId);
 		IsLoading = false;
+	}
+
+	private async void OnBookAdded(Guid bookId)
+	{
+		await BookManager.AppendBookAsync(ProfileId, bookId);
+		await InvokeAsync(StateHasChanged);
 	}
 
 	public void Dispose()
 	{
+		EventsService.OnBookAdded -= OnBookAdded;
 		JsRuntime.InvokeVoidAsync("saveScrollPosition", Urls.Shelf);
 	}
 
