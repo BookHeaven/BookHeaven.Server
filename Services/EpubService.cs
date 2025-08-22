@@ -18,8 +18,8 @@ public class EpubService(IEpubReader epubReader, ISender sender, ILogger<EpubSer
 		Guid? id;
 		try
 		{
-			string tempPath = Path.GetTempFileName();
-			await using (FileStream fileStream = File.Create(tempPath))
+			var tempPath = Path.GetTempFileName();
+			await using (var fileStream = File.Create(tempPath))
 			{
 				await file.OpenReadStream(maxAllowedSize: 1024 * 30000).CopyToAsync(fileStream);
 			}
@@ -127,7 +127,7 @@ public class EpubService(IEpubReader epubReader, ISender sender, ILogger<EpubSer
 
 	public async Task LoadFromFolder(string path)
 	{
-		foreach (string file in Directory.EnumerateFiles(path, "*.epub", SearchOption.AllDirectories))
+		foreach (var file in Directory.EnumerateFiles(path, "*.epub", SearchOption.AllDirectories))
 		{
 			await LoadFromFilePath(file);
 		}
@@ -150,8 +150,8 @@ public class EpubService(IEpubReader epubReader, ISender sender, ILogger<EpubSer
 		await using var destination = File.Create(dest);
 		await source.CopyToAsync(destination);
 	}
-		
-	public static string? GetBookPath(string booksPath, Guid bookId, bool checkPath = false)
+
+	private static string? GetBookPath(string booksPath, Guid bookId, bool checkPath = false)
 	{
 		var path = $"{booksPath}/{bookId}.epub";
 		if (checkPath && !File.Exists(path))
@@ -160,8 +160,8 @@ public class EpubService(IEpubReader epubReader, ISender sender, ILogger<EpubSer
 		}
 		return path;
 	}
-	
-	public static string? GetCoverPath(string coversPath, Guid bookId, bool checkPath = false)
+
+	private static string? GetCoverPath(string coversPath, Guid bookId, bool checkPath = false)
 	{
 		var path = $"{coversPath}/{bookId}.jpg";
 		if (checkPath && !File.Exists(path))
