@@ -88,6 +88,6 @@ Bear in mind that the UI and features are still a work in progress, so the scree
     </tr>
 </table>
 
-## :heart: Credits
+## :package: Credits
 - MudBlazor (https://mudblazor.com)
 - Toolbelt.Blazor.ViewTransition (https://github.com/jsakamoto/Toolbelt.Blazor.ViewTransition/) 
