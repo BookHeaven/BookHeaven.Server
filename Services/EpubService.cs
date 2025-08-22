@@ -11,7 +11,12 @@ using MediatR;
 
 namespace BookHeaven.Server.Services;
 
-public class EpubService(IEpubReader epubReader, ISender sender, ILogger<EpubService> logger) : IFormatService<EpubBook>
+public class EpubService(
+	IEpubReader epubReader, 
+	ISender sender, 
+	ILogger<EpubService> logger,
+	EventsService eventsService)
+	: IFormatService<EpubBook>
 {
 	public async Task<Guid?> LoadFromFile(IBrowserFile file)
 	{
@@ -121,6 +126,8 @@ public class EpubService(IEpubReader epubReader, ISender sender, ILogger<EpubSer
 			
 		await StoreCover(epubBook.Cover, GetCoverPath(Program.CoversPath, createBook.Value)!);
 		await StoreBook(epubBook.FilePath, GetBookPath(Program.BooksPath, createBook.Value)!);
+		
+		eventsService.NotifyBookAdded(createBook.Value);
 			
 		return createBook.Value;
 	}
