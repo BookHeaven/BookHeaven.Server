@@ -1,8 +1,12 @@
 ﻿@using System.Net.Http
 @using System.Net.Http.Json
 @using BookHeaven.Domain.Entities
+@using BookHeaven.Domain.Enums
+@using BookHeaven.Domain.Events
 @using BookHeaven.Domain.Extensions
+@using BookHeaven.Domain.Services
 @using BookHeaven.Server
+@using BookHeaven.Server.Abstractions
 @using BookHeaven.Server.Components
 @using BookHeaven.Server.Components.Layout
 @using BookHeaven.Server.Components.Shared
@@ -11,11 +15,11 @@
 @using BookHeaven.Server.Services
 @using MediatR
 @using Microsoft.AspNetCore.Components.Forms
-@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Routing;
 @using Microsoft.AspNetCore.Components.Sections
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Components.Web.Virtualization
-@using Microsoft.JSInterop;
+@using Microsoft.JSInterop
 @using MudBlazor
 @using Toolbelt.Blazor.ViewTransition
 @using static Microsoft.AspNetCore.Components.Web.RenderMode
