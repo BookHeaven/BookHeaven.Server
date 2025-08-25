@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Components.Forms;
+﻿using BookHeaven.Domain.Events;
+using Microsoft.AspNetCore.Components.Forms;
 using BookHeaven.Domain.Features.Authors;
 using BookHeaven.Domain.Features.Books;
 using BookHeaven.Domain.Features.BooksProgress;
 using BookHeaven.Domain.Features.Profiles;
 using BookHeaven.Domain.Features.Seriess;
+using BookHeaven.Domain.Services;
 using BookHeaven.EpubManager.Epub.Entities;
 using BookHeaven.EpubManager.Epub.Services;
 using BookHeaven.Server.Abstractions;
@@ -15,7 +17,7 @@ public class EpubService(
 	IEpubReader epubReader, 
 	ISender sender, 
 	ILogger<EpubService> logger,
-	EventsService eventsService)
+	GlobalEventsService globalEventsService)
 	: IFormatService<EpubBook>
 {
 	public async Task<Guid?> LoadFromFile(IBrowserFile file)
@@ -127,7 +129,7 @@ public class EpubService(
 		await StoreCover(epubBook.Cover, GetCoverPath(Program.CoversPath, createBook.Value)!);
 		await StoreBook(epubBook.FilePath, GetBookPath(Program.BooksPath, createBook.Value)!);
 		
-		eventsService.NotifyBookAdded(createBook.Value);
+		await globalEventsService.Publish(new BookAdded(createBook.Value));
 			
 		return createBook.Value;
 	}

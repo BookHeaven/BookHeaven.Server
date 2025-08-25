@@ -96,7 +96,6 @@ public class Program
 		builder.Services.AddScoped<IMetadataProviderService, GoogleBooksService>();
 		// builder.Services.AddScoped<IMetadataProviderService, OpenLibraryService>();
 		builder.Services.AddScoped<ISessionService, SessionService>();
-		builder.Services.AddSingleton<EventsService>();
 
 		// Background services
 		builder.Services.AddHostedService<UdpBroadcastServer>();
