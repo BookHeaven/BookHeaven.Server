@@ -53,6 +53,7 @@
 	[Inject] private ISender Sender { get; set; } = null!;
 	[Inject] private NavigationManager NavigationManager { get; set; } = null!;
 	[Inject] private IDialogService DialogService { get; set; } = null!;
+	[Inject] private ISessionService SessionService { get; set; } = null!;
 	
 	[Parameter] public Guid? Id { get; set; }
 
@@ -78,17 +79,24 @@
 	private async Task Save()
 	{
 		if(string.IsNullOrEmpty(_profile!.Name)) return;
+		var skipProfilesPage = false;
 		
 		
 		if (_profile!.ProfileId == Guid.Empty)
 		{
 			var createProfile = await Sender.Send(new CreateProfile.Command(_profile.Name));
+			if (createProfile.Value.TotalProfiles == 1)
+			{
+				await SessionService.SetAsync(SessionKey.SelectedProfileId, createProfile.Value.ProfileId);
+				skipProfilesPage = true;
+			}
 		}
 		else
 		{
 			var updateProfile = await Sender.Send(new UpdateProfileName.Command(_profile.ProfileId, _profile.Name));
 		}
-		NavigationManager.NavigateTo(Urls.Profiles);
+
+		NavigationManager.NavigateTo(skipProfilesPage ? Urls.Shelf : Urls.Profiles);
 	}
 	
 	private async Task Delete()
