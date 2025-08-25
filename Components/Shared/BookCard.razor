@@ -1,9 +1,17 @@
 ﻿@using BookHeaven.Server.Helpers
 <MudCard Elevation="4"
-         Class="group overflow-hidden flex flex-col hover:cursor-pointer"
-         @onclick="@(() => NavigationManager.NavigateTo(Urls.GetBookUrl(Book.BookId)))">
+         Class="group relative overflow-hidden flex flex-col hover:cursor-pointer select-none"
+         @onclick="e => OnBookClicked.InvokeAsync((Book.BookId, e.ShiftKey))">
 
-
+	@if (IsSelectMode)
+	{
+		<span class="absolute top-2 left-2 size-5 @(IsSelected ? "bg-(--mud-palette-tertiary)" : "bg-white") border border-2 border-(--mud-palette-primary) z-10 rounded-full flex items-center justify-center">
+			@if (IsSelected)
+			{
+				<MudIcon Icon="@Icons.Material.Filled.Check" Class="text-xs"/>
+			}
+		</span>
+	}
 	<div class="h-[250px] overflow-hidden">
 		<span class="h-full" style="@Transitions.GetTransitionName("img", Book.BookId)">
 			<MudCardMedia Image="@Book.CoverUrl()" Class="transition-transform !h-full duration-150 group-hover:scale-105"/>
@@ -11,20 +19,21 @@
 	</div>
 	<MudCardContent
 		Class="flex-1 relative flex flex-col gap-1 transition-colors group-hover:bg-slate-700">
-						<span class="absolute z-10 bottom-0 inset-x-0" style="@Transitions.GetTransitionName("progress-bar", Book.BookId)">
-							<MudProgressLinear
-								Color="Color.Primary"
-								Size="Size.Small"
-								Value="@((double)Book.Progress().Progress)"/>
-						</span>
 		<MudText Typo="Typo.body2"><span style="@Transitions.GetTransitionName("title", Book.BookId)">@Book.Title</span></MudText>
 		<MudText Typo="Typo.body2" Color="Color.Secondary"><span style="@Transitions.GetTransitionName("author", Book.BookId)">@Book.Author?.Name</span></MudText>
 		<MudText Typo="Typo.caption" Color="Color.Primary"><span style="@Transitions.GetTransitionName("series", Book.BookId)">@Book.Series?.Name</span></MudText>
+		<span class="absolute z-10 bottom-0 inset-x-0" style="@Transitions.GetTransitionName("progress-bar", Book.BookId)">
+			<MudProgressLinear
+				Color="Color.Primary"
+				Size="Size.Small"
+				Value="@((double)Book.Progress().Progress)"/>
+		</span>
 	</MudCardContent>
 </MudCard>
 
 @code {
-	[Inject] private NavigationManager NavigationManager { get; set; } = null!;
-	
 	[Parameter] public required Book Book { get; set; }
+	[Parameter] public bool IsSelectMode { get; set; } = false;
+	[Parameter] public bool IsSelected { get; set; } = false;
+	[Parameter] public EventCallback<(Guid id, bool shiftPressed)> OnBookClicked { get; set; }
 }

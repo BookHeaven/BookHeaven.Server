@@ -33,7 +33,45 @@
 
 @if (BookManager.Books.Count > 0)
 {
-	<BookGrid Books="BookManager.Books.OrderBy(b => b.Author?.Name).ThenBy(b => b.Series?.Name).ThenBy(b => b.SeriesIndex).ToList()" Center="true" />
+	<BookGrid 
+		Books="BookManager.Books.OrderBy(b => b.Author?.Name).ThenBy(b => b.Series?.Name).ThenBy(b => b.SeriesIndex).ToList()" 
+		Center="true"
+		IsSelectMode="IsSelectMode"
+		@bind-SelectedBooks="_selectedBooks"/>
+	<BottomToolbar>
+		@if (!IsSelectMode)
+		{
+			<MudIconButton 
+				OnClick="ToggleSelectMode"
+				Icon="@Icons.Material.Filled.SelectAll"
+				Variant="Variant.Filled"/>
+			<span>Mass edit mode</span>
+		}
+		else
+		{
+			<MudIconButton 
+				OnClick="ToggleSelectMode"
+				Icon="@Icons.Material.Filled.Deselect"
+				Variant="Variant.Filled" />
+			<MudIconButton 
+				OnClick="() => SelectIconAction.Invoke()"
+				Icon="@SelectIcon"
+				Variant="Variant.Filled" />
+			<MudButton
+				Color="Color.Tertiary"
+				Variant="Variant.Filled">
+				Set Tags
+			</MudButton>
+			<MudButton
+				Color="Color.Tertiary"
+				Variant="Variant.Filled">
+				Edit
+			</MudButton>
+			<MudSpacer/>
+			
+			<span class="ms-auto text-nowrap font-bold">@_selectedBooks.Count selected</span>
+		}
+	</BottomToolbar>
 }
 else
 {
@@ -52,6 +90,23 @@ else
 	
 	private bool IsLoading { get; set; } = true;
 	private Guid ProfileId { get; set; }
+	
+	private bool IsSelectMode { get; set; } = false;
+	private List<Guid> _selectedBooks = [];
+	private string SelectIcon => _selectedBooks.Count switch
+	{
+		0 => Icons.Material.Filled.CheckBoxOutlineBlank,
+		_ when _selectedBooks.Count == BookManager.Books.Count => Icons.Material.Filled.CheckBox,
+		_ => Icons.Material.Filled.IndeterminateCheckBox
+	};
+	
+	private Action SelectIconAction => _selectedBooks.Count switch
+	{
+		0 => SelectAllBooks,
+		_ when _selectedBooks.Count == BookManager.Books.Count => DeselectAllBooks,
+		_ => SelectAllBooks
+	};
+	
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -66,6 +121,26 @@ else
 	{
 		await BookManager.AppendBookAsync(ProfileId, bookId);
 		await InvokeAsync(StateHasChanged);
+	}
+	
+	private void ToggleSelectMode()
+	{
+		IsSelectMode = !IsSelectMode;
+		if (!IsSelectMode)
+		{
+			_selectedBooks.Clear();
+		}
+	}
+	
+	private void SelectAllBooks()
+	{
+		_selectedBooks.Clear();
+		_selectedBooks.AddRange(BookManager.Books.Select(b => b.BookId));
+	}
+	
+	private void DeselectAllBooks()
+	{
+		_selectedBooks.Clear();
 	}
 
 	public void Dispose()

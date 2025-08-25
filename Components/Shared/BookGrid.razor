@@ -1,11 +1,51 @@
 ﻿<div class="grid grid-cols-[repeat(auto-fill,170px)] sm:grid-cols-[repeat(auto-fill,180px)] gap-3 sm:gap-5 @(Center ? "justify-center" : "")">
 	@foreach(var book in Books)
 	{
-		<BookCard @key="book" Book="book"/>
+		<BookCard @key="book" Book="book" IsSelectMode="IsSelectMode" IsSelected="SelectedBooks.Contains(book.BookId)" OnBookClicked="OnBookClicked" />
 	}
 </div>
 
 @code {
+	[Inject] private NavigationManager NavigationManager { get; set; } = null!;
+	
 	[Parameter] public required List<Book> Books { get; set; }
 	[Parameter] public bool Center { get; set; }
+	[Parameter] public bool IsSelectMode { get; set; }
+	[Parameter] public List<Guid> SelectedBooks { get; set; } = [];
+	[Parameter] public EventCallback<List<Guid>> SelectedBooksChanged { get; set; }
+
+	private void OnBookClicked((Guid bookId, bool shiftPressed) args)
+	{
+		if (IsSelectMode)
+		{
+			var lastSelectedIndex = Books.FindIndex(b => b.BookId == SelectedBooks.LastOrDefault());
+			var clickedIndex = Books.FindIndex(b => b.BookId == args.bookId);
+			if (args.shiftPressed && lastSelectedIndex != -1)
+			{
+				var start = Math.Min(lastSelectedIndex, clickedIndex);
+				var end = Math.Max(lastSelectedIndex, clickedIndex);
+				var rangeIds = Books.Skip(start).Take(end - start + 1).Select(b => b.BookId);
+				var deselect = SelectedBooks.Contains(args.bookId);
+				foreach (var id in rangeIds)
+				{
+					if (deselect)
+						SelectedBooks.Remove(id);
+					else if (!SelectedBooks.Contains(id))
+						SelectedBooks.Add(id);
+				}
+			}
+			else
+			{
+				if (SelectedBooks.Contains(args.bookId))
+					SelectedBooks.Remove(args.bookId);
+				else
+					SelectedBooks.Add(args.bookId);
+			}
+			SelectedBooksChanged.InvokeAsync(SelectedBooks);
+		}
+		else
+		{
+			NavigationManager.NavigateTo(Urls.GetBookUrl(args.bookId));
+		}
+	}
 }
