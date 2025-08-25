@@ -32,6 +32,10 @@ body {
     color: var(--neutral-foreground-rest);
 }
 
+button, a, img {
+    @apply select-none;
+}
+
 footer {
     display: grid;
     grid-template-columns: 10px auto auto 10px;
