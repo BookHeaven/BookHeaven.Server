@@ -1,0 +1,10 @@
+﻿<div class="flex gap-2">
+	@foreach(var tag in TagList.OrderBy(t => t.Name))
+	{
+		<MudChip T="string" Class="m-0" Color="Color.Info" Size="Size.Small" Text="@tag.Name" Variant="Variant.Outlined" />
+	}
+</div>
+
+@code {
+	[Parameter] public List<Tag> TagList { get; set; } = [];
+}

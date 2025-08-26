@@ -1,0 +1,142 @@
+﻿@using BookHeaven.Domain.Features.Tags
+@using BookHeaven.Domain.Shared
+<MudDialog>
+	<TitleContent>
+		Manage tags
+	</TitleContent>
+	<DialogContent>
+		<MudTextField
+			@bind-Value="_tags"
+			Label="Tags"
+			Placeholder="Comma separated list of tags"
+			Immediate="true"
+			Variant="Variant.Outlined"/>
+		<MudSelect
+			@bind-Value="_action"
+			Label="Action"
+			Variant="Variant.Outlined">
+			<MudSelectItem Value="Action.Add">Add</MudSelectItem>
+			<MudSelectItem Value="Action.Remove">Remove</MudSelectItem>
+		</MudSelect>
+		<MudDivider Class="my-5" />
+		<span class="text-xl">Preview</span>
+		<MudTable
+			Class="flex-1"
+			T="Book"
+			Items="BookManager.Books.Where(b => BookIds.Contains(b.BookId))"
+			Elevation="0"
+			Bordered="true"
+			Dense="true">
+			<HeaderContent>
+				<MudTh></MudTh>
+				<MudTh>Before</MudTh>
+				<MudTh>After</MudTh>
+			</HeaderContent>
+			<RowTemplate>
+				<MudTd>@context.Title</MudTd>
+				<MudTd>
+					@if(context.Tags.Count == 0) 
+					{
+						<span class="text-sm text-gray-500 italic">No tags</span>
+					}
+					else
+					{
+						<Tags TagList="context.Tags"/>
+					}
+				</MudTd>
+				<MudTd>
+					@if(Preview.First(b => b.BookId == context.BookId).Tags.Count == 0) 
+					{
+						<span class="text-sm text-gray-500 italic">No tags</span>
+					}
+					else
+					{
+						<Tags TagList="Preview.First(b => b.BookId == context.BookId).Tags"/>
+					}
+				</MudTd>
+			</RowTemplate>
+		</MudTable>
+	</DialogContent>
+	<DialogActions>
+		<MudButton OnClick="Apply" Color="Color.Primary" Variant="Variant.Filled">Apply</MudButton>
+	</DialogActions>
+</MudDialog>
+
+@code {
+	[Inject] private IDialogService DialogService { get; set; } = null!;
+	[Inject] private BookManager BookManager { get; set; } = null!;
+	[Inject] private ISender Sender { get; set; } = null!;
+	[Inject] private ISnackbar Snackbar { get; set; } = null!;
+	
+	[CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = null!;
+	[Parameter] public List<Guid> BookIds { get; set; } = [];
+	
+	enum Action
+	{
+		Add,
+		Remove
+	}
+	
+	private readonly DialogOptions _options = new() { FullWidth = true, MaxWidth = MaxWidth.Medium, CloseButton = true};
+	private string _tags = string.Empty;
+	private Action _action = Action.Add;
+
+	private IEnumerable<Tag> TagList => _tags.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).Select(t => new Tag { Name = t.Trim() });
+	
+	private List<Book> Preview => _action switch
+	{
+		Action.Add => BookManager.Books
+			.Where(b => BookIds.Contains(b.BookId))
+			.Select(b => new Book
+			{
+				BookId = b.BookId,
+				Title = b.Title,
+				Tags = b.Tags.Union(
+						TagList.Where(t => !b.Tags.Any(bt => bt.Name.Equals(t.Name, StringComparison.OrdinalIgnoreCase)))
+						.Distinct()
+						).ToList()
+			})
+			.ToList(),
+		Action.Remove => BookManager.Books
+			.Where(b => BookIds.Contains(b.BookId))
+			.Select(b => new Book
+			{
+				BookId = b.BookId,
+				Title = b.Title,
+				Tags = b.Tags.Where(t => !TagList.Any(rt => rt.Name.Equals(t.Name, StringComparison.OrdinalIgnoreCase)))
+					.ToList()
+			})
+			.ToList(),
+		_ => []
+	};
+	
+	protected override async Task OnInitializedAsync()
+	{
+		await MudDialog.SetOptionsAsync(_options);
+	}
+
+	private async Task Apply()
+	{
+		if(string.IsNullOrEmpty(_tags)) return;
+		
+		foreach (var bookId in BookIds)
+		{
+			var book = BookManager.Books.FirstOrDefault(b => b.BookId == bookId);
+			if (book == null) continue;
+
+			switch (_action)
+			{
+				case Action.Add:
+					await Sender.Send(new AddTagsToBook.Command(_tags, bookId));
+					break;
+				case Action.Remove:
+					var tagsToRemove = book.Tags.Where(t => TagList.Any(rt => rt.Name.Equals(t.Name, StringComparison.OrdinalIgnoreCase))).Select(t => t.TagId);
+					await Sender.Send(new RemoveTagsFromBook.Command(tagsToRemove, bookId));
+					break;
+			}
+		}
+
+		Snackbar.Add("Tags updated successfully", Severity.Success);
+		MudDialog.Close();
+	}
+}

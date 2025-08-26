@@ -38,30 +38,34 @@
 	<BottomToolbar>
 		@if (!IsSelectMode)
 		{
-			<MudIconButton 
+			<MudButton
 				OnClick="ToggleSelectMode"
-				Icon="@Icons.Material.Filled.SelectAll"
-				Variant="Variant.Filled"/>
-			<span>Mass edit mode</span>
+				StartIcon="@Icons.Material.Filled.SelectAll"
+				Color="Color.Secondary"
+				IconSize="Size.Large"
+				Size="Size.Large">
+				Select mode
+			</MudButton>
 		}
 		else
 		{
 			<MudIconButton 
 				OnClick="ToggleSelectMode"
 				Icon="@Icons.Material.Filled.Deselect"
-				Variant="Variant.Filled" />
+				Color="Color.Secondary"/>
 			<MudIconButton 
 				OnClick="() => SelectIconAction.Invoke()"
 				Icon="@SelectIcon"
 				Variant="Variant.Filled" />
 			<MudButton
-				Color="Color.Tertiary"
-				Variant="Variant.Filled">
-				Set Tags
+				OnClick="OpenTagsDialog"
+				Color="Color.Primary"
+				Disabled="_selectedBooks.Count == 0">
+				Tags
 			</MudButton>
 			<MudButton
-				Color="Color.Tertiary"
-				Variant="Variant.Filled">
+				Color="Color.Primary"
+				Disabled="_selectedBooks.Count == 0">
 				Edit
 			</MudButton>
 			<MudSpacer/>
@@ -84,6 +88,7 @@ else
 	[Inject] private BookManager BookManager { get; set; } = null!;
 	[Inject] private ISessionService SessionService { get; set; } = null!;
 	[Inject] private GlobalEventsService GlobalEventsService { get; set; } = null!;
+	[Inject] private IDialogService DialogService { get; set; } = null!;
 	
 	private bool IsLoading { get; set; } = true;
 	private Guid ProfileId { get; set; }
@@ -139,6 +144,21 @@ else
 	private void DeselectAllBooks()
 	{
 		_selectedBooks.Clear();
+	}
+	
+	public async Task OpenTagsDialog()
+	{
+		var parameters = new DialogParameters
+		{
+			{ nameof(TagsDialog.BookIds), _selectedBooks }
+		};
+		var dialog = await DialogService.ShowAsync<TagsDialog>(null, parameters);
+		var result = await dialog.Result;
+
+		if (!result!.Canceled)
+		{
+			// Handle result if needed
+		}
 	}
 
 	public void Dispose()
