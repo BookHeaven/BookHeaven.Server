@@ -34,7 +34,7 @@ You can also add fonts so they can be easily downloaded and used by your devices
 
 ## :rocket: Getting Started
 Setting the server up is pretty straightforward using docker.<br/>
-Here's a sample compose.yml file.
+Here's a sample compose.yml file.<br/>
 
 ```yaml
 services:
@@ -60,7 +60,9 @@ services:
     user: 1000:1000
     restart: unless-stopped
 ```
-
+> [!NOTE]
+> Check the out [starting guide](https://bookheaven.ggarrido.dev/getting-started) for more information.
+> 
 ## :memo: API definition
 Coming soon
 
