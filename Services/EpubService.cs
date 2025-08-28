@@ -95,7 +95,7 @@ public class EpubService(
 			
 		var createBook = await sender.Send(
 			new CreateBook.Command(
-				AuthorId: authorId!.Value,
+				AuthorId: authorId.Value,
 				SeriesId: seriesId,
 				SeriesIndex: epubBook.Metadata.SeriesIndex,
 				Title: epubBook.Metadata.Title,
