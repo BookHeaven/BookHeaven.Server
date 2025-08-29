@@ -17,25 +17,25 @@
         <NavMenu/>
     </MudDrawer>
     <main class="flex flex-col w-full overflow-y-auto">
-        <div class="sticky top-0 backdrop-blur lg:py-3 z-20 bg-(--mud-palette-appbar-background)" style="view-transition-name:appbar;">
-            <div class="flex items-center me-0 2xl:me-5">
+        <div class="flex flex-col-reverse lg:flex-row gap-2 sticky top-0 2xl:mx-5 backdrop-blur py-2 lg:py-3 z-20 bg-(--mud-palette-appbar-background)" style="view-transition-name:appbar;">
+            <div class="flex items-center gap-3 flex-1">
+                <SectionOutlet SectionName="TopBar" />
+            </div>
+            <div class="flex items-center">
                 <MudHidden Breakpoint="Breakpoint.MdAndUp">
                     <MudIconButton Icon="@Icons.Material.Filled.Menu" Edge="Edge.False" OnClick="@((e) => DrawerToggle())"/>
                 </MudHidden>
-                <MudSpacer/>
-                <MudStack
-                    Row="true"
-                    Spacing="1">
-                    <SearchBar/>
+                <MudHidden Breakpoint="Breakpoint.MdAndDown">
+                    <MudSpacer />
+                </MudHidden>
+                <SearchBar/>
 
-                    <MudFileUpload T="IBrowserFile" FilesChanged="UploadBook" Class="!m-0">
-                        <ActivatorContent>
-                            <MudIconButton HtmlTag="label" Icon="@Icons.Material.Filled.UploadFile" Color="Color.Secondary"/>
-                        </ActivatorContent>
-                    </MudFileUpload>
-                </MudStack>
+                <MudFileUpload T="IBrowserFile" FilesChanged="UploadBook" Class="!m-0">
+                    <ActivatorContent>
+                        <MudIconButton HtmlTag="label" Icon="@Icons.Material.Filled.UploadFile" Color="Color.Secondary"/>
+                    </ActivatorContent>
+                </MudFileUpload>
             </div>
-            <SectionOutlet SectionName="TopBar" />
         </div>
         <div class="py-2 lg:py-5 md:px-7 relative flex-1">
             <SectionOutlet SectionName="Toolbar" />
