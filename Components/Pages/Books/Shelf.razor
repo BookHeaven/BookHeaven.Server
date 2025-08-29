@@ -20,11 +20,11 @@
 }
 
 <Topbar>
-	<MudChipSet T="BookStatus" @bind-SelectedValue="BookManager.Filter" Class="mx-2" CheckMark>
-		<MudChip Value="BookStatus.All" Variant="Variant.Text" Color="Color.Primary">@BookStatus.All.StringValue()</MudChip>	
-		<MudChip Value="BookStatus.New" Variant="Variant.Text" Color="Color.Primary">@BookStatus.New.StringValue()</MudChip>
-		<MudChip Value="BookStatus.Reading" Variant="Variant.Text" Color="Color.Primary">@BookStatus.Reading.StringValue()</MudChip>
-		<MudChip Value="BookStatus.Finished" Variant="Variant.Text" Color="Color.Primary">@BookStatus.Finished.StringValue()</MudChip>
+	<MudChipSet T="BookStatus" @bind-SelectedValue="BookManager.Filter" CheckMark>
+		<MudChip Value="BookStatus.All" Variant="Variant.Text" Color="Color.Primary" Class="mx-0.5">@BookStatus.All.StringValue()</MudChip>	
+		<MudChip Value="BookStatus.New" Variant="Variant.Text" Color="Color.Primary" Class="mx-0.5">@BookStatus.New.StringValue()</MudChip>
+		<MudChip Value="BookStatus.Reading" Variant="Variant.Text" Color="Color.Primary" Class="mx-0.5">@BookStatus.Reading.StringValue()</MudChip>
+		<MudChip Value="BookStatus.Finished" Variant="Variant.Text" Color="Color.Primary" Class="mx-0.5">@BookStatus.Finished.StringValue()</MudChip>
 	</MudChipSet>
 </Topbar>
 
