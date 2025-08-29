@@ -7,9 +7,6 @@ on:
       - '**/*.md'
       - '**/*.gitignore'
       - '**/*.gitattributes'
-        
-permissions:
-  contents: write
 
 jobs:
   check-version:
@@ -47,7 +44,7 @@ jobs:
     needs: check-version
     if: needs.check-version.outputs.exists == 'false'
     permissions:
-      contents: read
+      contents: write
       packages: write
       
     env:
