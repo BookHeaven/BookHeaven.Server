@@ -13,8 +13,8 @@
 
 @if (BookManager.IsEmpty)
 {
-	<div class="absolute inset-0 flex items-center justify-center">
-		<span class="text-4xl">@Translations.SHELF_EMPTY</span>
+	<div class="absolute inset-0 flex items-center justify-center text-center">
+		<span class="text-2xl 2xl:text-4xl text-balance text-neutral-300">@Translations.SHELF_EMPTY</span>
 	</div>
 	return;
 }
@@ -76,8 +76,8 @@
 }
 else
 {
-	<div class="absolute inset-0 flex items-center justify-center">
-		<span class="text-4xl">@Translations.SHELF_FILTER_NO_RESULTS</span>
+	<div class="absolute inset-0 flex items-center justify-center text-center">
+		<span class="text-2xl 2xl:text-4xl text-balance text-neutral-300">@Translations.SHELF_FILTER_NO_RESULTS</span>
 	</div>
 }
 
