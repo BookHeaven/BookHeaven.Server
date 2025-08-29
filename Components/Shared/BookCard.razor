@@ -1,6 +1,6 @@
 ﻿@using BookHeaven.Server.Helpers
 <MudCard Elevation="4"
-         Class="group relative overflow-hidden flex flex-col hover:cursor-pointer select-none"
+         Class="group relative overflow-hidden flex flex-col hover:cursor-pointer select-none active:scale-95 transition-transform"
          @onclick="e => OnBookClicked.InvokeAsync((Book.BookId, e.ShiftKey))">
 
 	@if (IsSelectMode)
