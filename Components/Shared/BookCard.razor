@@ -5,7 +5,7 @@
 
 	@if (IsSelectMode)
 	{
-		<span class="absolute top-2 left-2 size-5 @(IsSelected ? "bg-(--mud-palette-tertiary)" : "bg-white") border border-2 border-(--mud-palette-primary) z-10 rounded-full flex items-center justify-center">
+		<span class="absolute bottom-3 right-2 size-5 @(IsSelected ? "bg-(--mud-palette-tertiary)" : "bg-white") border border-2 border-(--mud-palette-primary) z-10 rounded-full flex items-center justify-center animate-flip-in-x animate-iteration-count-once animate-duration-300">
 			@if (IsSelected)
 			{
 				<MudIcon Icon="@Icons.Material.Filled.Check" Class="text-xs"/>
