@@ -150,9 +150,9 @@ else
 	{
 		var parameters = new DialogParameters
 		{
-			{ nameof(TagsDialog.BookIds), _selectedBooks }
+			{ nameof(BulkTagsEditDialog.BookIds), _selectedBooks }
 		};
-		var dialog = await DialogService.ShowAsync<TagsDialog>(null, parameters);
+		var dialog = await DialogService.ShowAsync<BulkTagsEditDialog>(null, parameters);
 		var result = await dialog.Result;
 
 		if (!result!.Canceled)
