@@ -1,0 +1,108 @@
+﻿@using BookHeaven.Server.Entities
+@using BookHeaven.Server.MetadataProviders.Factory
+<MudDialog>
+	<DialogContent>
+		<div class="flex items-center p-3 mb-4">
+			<MudSelect 
+				@bind-Value="_metadataProvider"
+				Variant="Variant.Outlined"
+				Label="Metadata provider">
+				<MudSelectItem Value="MetadataProvidersFactory.MetadataProvider.GoogleBooks">Google books</MudSelectItem>
+				<MudSelectItem Value="MetadataProvidersFactory.MetadataProvider.OpenLibrary">Open library</MudSelectItem>
+			</MudSelect>
+		</div>
+		@if (!_isLoaded)
+		{
+			<MudProgressCircular Indeterminate="true" Color="Color.Primary" Size="Size.Large" Class="mx-auto my-10"/>
+		}
+		else if (_metadataList.Count == 0)
+		{
+			<MudAlert Severity="Severity.Info">No metadata found for this book.</MudAlert>
+		}
+		else
+		{
+			<MudStack Spacing="10">
+				@foreach (var metadata in _metadataList)
+				{
+					<div class="flex items-start gap-4">
+
+						@if (string.IsNullOrEmpty(metadata.CoverUrl))
+						{
+							<div class="h-[300px] w-[200px] bg-slate-600 flex flex-col items-center justify-center">
+								<span>No image</span>
+							</div>
+						}
+						else
+						{
+							<img src="@metadata.CoverUrl" class="w-[200px]" alt=""/>
+						}
+
+						<div class="flex-1">
+							<p class="text-xl">@metadata.Title</p>
+							<p class="text-lg">@metadata.Author</p>
+							<p>@metadata.Publisher</p>
+							@if (metadata.PublishedDate != null)
+							{
+								<p>@metadata.PublishedDate.Value.ToString(_settings.LongDateFormat)</p>
+							}
+							<div class="flex items-center flex-wrap">
+								@if (!string.IsNullOrEmpty(metadata.Isbn10))
+								{
+									<MudChip T="MarkupString" Size="Size.Small" Color="Color.Primary">
+										ISBN-10: <span class="ms-1">@metadata.Isbn10</span>
+									</MudChip>
+								}
+								@if (!string.IsNullOrEmpty(metadata.Isbn13))
+								{
+									<MudChip T="MarkupString" Size="Size.Small" Color="Color.Primary">
+										ISBN-13: <span class="ms-1">@metadata.Isbn13</span>
+									</MudChip>
+								}
+							</div>
+							<p class="mt-4">@((MarkupString)metadata.Description)</p>
+						</div>
+					</div>
+					if (_metadataList.IndexOf(metadata) != _metadataList.Count - 1)
+					{
+						<MudDivider Class="my-4"/>
+					}
+				}
+			</MudStack>
+		}
+	</DialogContent>
+	<DialogActions>
+		<MudButton Color="Color.Primary">Apply</MudButton>
+		<MudButton Color="Color.Secondary">Cancel</MudButton>
+	</DialogActions>
+</MudDialog>
+
+@code {
+	[Inject] private IDialogService DialogService { get; set; } = null!;
+	[Inject] private MetadataProvidersFactory MetadataProvidersFactory { get; set; } = null!;
+	[Inject] private ISettingsManagerService SettingsManager { get; set; } = null!;
+	
+	[CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = null!;
+	[Parameter] public required Book Book { get; set; }
+	
+	private readonly DialogOptions _options = new() { FullWidth = true, MaxWidth = MaxWidth.Large, CloseButton = true};
+	
+	private bool _isLoaded;
+	private MetadataProvidersFactory.MetadataProvider _metadataProvider = MetadataProvidersFactory.MetadataProvider.GoogleBooks;
+	private List<BookMetadata> _metadataList = [];
+	private ServerSettings _settings = new();
+
+	protected override async Task OnInitializedAsync()
+	{
+		await MudDialog.SetOptionsAsync(_options);
+		_settings = await SettingsManager.LoadSettingsAsync();
+		await FetchMetadata();
+		_isLoaded = true;
+	}
+	
+	private async Task FetchMetadata()
+	{
+		var provider = MetadataProvidersFactory.GetMetadataProvider(_metadataProvider)!;
+		_metadataList = await provider.GetMetadataByName(Book.Title!);
+	}
+
+}

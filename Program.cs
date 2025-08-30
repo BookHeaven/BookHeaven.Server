@@ -11,6 +11,7 @@ using BookHeaven.Domain.Abstractions;
 using BookHeaven.EpubManager.Epub.Entities;
 using BookHeaven.Server.Abstractions;
 using BookHeaven.Server.Extensions;
+using BookHeaven.Server.MetadataProviders.DependencyInjection;
 using Microsoft.AspNetCore.DataProtection;
 using Scalar.AspNetCore;
 
@@ -93,9 +94,9 @@ public class Program
 		builder.Services.AddTransient<IAlertService, AlertService>();
 		builder.Services.AddTransient<IFormatService<EpubBook>, EpubService>();
 		builder.Services.AddScoped<ISettingsManagerService, SettingsManagerService>();
-		builder.Services.AddScoped<IMetadataProviderService, GoogleBooksService>();
-		// builder.Services.AddScoped<IMetadataProviderService, OpenLibraryService>();
 		builder.Services.AddScoped<ISessionService, SessionService>();
+
+		builder.Services.AddMetadataProviders();
 
 		// Background services
 		builder.Services.AddHostedService<UdpBroadcastServer>();

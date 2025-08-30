@@ -1,5 +1,4 @@
-﻿@using BookHeaven.Domain.Enums
-@using BookHeaven.Server.Helpers
+﻿@using BookHeaven.Server.Helpers
 @attribute [Route($"{Urls.Shelf}/{{Id:guid}}")]
 @attribute [Route($"{Urls.Shelf}/{{Id:guid}}/{{Editing}}")]
 <ScrollToTop />
@@ -266,56 +265,6 @@
 	
 </div>
 
-<MudDialog @bind-Visible="_searchingMetadata" OnBackdropClick="@(() => _searchingMetadata = false)">
-	<DialogContent>
-		@if(_metadataList.Count == 0)
-		{
-			<MudAlert Severity="Severity.Info">No metadata found for this book.</MudAlert>
-		}
-		else
-		{
-			<MudStack Spacing="10">
-				@foreach (var metadata in _metadataList)
-				{
-					<div>
-						<div class="flex items-start">
-							<img src="@metadata.CoverUrl" class="max-w-[200px]" alt="" />
 
-							<div class="flex-1 ml-4">
-								<p class="text-xl">@metadata.Title</p>
-								<p class="text-lg">@metadata.Author</p>
-								<p>@metadata.Publisher</p>
-								@if(metadata.PublishedDate != null)
-								{
-									<p>@metadata.PublishedDate.Value.ToString(_settings.LongDateFormat)</p>
-								}
-								<div class="flex items-center flex-wrap">
-									@if (!string.IsNullOrEmpty(metadata.Isbn10))
-									{
-										<MudChip T="MarkupString" Size="Size.Small" Color="Color.Primary">
-											ISBN-10: <span class="ms-1">@metadata.Isbn10</span>
-										</MudChip>
-									}
-									@if (!string.IsNullOrEmpty(metadata.Isbn13))
-									{
-										<MudChip T="MarkupString" Size="Size.Small" Color="Color.Primary">
-											ISBN-13: <span class="ms-1">@metadata.Isbn13</span>
-										</MudChip>
-									}
-								</div>
-							</div>
-						</div>
-						<p class="mt-4">@((MarkupString)metadata.Description)</p>
-					</div>
-					
-				}
-			</MudStack>
-		}
-	</DialogContent>
-	<DialogActions>
-		<MudButton Color="Color.Primary">Apply</MudButton>
-		<MudButton Color="Color.Secondary">Cancel</MudButton>
-	</DialogActions>
-</MudDialog>
 
 

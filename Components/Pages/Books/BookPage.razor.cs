@@ -10,6 +10,7 @@ using BookHeaven.Server.Constants;
 using BookHeaven.Server.Entities;
 using BookHeaven.EpubManager.Epub.Entities;
 using BookHeaven.EpubManager.Epub.Services;
+using BookHeaven.Server.Components.Dialogs;
 using MediatR;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -21,11 +22,11 @@ public partial class BookPage
 {
 	[Inject] private ISender Sender { get; set; } = null!;
 	[Inject] private IFormatService<EpubBook> EpubService { get; set; } = null!;
-	[Inject] private IMetadataProviderService MetadataProviderService { get; set; } = null!;
 	[Inject] private IEpubWriter EpubWriter { get; set; } = null!;
 	[Inject] private NavigationManager NavigationManager { get; set; } = null!;
 	[Inject] private ISettingsManagerService SettingsManager { get; set; } = null!;
 	[Inject] private ISessionService SessionService { get; set; } = null!;
+	[Inject] private IDialogService DialogService { get; set; } = null!;
 
 	[Parameter] public Guid Id { get; set; }
 	[Parameter] public string? Editing { get; set; }
@@ -37,14 +38,13 @@ public partial class BookPage
 	private string _tagNames = string.Empty;
 		
 	private bool IsEditing => Editing == "edit";
-	private bool _searchingMetadata;
 		
 	private bool CoverExists => File.Exists(_book.CoverPath());
 
 	private Book _book = new();
 	private List<Author> _authors = [];
 	private List<Series> _series = [];
-	private List<BookMetadata> _metadataList = [];
+	
 
 	private string? _newCoverTempPath;
 	private string? _newEpubTempPath;
@@ -234,9 +234,11 @@ public partial class BookPage
 
 	private async Task ShowMetadataDialog()
 	{
-		_metadataList = await MetadataProviderService.GetMetadataByName(_book.Title!);
-		_searchingMetadata = true;
-		StateHasChanged();
+		var dialogParameters = new DialogParameters
+		{
+			{ nameof(FetchMetadataDialog.Book), _book }
+		};
+		await DialogService.ShowAsync<FetchMetadataDialog>(null, dialogParameters);
 	}
 		
 	private async Task AddTagToBook()
