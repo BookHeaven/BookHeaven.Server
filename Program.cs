@@ -10,6 +10,7 @@ using BookHeaven.Domain;
 using BookHeaven.Domain.Abstractions;
 using BookHeaven.EpubManager.Epub.Entities;
 using BookHeaven.Server.Abstractions;
+using BookHeaven.Server.Endpoints;
 using BookHeaven.Server.Extensions;
 using BookHeaven.Server.MetadataProviders.DependencyInjection;
 using Microsoft.AspNetCore.DataProtection;
@@ -104,6 +105,7 @@ public class Program
 			
 		// Add endpoints
 		builder.Services.AddEndpoints(typeof(Program).Assembly);
+		builder.Services.AddOpds();
 
 		builder.Services.AddOpenApi();
 
@@ -169,6 +171,7 @@ public class Program
 		});
 		
 		app.MapEndpoints();
+		app.MapOpds();
 
 		if (app.Environment.IsDevelopment())
 		{
