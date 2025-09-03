@@ -47,6 +47,7 @@ public static class Opds
                             new XElement(atom+"id", $"urn:bookheaven:book:{book.BookId}"),
                             new XElement(atom+"updated", DateTime.UtcNow.ToString("o")),
                             new XElement(atom+"author", new XElement(atom+"name", book.Author?.Name ?? "Unknown")),
+                            !string.IsNullOrEmpty(book.Description) ? new XElement(atom+"content", new XAttribute("type", "text"), book.Description) : null,
                             new XElement(atom+"link",
                                 new XAttribute("href", book.EpubUrl()),
                                 new XAttribute("type", "application/epub+zip"),
