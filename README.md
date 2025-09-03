@@ -20,10 +20,12 @@ You can also add fonts so they can be easily downloaded and used by your devices
 ## :sparkles: Features
 - :computer: **Modern and responsive UI**
 - :mag: **Auto discovery**: The server can be discovered by the client app automatically, so you don't have to manually configure it.
-- :label: **Metadata handling (title, author, etc)**. Metadata is read from the ebook itself and editable at any time. Any changes, including the cover, are persisted into the file as well.
-- :cloud: **Metadata fetching**. You can fetch metadata from the internet, which will update the book's metadata and cover (WIP, very experimental).
-- :clock10: **Progress tracking**[^1]. You can check the progress of your books at any given time, but also set it manually.
-- :a: **Font types management**[^2]. Any font that you configure will be made available for your devices to easily download and use.
+- :label: **Metadata handling (title, author, etc)**: Metadata is read from the ebook itself and editable at any time. Any changes, including the cover, are persisted into the file as well.
+- :cloud: **Metadata fetching**: You can fetch metadata from the internet, which will update the book's metadata and cover (WIP, very experimental).
+- :clock10: **Progress tracking**[^1]: You can check the progress of your books at any given time, but also set it manually.
+- :a: **Font types management**[^2]: Any font that you configure will be made available for your devices to easily download and use.
+- :busts_in_silhouette: **Profiles**: You can create multiple profiles to keep your reading progress separate.
+- :book: **OPDS Support**: Just add /opds to your server URL.
 
 [^1]: Progress tracking includes start date, last read date, percentage, elapsed time as well as finished date.
 [^2]: Fonts can be split up into any combination of styles (regular, italic) and weights (normal, bold) or you can also use a single font file for everything.
