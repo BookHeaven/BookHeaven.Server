@@ -48,7 +48,7 @@
 		}
 	</DialogContent>
 	<DialogActions>
-		<MudButton Color="Color.Primary" OnClick="Apply">Apply</MudButton>
+		<MudButton Color="Color.Primary" Variant="Variant.Filled" Disabled="@string.IsNullOrWhiteSpace(_selectedCoverUrl)" OnClick="@Apply">Apply</MudButton>
 	</DialogActions>
 </MudDialog>
 
@@ -92,6 +92,7 @@
 	
 	private void Apply()
 	{
+		if(string.IsNullOrWhiteSpace(_selectedCoverUrl)) return;
 		MudDialog.Close(DialogResult.Ok(_selectedCoverUrl));
 	}
 	
