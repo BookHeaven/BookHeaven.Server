@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 namespace BookHeaven.Server.Services;
 
-public class SessionService(ProtectedLocalStorage storage) : ISessionService
+public class SessionService(ILogger<SessionService> logger, ProtectedLocalStorage storage) : ISessionService
 {
     public async Task SetAsync<T>(SessionKey key, T value)
     {
@@ -24,6 +24,7 @@ public class SessionService(ProtectedLocalStorage storage) : ISessionService
         }
         catch (Exception ex)
         {
+            logger.LogWarning(ex, "Error getting session value for key {Key}, might be expected", key);
             return default;
         }
         
@@ -36,6 +37,5 @@ public class SessionService(ProtectedLocalStorage storage) : ISessionService
             await storage.DeleteAsync(key.ToString());
         }
         catch {}
-        
     }
 }
