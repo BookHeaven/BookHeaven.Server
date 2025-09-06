@@ -12,6 +12,8 @@ using BookHeaven.EpubManager.Epub.Entities;
 using BookHeaven.Server.Abstractions;
 using BookHeaven.Server.Endpoints;
 using BookHeaven.Server.Extensions;
+using BookHeaven.Server.MetadataProviders;
+using BookHeaven.Server.MetadataProviders.Abstractions;
 using BookHeaven.Server.MetadataProviders.DependencyInjection;
 using Microsoft.AspNetCore.DataProtection;
 using Scalar.AspNetCore;
@@ -92,6 +94,7 @@ public class Program
 		builder.Services.AddDomain(BooksPath, CoversPath, FontsPath, DatabasePath);
 		builder.Services.AddEpubManager();
 
+		builder.Services.AddTransient<ICoverProvider, DuckDuckGoCoverProvider>();
 		builder.Services.AddTransient<IAlertService, AlertService>();
 		builder.Services.AddTransient<IFormatService<EpubBook>, EpubService>();
 		builder.Services.AddScoped<ISettingsManagerService, SettingsManagerService>();

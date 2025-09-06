@@ -167,8 +167,11 @@
 		else
 		{
 			<div class="flex gap-3 mb-5">
-				<MudTooltip Text="Get Metadata">
-					<MudIconButton Icon="@Icons.Material.Rounded.CloudDownload" Variant="Variant.Filled" Color="Color.Tertiary" OnClick="@ShowMetadataDialog"/>
+				<MudTooltip Text="Search Covers">
+					<MudIconButton Icon="@Icons.Material.Rounded.ImageSearch" Variant="Variant.Filled" Color="Color.Tertiary" OnClick="@ShowFetchCoversDialog"/>
+				</MudTooltip>
+				<MudTooltip Text="Search Metadata (disabled for now)">
+					<MudIconButton Icon="@Icons.Material.Rounded.CloudDownload" Variant="Variant.Filled" Color="Color.Tertiary" Disabled="true"/>
 				</MudTooltip>
 				<MudTooltip Text="@(!CoverExists ? Translations.ADD_COVER : Translations.REPLACE_COVER)">
 					<MudFileUpload T="IBrowserFile" FilesChanged="UploadCoverToTempPath" Accept=".jpg">

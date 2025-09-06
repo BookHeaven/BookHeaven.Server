@@ -11,6 +11,7 @@ using BookHeaven.Server.Entities;
 using BookHeaven.EpubManager.Epub.Entities;
 using BookHeaven.EpubManager.Epub.Services;
 using BookHeaven.Server.Components.Dialogs;
+using BookHeaven.Server.MetadataProviders.DTO;
 using MediatR;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -193,10 +194,18 @@ public partial class BookPage
 			throw new Exception(updateProgress.Error.Description);
 		}
 			
-		if(_newCoverTempPath != null)
+		if(!string.IsNullOrWhiteSpace(_newCoverTempPath))
 		{
-			await EpubService.StoreCover(await File.ReadAllBytesAsync(_newCoverTempPath), _book.CoverPath()!);
-			File.Delete(_newCoverTempPath);
+			if (_newCoverTempPath.StartsWith("http"))
+			{
+				await EpubService.DownloadAndStoreCoverAsync(_newCoverTempPath, _book.CoverPath());
+			}
+			else
+			{
+				await EpubService.StoreCover(await File.ReadAllBytesAsync(_newCoverTempPath), _book.CoverPath());
+				File.Delete(_newCoverTempPath);
+			}
+			
 		}
 		if(_newEpubTempPath != null)
 		{
@@ -239,6 +248,22 @@ public partial class BookPage
 			{ nameof(FetchMetadataDialog.Book), _book }
 		};
 		await DialogService.ShowAsync<FetchMetadataDialog>(null, dialogParameters);
+	}
+
+	private async Task ShowFetchCoversDialog()
+	{
+		var dialogParameters = new DialogParameters
+		{
+			{ nameof(FetchCoversDialog.Title), _book.Title },
+			{ nameof(FetchCoversDialog.Author), _book.Author?.Name ?? string.Empty }
+		};
+		var dialog = await DialogService.ShowAsync<FetchCoversDialog>(null, dialogParameters);
+		var result = await dialog.Result;
+		if (result?.Canceled == false && !string.IsNullOrWhiteSpace(result?.Data as string))
+		{
+			_newCoverTempPath = result.Data as string;
+			StateHasChanged();
+		}
 	}
 		
 	private async Task AddTagToBook()

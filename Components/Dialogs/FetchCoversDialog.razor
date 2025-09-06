@@ -1,0 +1,98 @@
+﻿@using BookHeaven.Server.MetadataProviders.Abstractions
+@using BookHeaven.Server.MetadataProviders.DTO
+<MudDialog>
+	<DialogContent>
+		<div class="sticky top-0 py-3 mb-4 bg-(--mud-palette-surface)">
+			<MudTextField 
+				@bind-Value="Title" 
+				Variant="Variant.Outlined" 
+				Label="Search by" 
+				Adornment="Adornment.End" 
+				Immediate="true"
+				AdornmentIcon="@Icons.Material.Filled.Search"
+				OnAdornmentClick="FetchCovers"/>
+		</div>
+		@if (!_isLoaded)
+		{
+			<div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 p-3">
+				@for(var i = 0; i < 10; i++)
+				{
+					<div class="w-full h-[300px] bg-slate-600 animate-pulse"></div>
+				}
+			</div>
+		}
+		else if (!string.IsNullOrEmpty(_errorMessage))
+		{
+			<div class="flex items-center justify-center">
+				<MudAlert Severity="Severity.Error">@_errorMessage</MudAlert>
+			</div>
+		}
+		else if (_coverUrls.Count == 0)
+		{
+			<div class="flex items-center justify-center">
+				<MudAlert Severity="Severity.Info">No covers found for this book.</MudAlert>
+			</div>
+		}
+		else
+		{
+			<div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 p-3">
+				@foreach (var coverUrl in _coverUrls)
+				{
+					<img 
+						src="@coverUrl" 
+						class="w-full h-auto hover:cursor-pointer active:scale-95 transition-transform @(_selectedCoverUrl == coverUrl ? "outline-4 outline-(--mud-palette-primary)": "")"
+						alt="" 
+						@onclick="() => _selectedCoverUrl = coverUrl"/>
+				}
+			</div>
+		}
+	</DialogContent>
+	<DialogActions>
+		<MudButton Color="Color.Primary" OnClick="Apply">Apply</MudButton>
+	</DialogActions>
+</MudDialog>
+
+@code {
+	[Inject] ICoverProvider CoverProvider { get; set; } = null!;
+	
+	[CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = null!;
+	[Parameter] public required string Title { get; set; }
+	[Parameter] public required string Author { get; set; }
+	
+	private readonly DialogOptions _options = new() { FullWidth = true, MaxWidth = MaxWidth.Large, CloseButton = true};
+	private bool _isLoaded;
+	private List<string> _coverUrls = [];
+	private string _errorMessage = string.Empty;
+	
+	private string _selectedCoverUrl = string.Empty;
+	
+	protected override async Task OnInitializedAsync()
+	{
+		await MudDialog.SetOptionsAsync(_options);
+		await FetchCovers();
+	}
+	
+	private async Task FetchCovers()
+	{
+		if(string.IsNullOrWhiteSpace(Title)) return;
+		_isLoaded = false;
+		StateHasChanged();
+		var getCovers = await CoverProvider.GetCoversAsync(new CoverRequest(Title, Author));
+		if (getCovers.IsSuccess)
+		{
+			_coverUrls = getCovers.Value;
+		}
+		else
+		{
+			_errorMessage = getCovers.Error.Description;
+		}
+		_isLoaded = true;
+		StateHasChanged();
+	}
+	
+	private void Apply()
+	{
+		MudDialog.Close(DialogResult.Ok(_selectedCoverUrl));
+	}
+	
+}
