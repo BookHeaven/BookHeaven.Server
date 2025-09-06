@@ -1,8 +1,9 @@
 ﻿@using BookHeaven.Server.Entities
+@using BookHeaven.Server.MetadataProviders.DTO
 @using BookHeaven.Server.MetadataProviders.Factory
 <MudDialog>
 	<DialogContent>
-		<div class="flex items-center p-3 mb-4">
+		<div class="sticky top-0 py-3 mb-4 bg-(--mud-palette-surface) z-10">
 			<MudSelect 
 				@bind-Value="_metadataProvider"
 				@bind-Value:after="FetchMetadata"
@@ -18,64 +19,52 @@
 				<MudProgressCircular Indeterminate="true" Color="Color.Primary" Size="Size.Large"/>
 			</div>
 		}
+		else if (!string.IsNullOrWhiteSpace(_errorMessage))
+		{
+			<MudAlert Severity="Severity.Error">@_errorMessage</MudAlert>
+		}
 		else if (_metadataList.Count == 0)
 		{
 			<MudAlert Severity="Severity.Info">No metadata found for this book.</MudAlert>
 		}
 		else
 		{
-			<MudStack Spacing="10">
+			<div class="flex flex-col p-2 gap-2 2xl:gap-5">
 				@foreach (var metadata in _metadataList)
 				{
-					<div class="flex items-start gap-4">
-
-						@if (string.IsNullOrEmpty(metadata.CoverUrl))
+					<div class="p-3 bg-slate-700 hover:cursor-pointer active:scale-y-95 transition-all rounded @(_selectedMetadata == metadata ? "outline-2 outline-(--mud-palette-primary)" : "")" @onclick="() => _selectedMetadata = metadata">
+						<p class="text-xl">@metadata.Title</p>
+						<p class="text-lg mb-2">@metadata.Author</p>
+						<p>@metadata.Publisher</p>
+						@if (metadata.PublishedDate != null)
 						{
-							<div class="h-[300px] w-[200px] bg-slate-600 flex flex-col items-center justify-center">
-								<span>No image</span>
-							</div>
+							<p>@metadata.PublishedDate.Value.ToString(_settings.LongDateFormat)</p>
 						}
-						else
-						{
-							<img src="@metadata.CoverUrl" class="w-[200px]" alt=""/>
-						}
-
-						<div class="flex-1">
-							<p class="text-xl">@metadata.Title</p>
-							<p class="text-lg">@metadata.Author</p>
-							<p>@metadata.Publisher</p>
-							@if (metadata.PublishedDate != null)
+						<div class="flex items-center flex-wrap my-2">
+							@if (!string.IsNullOrEmpty(metadata.Isbn10))
 							{
-								<p>@metadata.PublishedDate.Value.ToString(_settings.LongDateFormat)</p>
+								<MudChip T="MarkupString" Size="Size.Small" Color="Color.Primary">
+									ISBN-10: <span class="ms-1">@metadata.Isbn10</span>
+								</MudChip>
 							}
-							<div class="flex items-center flex-wrap">
-								@if (!string.IsNullOrEmpty(metadata.Isbn10))
-								{
-									<MudChip T="MarkupString" Size="Size.Small" Color="Color.Primary">
-										ISBN-10: <span class="ms-1">@metadata.Isbn10</span>
-									</MudChip>
-								}
-								@if (!string.IsNullOrEmpty(metadata.Isbn13))
-								{
-									<MudChip T="MarkupString" Size="Size.Small" Color="Color.Primary">
-										ISBN-13: <span class="ms-1">@metadata.Isbn13</span>
-									</MudChip>
-								}
-							</div>
-							<p class="mt-4">@((MarkupString)metadata.Description)</p>
+							@if (!string.IsNullOrEmpty(metadata.Isbn13))
+							{
+								<MudChip T="MarkupString" Size="Size.Small" Color="Color.Primary">
+									ISBN-13: <span class="ms-1">@metadata.Isbn13</span>
+								</MudChip>
+							}
 						</div>
+						@if (!string.IsNullOrWhiteSpace(metadata.Description))
+						{
+							<p class="mt-4 text-neutral-300">@((MarkupString)metadata.Description)</p>
+						}
 					</div>
-					if (_metadataList.IndexOf(metadata) != _metadataList.Count - 1)
-					{
-						<MudDivider Class="my-4"/>
-					}
 				}
-			</MudStack>
+			</div>
 		}
 	</DialogContent>
 	<DialogActions>
-		<MudButton Color="Color.Primary">Apply</MudButton>
-		<MudButton Color="Color.Secondary">Cancel</MudButton>
+		<MudButton Color="Color.Primary" Variant="Variant.Filled" Disabled="@(_selectedMetadata is null)" OnClick="@Apply">Apply</MudButton>
 	</DialogActions>
 </MudDialog>
 
@@ -85,14 +74,18 @@
 	[Inject] private ISettingsManagerService SettingsManager { get; set; } = null!;
 	
 	[CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = null!;
-	[Parameter] public required Book Book { get; set; }
+	[Parameter] public required string Title { get; set; }
+	[Parameter] public required string Author { get; set; }
 	
 	private readonly DialogOptions _options = new() { FullWidth = true, MaxWidth = MaxWidth.Large, CloseButton = true};
 	
 	private bool _isLoaded;
 	private MetadataProvidersFactory.MetadataProvider _metadataProvider = MetadataProvidersFactory.MetadataProvider.GoogleBooks;
 	private List<BookMetadata> _metadataList = [];
+	private string _errorMessage = string.Empty;
 	private ServerSettings _settings = new();
+	
+	private BookMetadata? _selectedMetadata;
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -103,13 +96,30 @@
 	
 	private async Task FetchMetadata()
 	{
+		_errorMessage = string.Empty;
 		_isLoaded = false;
 		StateHasChanged();
 		_metadataList.Clear();
 		var provider = MetadataProvidersFactory.GetMetadataProvider(_metadataProvider)!;
-		_metadataList = await provider.GetMetadataByName(Book.Title!);
+		var fetchData = await provider.GetMetadataAsync(new MetadataRequest(Title, Author));
+		if (fetchData.IsSuccess)
+		{
+			_metadataList = fetchData.Value;
+		}
+		else
+		{
+			_errorMessage = fetchData.Error.Description;
+		}
 		_isLoaded = true;
 		StateHasChanged();
+	}
+	
+	private void Apply()
+	{
+		if (_selectedMetadata != null)
+		{
+			MudDialog.Close(DialogResult.Ok(_selectedMetadata));
+		}
 	}
 
 }

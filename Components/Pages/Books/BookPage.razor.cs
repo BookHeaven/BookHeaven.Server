@@ -241,13 +241,26 @@ public partial class BookPage
 			
 	}
 
-	private async Task ShowMetadataDialog()
+	private async Task ShowFetchMetadataDialog()
 	{
 		var dialogParameters = new DialogParameters
 		{
-			{ nameof(FetchMetadataDialog.Book), _book }
+			{ nameof(FetchMetadataDialog.Title), _book.Title },
+			{ nameof(FetchMetadataDialog.Author), _authorName }
 		};
-		await DialogService.ShowAsync<FetchMetadataDialog>(null, dialogParameters);
+		var dialog = await DialogService.ShowAsync<FetchMetadataDialog>(null, dialogParameters);
+		var result = await dialog.Result;
+		if (result is { Canceled: false, Data: BookMetadata metadata })
+		{
+			_book.Title = metadata.Title;
+			_authorName = metadata.Author ?? _authorName;
+			_book.Publisher = metadata.Publisher ?? _book.Publisher;
+			_book.PublishedDate = metadata.PublishedDate ?? _book.PublishedDate;
+			_book.ISBN10 = metadata.Isbn10 ?? _book.ISBN10;
+			_book.ISBN13 = metadata.Isbn13 ?? _book.ISBN13;
+			if(!string.IsNullOrWhiteSpace(metadata.Description)) _book.Description = metadata.Description;
+			StateHasChanged();
+		}
 	}
 
 	private async Task ShowFetchCoversDialog()

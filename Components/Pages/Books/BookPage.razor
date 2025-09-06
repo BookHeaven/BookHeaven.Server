@@ -170,8 +170,8 @@
 				<MudTooltip Text="Search Covers">
 					<MudIconButton Icon="@Icons.Material.Rounded.ImageSearch" Variant="Variant.Filled" Color="Color.Tertiary" OnClick="@ShowFetchCoversDialog"/>
 				</MudTooltip>
-				<MudTooltip Text="Search Metadata (disabled for now)">
-					<MudIconButton Icon="@Icons.Material.Rounded.CloudDownload" Variant="Variant.Filled" Color="Color.Tertiary" Disabled="true"/>
+				<MudTooltip Text="Search Metadata">
+					<MudIconButton Icon="@Icons.Material.Rounded.ManageSearch" Variant="Variant.Filled" Color="Color.Tertiary" OnClick="@ShowFetchMetadataDialog"/>
 				</MudTooltip>
 				<MudTooltip Text="@(!CoverExists ? Translations.ADD_COVER : Translations.REPLACE_COVER)">
 					<MudFileUpload T="IBrowserFile" FilesChanged="UploadCoverToTempPath" Accept=".jpg">
