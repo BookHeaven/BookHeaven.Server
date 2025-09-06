@@ -5,6 +5,7 @@
 		<div class="flex items-center p-3 mb-4">
 			<MudSelect 
 				@bind-Value="_metadataProvider"
+				@bind-Value:after="FetchMetadata"
 				Variant="Variant.Outlined"
 				Label="Metadata provider">
 				<MudSelectItem Value="MetadataProvidersFactory.MetadataProvider.GoogleBooks">Google books</MudSelectItem>
@@ -13,7 +14,9 @@
 		</div>
 		@if (!_isLoaded)
 		{
-			<MudProgressCircular Indeterminate="true" Color="Color.Primary" Size="Size.Large" Class="mx-auto my-10"/>
+			<div class="flex items-center justify-center">
+				<MudProgressCircular Indeterminate="true" Color="Color.Primary" Size="Size.Large"/>
+			</div>
 		}
 		else if (_metadataList.Count == 0)
 		{
@@ -96,13 +99,17 @@
 		await MudDialog.SetOptionsAsync(_options);
 		_settings = await SettingsManager.LoadSettingsAsync();
 		await FetchMetadata();
-		_isLoaded = true;
 	}
 	
 	private async Task FetchMetadata()
 	{
+		_isLoaded = false;
+		StateHasChanged();
+		_metadataList.Clear();
 		var provider = MetadataProvidersFactory.GetMetadataProvider(_metadataProvider)!;
 		_metadataList = await provider.GetMetadataByName(Book.Title!);
+		_isLoaded = true;
+		StateHasChanged();
 	}
 
 }
