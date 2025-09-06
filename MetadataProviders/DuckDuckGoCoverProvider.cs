@@ -47,7 +47,7 @@ public partial class DuckDuckGoCoverProvider(ILogger<DuckDuckGoCoverProvider> lo
     private static readonly HttpClientHandler HttpClientHandler = new() { AllowAutoRedirect = true, UseCookies = true, CookieContainer = new() };
     private static readonly HttpClient HttpClient = new(HttpClientHandler);
     
-    public async Task<Result<List<string>>> GetCoversAsync(CoverRequest request, CancellationToken cancellationToken = default)
+    public async Task<Result<List<string>>> GetCoversAsync(MetadataRequest request, CancellationToken cancellationToken = default)
     {
         var query = HttpUtility.UrlEncode(request.Title + (string.IsNullOrWhiteSpace(request.Author) ? string.Empty : $" {request.Author}") + " book");
         

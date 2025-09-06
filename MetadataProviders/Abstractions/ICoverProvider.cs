@@ -5,5 +5,5 @@ namespace BookHeaven.Server.MetadataProviders.Abstractions;
 
 public interface ICoverProvider
 {
-    Task<Result<List<string>>> GetCoversAsync(CoverRequest request, CancellationToken cancellationToken = default);
+    Task<Result<List<string>>> GetCoversAsync(MetadataRequest request, CancellationToken cancellationToken = default);
 }
