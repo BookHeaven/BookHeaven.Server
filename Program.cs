@@ -148,7 +148,11 @@ public class Program
 		app.UseStaticFiles(new StaticFileOptions
 		{
 			FileProvider = new PhysicalFileProvider(CoversPath),
-			RequestPath = "/covers"
+			RequestPath = "/covers",
+			OnPrepareResponse = ctx =>
+			{
+				ctx.Context.Response.Headers.CacheControl = "public,immutable,max-age=" + (int)TimeSpan.FromDays(30).TotalSeconds;
+			}
 		});
 		app.UseStaticFiles(new StaticFileOptions
 		{
