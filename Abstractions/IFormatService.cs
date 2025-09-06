@@ -4,6 +4,7 @@ namespace BookHeaven.Server.Abstractions;
 
 public interface IFormatService<T>
 {
+	Task DownloadAndStoreCoverAsync(string url, string dest);
 	Task StoreCover(byte[]? image, string dest);
 	Task StoreBook(string? sourcePath, string dest);
 	Task LoadFromFolder(string path);

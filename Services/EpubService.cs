@@ -141,6 +141,20 @@ public class EpubService(
 			await LoadFromFilePath(file);
 		}
 	}
+	
+	public async Task DownloadAndStoreCoverAsync(string url, string dest)
+	{
+		try
+		{
+			using var httpClient = new HttpClient();
+			var imageBytes = await httpClient.GetByteArrayAsync(url);
+			await StoreCover(imageBytes, dest);
+		}
+		catch (Exception e)
+		{
+			logger.LogError(e, "Failed to download cover from {Url}", url);
+		}
+	}
 
 	public async Task StoreCover(byte[]? image, string dest)
 	{
