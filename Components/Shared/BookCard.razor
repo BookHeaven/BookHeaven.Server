@@ -14,7 +14,7 @@
 	}
 	<div class="h-[250px] overflow-hidden">
 		<span class="h-full" style="@Transitions.GetTransitionName("img", Book.BookId)">
-			<MudCardMedia Image="@Book.CoverUrl()" Class="transition-transform !h-full duration-150 group-hover:scale-105"/>
+			<MudCardMedia Image="@Book.CoverUrl(true)" Class="transition-transform !h-full duration-150 group-hover:scale-105"/>
 		</span>
 	</div>
 	<MudCardContent

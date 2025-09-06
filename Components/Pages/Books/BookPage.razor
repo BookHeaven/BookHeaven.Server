@@ -11,7 +11,7 @@
 @if(!IsEditing)
 {
 	<div class="fixed left-0 top-0 right-0 bottom-0 -z-10 blur-3xl opacity-10">
-		<img class="h-full w-full" src="@(_book.CoverUrl())" alt="" />
+		<img class="h-full w-full" src="@(_book.CoverUrl(true))" alt="" />
 	</div>
 }
 
@@ -42,7 +42,7 @@
 </Topbar>
 <div class="mx-auto w-10/12 mt-10 flex flex-wrap gap-10">
 	<div class="w-[200px] mx-auto">
-		<img src="@(_newCoverTempPath ?? _book.CoverUrl())" style="@Transitions.GetTransitionName("img", _book.BookId)" alt="" />
+		<img src="@(_newCoverTempPath ?? _book.CoverUrl(true))" style="@Transitions.GetTransitionName("img", _book.BookId)" alt="" />
 		@if (IsEditing && _newCoverTempPath != null)
 		{
 			<MudAlert Class="mt-4" Severity="Severity.Warning">The new cover won't be applied until the changes are saved.</MudAlert>
