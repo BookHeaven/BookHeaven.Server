@@ -18,7 +18,7 @@ public class EpubService(
 	ISender sender, 
 	ILogger<EpubService> logger,
 	GlobalEventsService globalEventsService)
-	: IFormatService<EpubBook>
+	: IFormatService
 {
 	public async Task<Guid?> LoadFromFile(IBrowserFile file)
 	{

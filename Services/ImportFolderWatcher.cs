@@ -6,7 +6,7 @@ namespace BookHeaven.Server.Services;
 
 public class ImportFolderWatcher(
     ILogger<ImportFolderWatcher> logger, 
-    IFormatService<EpubBook> epubService) 
+    IFormatService epubService) 
     : BackgroundService
 {
     private FileSystemWatcher? _watcher;

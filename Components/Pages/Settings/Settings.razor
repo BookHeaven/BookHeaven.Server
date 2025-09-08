@@ -42,7 +42,7 @@
 </div>
 
 @code {
-	[Inject] private IFormatService<EpubBook> EpubService { get; set; } = null!;
+	[Inject] private IFormatService EpubService { get; set; } = null!;
 	[Inject] private ISettingsManagerService SettingsManager { get; set; } = null!;
 	[Inject] private NavigationManager NavigationManager { get; set; } = null!;
 	

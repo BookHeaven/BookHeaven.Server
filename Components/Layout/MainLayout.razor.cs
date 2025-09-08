@@ -13,7 +13,7 @@ namespace BookHeaven.Server.Components.Layout
     public partial class MainLayout
     {
         [Inject] private NavigationManager NavigationManager { get; set; } = null!;
-        [Inject] private IFormatService<EpubBook> EpubService { get; set; } = null!;
+        [Inject] private IFormatService EpubService { get; set; } = null!;
         [Inject] private ISessionService SessionService { get; set; } = null!;
         [Inject] private ISnackbar Snackbar { get; set; } = null!;
         [Inject] private ISender Sender { get; set; } = null!;

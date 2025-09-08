@@ -96,7 +96,7 @@ public class Program
 
 		builder.Services.AddTransient<ICoverProvider, DuckDuckGoCoverProvider>();
 		builder.Services.AddTransient<IAlertService, AlertService>();
-		builder.Services.AddTransient<IFormatService<EpubBook>, EpubService>();
+		builder.Services.AddTransient<IFormatService, EpubService>();
 		builder.Services.AddScoped<ISettingsManagerService, SettingsManagerService>();
 		builder.Services.AddScoped<ISessionService, SessionService>();
 
