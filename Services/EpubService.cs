@@ -137,14 +137,6 @@ public class EpubService(
 			
 		return createBook.Value;
 	}
-
-	public async Task LoadFromFolder(string path)
-	{
-		foreach (var file in Directory.EnumerateFiles(path, "*.epub", SearchOption.AllDirectories))
-		{
-			await LoadFromFilePath(file);
-		}
-	}
 	
 	public async Task DownloadAndStoreCoverAsync(string url, string dest)
 	{
