@@ -65,6 +65,7 @@ public class EpubService(
 			var createAuthor = await sender.Send(new CreateAuthor.Command(epubBook.Metadata.Author));
 			if (createAuthor.IsFailure)
 			{
+				logger.LogError("Failed to create author '{Author}': {Description}", epubBook.Metadata.Author, createAuthor.Error.Description);
 				return null;
 			}
 			authorId = createAuthor.Value.AuthorId;
@@ -82,6 +83,7 @@ public class EpubService(
 				var createSeries = await sender.Send(new CreateSeries.Command(epubBook.Metadata.Series));
 				if (createSeries.IsFailure)
 				{
+					logger.LogError("Failed to create series '{Series}': {Description}", epubBook.Metadata.Series, createSeries.Error.Description);
 					return null;
 				}
 				seriesId = createSeries.Value.SeriesId;
