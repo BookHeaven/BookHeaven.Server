@@ -14,16 +14,12 @@
   <ItemGroup>
     <Compile Remove="data\**" />
     <Compile Remove="import\**" />
-    <Compile Remove="wwwroot\lib\**" />
     <Content Remove="data\**" />
     <Content Remove="import\**" />
-    <Content Remove="wwwroot\lib\**" />
     <EmbeddedResource Remove="data\**" />
     <EmbeddedResource Remove="import\**" />
-    <EmbeddedResource Remove="wwwroot\lib\**" />
     <None Remove="data\**" />
     <None Remove="import\**" />
-    <None Remove="wwwroot\lib\**" />
     <EmbeddedResource Update="Localization\Translations.es.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Translations.es.Designer.cs</LastGenOutput>
