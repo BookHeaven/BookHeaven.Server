@@ -56,7 +56,8 @@ public class EpubService(
 			
 		if (getBook.IsSuccess)
 		{
-			return getBook.Value.BookId;
+			logger.LogWarning("Book with title '{Title}' already exists in the database, ignoring", epubBook.Metadata.Title);
+			return null;
 		}
 			
 		var getAuthor = await sender.Send(new GetAuthor.Query(new GetAuthor.Filter {Name = epubBook.Metadata.Author}));
