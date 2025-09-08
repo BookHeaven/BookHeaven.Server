@@ -121,7 +121,8 @@ public class EpubService(
 		var getProfiles = await sender.Send(new GetAllProfiles.Query());
 		if (getProfiles.IsFailure)
 		{
-			throw new Exception("Failed to get profiles");
+			logger.LogError("Failed to fetch profiles: {Description}", getProfiles.Error.Description);
+			return null;
 		}
 
 		foreach (var profile in getProfiles.Value)
