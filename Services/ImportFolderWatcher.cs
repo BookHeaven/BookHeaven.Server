@@ -78,40 +78,50 @@ public class ImportFolderWatcher(
     {
         if (!filePath.EndsWith(".epub")) return;
 
-        var fileName = Path.GetFileName(filePath);
-        logger.LogInformation("Loading '{FileName}' from import path", fileName);
-        var id = await epubService.LoadFromFilePath(filePath);
-        if (id != null)
+        try
         {
-            logger.LogInformation($"Loaded '{fileName}'.");
-            var relativePath = Path.GetRelativePath(Program.ImportPath, filePath);
-            var destPath = Path.Combine(_processedPath, relativePath);
-            var destDir = Path.GetDirectoryName(destPath);
-            if (!string.IsNullOrEmpty(destDir))
+            var fileName = Path.GetFileName(filePath);
+            logger.LogInformation("Loading '{FileName}' from import path", fileName);
+            var id = await epubService.LoadFromFilePath(filePath);
+            if (id != null)
             {
-                Directory.CreateDirectory(destDir);
-            }
-            File.Move(filePath, destPath, overwrite: true);
+                logger.LogInformation($"Loaded '{fileName}'.");
+                var relativePath = Path.GetRelativePath(Program.ImportPath, filePath);
+                var destPath = Path.Combine(_processedPath, relativePath);
+                var destDir = Path.GetDirectoryName(destPath);
+                if (!string.IsNullOrEmpty(destDir))
+                {
+                    Directory.CreateDirectory(destDir);
+                }
+                File.Move(filePath, destPath, overwrite: true);
+                
+                
 
-            // Clean up empty directories
-            var originalDir = Path.GetDirectoryName(filePath);
-            while (!string.IsNullOrEmpty(originalDir) &&
-                   !string.Equals(originalDir.TrimEnd(Path.DirectorySeparatorChar), Program.ImportPath.TrimEnd(Path.DirectorySeparatorChar), StringComparison.OrdinalIgnoreCase))
-            {
-                if (Directory.Exists(originalDir) && Directory.GetFileSystemEntries(originalDir).Length == 0)
+                // Clean up empty directories
+                var originalDir = Path.GetDirectoryName(filePath);
+                while (!string.IsNullOrEmpty(originalDir) &&
+                       !string.Equals(originalDir.TrimEnd(Path.DirectorySeparatorChar), Program.ImportPath.TrimEnd(Path.DirectorySeparatorChar), StringComparison.OrdinalIgnoreCase))
                 {
-                    Directory.Delete(originalDir);
-                    originalDir = Path.GetDirectoryName(originalDir);
-                }
-                else
-                {
-                    break;
+                    if (Directory.Exists(originalDir) && Directory.GetFileSystemEntries(originalDir).Length == 0)
+                    {
+                        Directory.Delete(originalDir);
+                        originalDir = Path.GetDirectoryName(originalDir);
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
             }
+            else
+            {
+                logger.LogError("Failed to load '{FileName}'", fileName);
+            }
         }
-        else
+        catch (Exception ex)
         {
-            logger.LogError("Failed to load '{FileName}'", fileName);
+            logger.LogError(ex, "Error processing file '{FilePath}'", filePath);
         }
+        
     }
 }
