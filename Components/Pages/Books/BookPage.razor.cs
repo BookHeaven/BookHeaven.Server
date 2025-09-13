@@ -99,7 +99,7 @@ public partial class BookPage
 	{
 		var result = await DialogService.ShowMessageBox(
 			"Delete book",
-			$"Are you sure you want to delete this book?{Environment.NewLine}{Environment.NewLine}This will remove the book from your server along with the progress for all profiles.{Environment.NewLine}This action cannot be undone.",
+			(MarkupString)$"Are you sure you want to delete this book?<br/><br/>This will remove the progress for all profiles.<br/>The book won't be removed from your devices but you won't be able to sync its progress anymore.<br/><br/>This action cannot be undone!",
 			"Yes", "Cancel");
 		
 		if (result != true) return;
