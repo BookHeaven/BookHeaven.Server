@@ -43,20 +43,17 @@ namespace BookHeaven.Server.Components.Layout
             _drawerOpen = !_drawerOpen;
         }
 
-        private async void UploadBook(IBrowserFile? file)
+        private async Task UploadBook(IReadOnlyList<IBrowserFile>? files)
         {
-            if (file == null) return;
+            if (files is null || files.Count == 0) return;
 
-            Snackbar.Add($"{Translations.UPLOADING_BOOK}...", Severity.Info);
-			var id = await EpubService.LoadFromFile(file);
-            Snackbar.Clear();
-            if (id != null)
+            foreach (var file in files)
             {
-                NavigationManager.NavigateTo(Urls.GetBookUrl(id.Value));
-            }
-            else
-            {
-				Snackbar.Add(Translations.UPLOADING_BOOK_FAILED, Severity.Error);
+                var id = await EpubService.LoadFromFile(file);
+                if (id is null)
+                {
+                    Snackbar.Add(Translations.UPLOADING_BOOK_FAILED + $" '{file.Name}'", Severity.Error);
+                }
             }
         }
     }

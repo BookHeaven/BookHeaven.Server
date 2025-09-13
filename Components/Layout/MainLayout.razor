@@ -30,7 +30,7 @@
                 </MudHidden>
                 <SearchBar/>
 
-                <MudFileUpload T="IBrowserFile" FilesChanged="UploadBook" Class="!m-0">
+                <MudFileUpload T="IReadOnlyList<IBrowserFile>" FilesChanged="UploadBook" Class="!m-0">
                     <ActivatorContent>
                         <MudIconButton HtmlTag="label" Icon="@Icons.Material.Filled.UploadFile" Color="Color.Secondary"/>
                     </ActivatorContent>
