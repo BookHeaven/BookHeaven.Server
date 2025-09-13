@@ -4,16 +4,17 @@ using MudBlazor;
 
 namespace BookHeaven.Server.Services;
 
-public class AlertService(ISnackbar snackbar) : IAlertService
+public class AlertService(ISnackbar snackbar, IDialogService dialogService) : IAlertService
 {
-    public Task ShowAlertAsync(string title, string message, string cancel = "OK")
+    public async Task ShowAlertAsync(string title, string message, string cancel = "OK")
     {
-        throw new NotImplementedException();
+        await dialogService.ShowMessageBox("title", message, cancel);
     }
 
-    public Task<bool> ShowConfirmationAsync(string title, string message, string accept = "Yes", string cancel = "No")
+    public async Task<bool> ShowConfirmationAsync(string title, string message, string accept = "Yes", string cancel = "No")
     {
-        throw new NotImplementedException();
+        var result = await dialogService.ShowMessageBox(title, message, accept, cancel);
+        return result == true;
     }
 
     public Task<string> ShowPromptAsync(string title, string message, string accept = "Yes", string cancel = "No")
@@ -28,6 +29,7 @@ public class AlertService(ISnackbar snackbar) : IAlertService
             AlertSeverity.Info => Severity.Info,
             AlertSeverity.Error => Severity.Error,
             AlertSeverity.Warning => Severity.Warning,
+            AlertSeverity.Success => Severity.Success,
             _ => Severity.Normal
         };
         
