@@ -48,9 +48,7 @@ public class EpubService(
 		Guid? authorId = null;
 		Guid? seriesId = null;
 			
-			
 		var epubBook = await epubReader.ReadMetadataAsync(path);
-		// Book? book = await databaseService.GetBy<Book>(x => x.Title!.Equals(epubBook.Metadata.Title));
 			
 		var getBook = await sender.Send(new GetBook.Query(null, epubBook.Metadata.Title));
 			
