@@ -11,6 +11,7 @@ public class ImportFolderWatcher(
 {
     private FileSystemWatcher? _watcher;
     private readonly string _processedPath = Path.Combine(Program.ImportPath, "processed");
+    private readonly string _errorPath = Path.Combine(Program.ImportPath, "_error");
     private readonly BlockingCollection<string> _filesToProcess = new();
     
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -53,7 +54,7 @@ public class ImportFolderWatcher(
         }
     }
     
-    private bool IsFileReady(string filePath)
+    private static bool IsFileReady(string filePath)
     {
         try
         {
@@ -69,7 +70,7 @@ public class ImportFolderWatcher(
     private void OnCreated(object sender, FileSystemEventArgs e)
     {
         if (!e.FullPath.EndsWith(".epub")) return;
-        if (e.FullPath.StartsWith(_processedPath, StringComparison.OrdinalIgnoreCase)) return;
+        if (e.FullPath.StartsWith(_processedPath, StringComparison.OrdinalIgnoreCase) || e.FullPath.StartsWith(_errorPath, StringComparison.OrdinalIgnoreCase)) return;
         
         _filesToProcess.Add(e.FullPath);
     }
@@ -77,51 +78,54 @@ public class ImportFolderWatcher(
     private async Task ProcessFileAsync(string filePath)
     {
         if (!filePath.EndsWith(".epub")) return;
+        
+        Guid? id = null;
+        
+        var fileName = Path.GetFileName(filePath);
+        logger.LogInformation("Loading '{FileName}' from import path", fileName);
 
         try
         {
-            var fileName = Path.GetFileName(filePath);
-            logger.LogInformation("Loading '{FileName}' from import path", fileName);
-            var id = await epubService.LoadFromFilePath(filePath);
-            if (id != null)
-            {
-                logger.LogInformation($"Loaded '{fileName}'.");
-                var relativePath = Path.GetRelativePath(Program.ImportPath, filePath);
-                var destPath = Path.Combine(_processedPath, relativePath);
-                var destDir = Path.GetDirectoryName(destPath);
-                if (!string.IsNullOrEmpty(destDir))
-                {
-                    Directory.CreateDirectory(destDir);
-                }
-                File.Move(filePath, destPath, overwrite: true);
-                
-                
-
-                // Clean up empty directories
-                var originalDir = Path.GetDirectoryName(filePath);
-                while (!string.IsNullOrEmpty(originalDir) &&
-                       !string.Equals(originalDir.TrimEnd(Path.DirectorySeparatorChar), Program.ImportPath.TrimEnd(Path.DirectorySeparatorChar), StringComparison.OrdinalIgnoreCase))
-                {
-                    if (Directory.Exists(originalDir) && Directory.GetFileSystemEntries(originalDir).Length == 0)
-                    {
-                        Directory.Delete(originalDir);
-                        originalDir = Path.GetDirectoryName(originalDir);
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-            }
-            else
-            {
-                logger.LogError("Failed to load '{FileName}'", fileName);
-            }
+            id = await epubService.LoadFromFilePath(filePath);
+            logger.LogInformation("Loaded '{FileName}'.", fileName);
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error processing file '{FilePath}'", filePath);
+            logger.LogError(ex, "Book '{FileName}' could not be imported", fileName);
         }
         
+        MoveToFolder(filePath, id is not null ? _processedPath : _errorPath);
+        
+        CleanUpEmptyDirectories(filePath);
+    }
+    
+    private static void MoveToFolder(string sourcePath, string destFolder)
+    {
+        var relativePath = Path.GetRelativePath(Program.ImportPath, sourcePath);
+        var destPath = Path.Combine(destFolder, relativePath);
+        var destDir = Path.GetDirectoryName(destPath);
+        if (!string.IsNullOrEmpty(destDir))
+        {
+            Directory.CreateDirectory(destDir);
+        }
+        File.Move(sourcePath, destPath, overwrite: true);
+    }
+    
+    private static void CleanUpEmptyDirectories(string startPath)
+    {
+        var originalDir = Path.GetDirectoryName(startPath);
+        while (!string.IsNullOrEmpty(originalDir) &&
+               !string.Equals(originalDir.TrimEnd(Path.DirectorySeparatorChar), Program.ImportPath.TrimEnd(Path.DirectorySeparatorChar), StringComparison.OrdinalIgnoreCase))
+        {
+            if (Directory.Exists(originalDir) && Directory.GetFileSystemEntries(originalDir).Length == 0)
+            {
+                Directory.Delete(originalDir);
+                originalDir = Path.GetDirectoryName(originalDir);
+            }
+            else
+            {
+                break;
+            }
+        }
     }
 }
