@@ -1,10 +1,13 @@
+using BookHeaven.Domain.Abstractions;
 using BookHeaven.Domain.Entities;
+using BookHeaven.Domain.Enums;
 using BookHeaven.Domain.Extensions;
 using BookHeaven.Domain.Features.Authors;
 using BookHeaven.Domain.Features.Books;
 using BookHeaven.Domain.Features.BooksProgress;
 using BookHeaven.Domain.Features.Seriess;
 using BookHeaven.Domain.Features.Tags;
+using BookHeaven.Domain.Services;
 using BookHeaven.Server.Abstractions;
 using BookHeaven.Server.Constants;
 using BookHeaven.Server.Entities;
@@ -28,6 +31,8 @@ public partial class BookPage
 	[Inject] private ISettingsManagerService SettingsManager { get; set; } = null!;
 	[Inject] private ISessionService SessionService { get; set; } = null!;
 	[Inject] private IDialogService DialogService { get; set; } = null!;
+	[Inject] private IAlertService AlertService { get; set; } = null!;
+	[Inject] private BookManager BookManager { get; set; } = null!;
 
 	[Parameter] public Guid Id { get; set; }
 	[Parameter] public string? Editing { get; set; }
@@ -88,7 +93,29 @@ public partial class BookPage
 	private void DisableEditing()
 	{
 		NavigationManager.NavigateTo(Urls.GetBookUrl(_book.BookId));
-	} 
+	}
+
+	private async Task DeleteBook()
+	{
+		var result = await DialogService.ShowMessageBox(
+			"Delete book",
+			$"Are you sure you want to delete this book?{Environment.NewLine}{Environment.NewLine}This will remove the book from your server along with the progress for all profiles.{Environment.NewLine}This action cannot be undone.",
+			"Yes", "Cancel");
+		
+		if (result != true) return;
+
+		try
+		{
+			await BookManager.DeleteBookAsync(_book);
+		}
+		catch (Exception ex)
+		{
+			await AlertService.ShowToastAsync(ex.Message);
+			return;
+		}
+		await AlertService.ShowToastAsync(Domain.Localization.Translations.BOOK_DELETED, AlertSeverity.Success);
+		NavigationManager.NavigateTo(Urls.Shelf);
+	}
 
 	private async Task LoadBook()
 	{

@@ -23,6 +23,9 @@
 	<MudSpacer />
 	@if (!IsEditing)
 	{
+		<MudTooltip Text="Delete book" Color="Color.Error">
+			<MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="@DeleteBook"/>
+		</MudTooltip>
 		<MudTooltip Text="@Translations.DOWNLOAD">
 			<MudIconButton Icon="@Icons.Material.Filled.Download" Color="Color.Primary" Href="@_book.EpubUrl()" download="@_book.FormattedFileName()"/>
 		</MudTooltip>
