@@ -8,7 +8,7 @@
 {
 	return;
 }
-<Toolbar>
+<Topbar>
 	<MudTooltip Text="@Translations.GO_BACK">
 		<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Color="Color.Primary" Href="@Urls.Authors" />
 	</MudTooltip>
@@ -28,8 +28,8 @@
 			<MudIconButton Icon="@Icons.Material.Filled.Save" Color="Color.Primary" OnClick="@Save"/>
 		</MudTooltip>
 	}
-</Toolbar>
-<div class="container px-4 py-5 mx-auto">
+</Topbar>
+<Container Class="px-4 py-5">
 	<div class="flex flex-wrap gap-5 lg:gap-10 mb-10">
 		<div class="w-[250px] rounded overflow-hidden mx-auto">
 			@if (string.IsNullOrEmpty(_author.ImageUrl))
@@ -67,7 +67,7 @@
 		<BookGrid Books="_author.Books.OrderBy(b => b.Author?.Name).ThenBy(b => b.Series?.Name).ThenBy(b => b.SeriesIndex).ToList()" />
 	}
 	
-</div>
+</Container>
 
 @code {
 	[Inject] private ISender Sender { get; set; } = null!;

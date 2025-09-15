@@ -2,26 +2,28 @@
 @attribute [Route(Urls.Authors)]
 <PageTitle>@Translations.AUTHORS</PageTitle>
 
-<MudTable 
-    T="Author"
-    Breakpoint="Breakpoint.None"
-    Items="_authors" 
-    Loading="_authors == null"
-OnRowClick="row => NavigationManager.NavigateTo(Urls.GetAuthorUrl(row.Item!.AuthorId))"
-    Hover="true" >
-    <ColGroup>
-        <col style="width: 50px;"/>
-        <col style="width: 300px;"/>
-    </ColGroup>
-    <HeaderContent>
-        <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Author, object>(x => x.Name!)">@Translations.NAME</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<Author, object>(x => x.Books.Count())">@Translations.BOOKS</MudTableSortLabel></MudTh>
-    </HeaderContent>
-    <RowTemplate>
-        <MudTd>@context.Name</MudTd>
-        <MudTd>@context.Books.Count()</MudTd>
-    </RowTemplate>
-</MudTable>
+<Container>
+    <MudTable 
+        T="Author"
+        Breakpoint="Breakpoint.None"
+        Items="_authors" 
+        Loading="_authors == null"
+        OnRowClick="row => NavigationManager.NavigateTo(Urls.GetAuthorUrl(row.Item!.AuthorId))"
+        Hover="true" >
+        <ColGroup>
+            <col style="width: 50px;"/>
+            <col style="width: 300px;"/>
+        </ColGroup>
+        <HeaderContent>
+            <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Author, object>(x => x.Name!)">@Translations.NAME</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<Author, object>(x => x.Books.Count())">@Translations.BOOKS</MudTableSortLabel></MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>@context.Name</MudTd>
+            <MudTd>@context.Books.Count()</MudTd>
+        </RowTemplate>
+    </MudTable>
+</Container>
 
 @code {
     [Inject] private ISender Sender { get; set; } = null!;
