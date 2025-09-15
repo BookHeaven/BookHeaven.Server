@@ -1,7 +1,7 @@
 ﻿@using BookHeaven.Server.Helpers
 <MudCard Elevation="4"
-         Class="group relative overflow-hidden flex flex-col hover:cursor-pointer select-none active:scale-95 transition-transform"
-         @onclick="e => OnBookClicked.InvokeAsync((Book.BookId, e.ShiftKey))">
+         Class="@CardClass"
+         @onclick="HandleBookClick">
 
 	@if (IsSelectMode)
 	{
@@ -36,7 +36,18 @@
 
 @code {
 	[Parameter] public required Book Book { get; set; }
+	[Parameter] public bool IsInteractive { get; set; } = true;
 	[Parameter] public bool IsSelectMode { get; set; } = false;
 	[Parameter] public bool IsSelected { get; set; } = false;
 	[Parameter] public EventCallback<(Guid id, bool shiftPressed)> OnBookClicked { get; set; }
+	
+	private string CardClass => $"relative overflow-hidden flex flex-col select-none {(!IsInteractive ? "pointer-events-none" : "group hover:cursor-pointer active:scale-95 transition-transform ")}";
+	
+	private async Task HandleBookClick(MouseEventArgs e)
+	{
+		if (!IsInteractive)
+			return;
+
+		await OnBookClicked.InvokeAsync((Book.BookId, e.ShiftKey));
+	}
 }
