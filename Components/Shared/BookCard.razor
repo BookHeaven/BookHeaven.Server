@@ -22,12 +22,15 @@
 		<MudText Typo="Typo.body2"><span style="@Transitions.GetTransitionName("title", Book.BookId)">@Book.Title</span></MudText>
 		<MudText Typo="Typo.body2" Color="Color.Secondary"><span style="@Transitions.GetTransitionName("author", Book.BookId)">@Book.Author?.Name</span></MudText>
 		<MudText Typo="Typo.caption" Color="Color.Primary"><span style="@Transitions.GetTransitionName("series", Book.BookId)">@Book.Series?.Name</span></MudText>
-		<span class="absolute z-10 bottom-0 inset-x-0" style="@Transitions.GetTransitionName("progress-bar", Book.BookId)">
-			<MudProgressLinear
-				Color="Color.Primary"
-				Size="Size.Small"
-				Value="@((double)Book.Progress().Progress)"/>
-		</span>
+		@if (Book.Progresses.Any())
+		{
+			<span class="absolute z-10 bottom-0 inset-x-0" style="@Transitions.GetTransitionName("progress-bar", Book.BookId)">
+				<MudProgressLinear
+					Color="Color.Primary"
+					Size="Size.Small"
+					Value="@((double)Book.Progress().Progress)"/>
+			</span>
+		}
 	</MudCardContent>
 </MudCard>
 
