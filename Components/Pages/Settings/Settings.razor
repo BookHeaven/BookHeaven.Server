@@ -1,16 +1,14 @@
 ﻿@attribute [Route(Urls.Settings)]
-@using BookHeaven.EpubManager.Epub.Entities
-@using BookHeaven.Server.Abstractions
 @using BookHeaven.Server.Entities
 @using BookHeaven.Server.Components.Pages.Settings.Components
 <PageTitle>@Translations.SETTINGS</PageTitle>
-<Toolbar>
+<Topbar>
 	<MudSpacer />
 	<MudTooltip Text="@Translations.SAVE">
 		<MudIconButton Icon="@Icons.Material.Filled.Save" Color="Color.Primary" OnClick="Save"/>
 	</MudTooltip>
-</Toolbar>
-<div class="mx-auto w-10/12 flex flex-col gap-10">
+</Topbar>
+<Container Class="flex flex-col gap-10">
 	<section>
 		<h1 class="mb-3">UI</h1>
 		<MudStack Spacing="5">
@@ -39,7 +37,7 @@
 	<section>
 		<FontCollection />
 	</section>
-</div>
+</Container>
 
 @code {
 	[Inject] private IFormatService EpubService { get; set; } = null!;
