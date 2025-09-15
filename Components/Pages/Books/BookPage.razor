@@ -1,4 +1,5 @@
-﻿@using BookHeaven.Server.Helpers
+﻿@using System.Globalization
+@using BookHeaven.Server.Helpers
 @attribute [Route($"{Urls.Shelf}/{{Id:guid}}")]
 @attribute [Route($"{Urls.Shelf}/{{Id:guid}}/{{Editing}}")]
 <ScrollToTop />
@@ -214,7 +215,7 @@
 					<MudTextField @bind-Value="_book.Progress().ElapsedTime" HelperText="Hours:Minutes" Label="@Translations.READ_TIME" Variant="Variant.Filled" Converter="_timeReadConverter" Clearable="true"></MudTextField>
 				</MudItem>
 				<MudItem xs="12" md="4">
-					<MudTextField @bind-Value="_book.Progress().Progress" Label="@Translations.PROGRESS" Variant="Variant.Filled"></MudTextField>
+					<MudNumericField @bind-Value="_book.Progress().Progress" Culture="CultureInfo.InvariantCulture" Max="100" Min="0" Label="@Translations.PROGRESS" Variant="Variant.Filled"></MudNumericField>
 				</MudItem>
 			</MudGrid>
 			<MudGrid Spacing="4" Style="min-width:300px;">
@@ -228,7 +229,7 @@
 					<MudTextField @bind-Value=_authorName Label="@Translations.AUTHOR" list="authors" Clearable="true" Variant="Variant.Filled"></MudTextField>
 				</MudItem>
 				<MudItem xs="12" md="2">
-					<MudNumericField @bind-Value=_book.SeriesIndex Label="@Translations.SERIES_INDEX" Variant="Variant.Filled"></MudNumericField>
+					<MudNumericField @bind-Value=_book.SeriesIndex Culture="CultureInfo.InvariantCulture" Label="@Translations.SERIES_INDEX" Variant="Variant.Filled"></MudNumericField>
 				</MudItem>
 				<MudItem xs="12" md="10">
 					<MudTextField @bind-Value=_seriesName Label="@Translations.SERIES" list="series" Clearable="true" Variant="Variant.Filled"></MudTextField>
