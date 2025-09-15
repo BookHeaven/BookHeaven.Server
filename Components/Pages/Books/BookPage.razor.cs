@@ -206,7 +206,7 @@ public partial class BookPage
 			_book.Series = null;
 		}
 
-		var updateBook = await Sender.Send(new UpdateBook.Command(_book));
+		var updateBook = await Sender.Send(new UpdateBook.Command(_book, _newCoverTempPath, _newEpubTempPath));
 		if(updateBook.IsFailure)
 		{
 			throw new Exception(updateBook.Error.Description);
@@ -219,25 +219,6 @@ public partial class BookPage
 		if(updateProgress.IsFailure)
 		{
 			throw new Exception(updateProgress.Error.Description);
-		}
-			
-		if(!string.IsNullOrWhiteSpace(_newCoverTempPath))
-		{
-			if (_newCoverTempPath.StartsWith("http"))
-			{
-				await EpubService.DownloadAndStoreCoverAsync(_newCoverTempPath, _book.CoverPath());
-			}
-			else
-			{
-				await EpubService.StoreCover(await File.ReadAllBytesAsync(_newCoverTempPath), _book.CoverPath());
-				File.Delete(_newCoverTempPath);
-			}
-			
-		}
-		if(_newEpubTempPath != null)
-		{
-			await EpubService.StoreBook(_newEpubTempPath, _book.EpubPath());
-			File.Delete(_newEpubTempPath);
 		}
 
 		await UpdateEpubFileMetadata();
