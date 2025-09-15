@@ -1,6 +1,130 @@
-﻿<MudNavMenu Margin="Margin.Dense" Class="p-4" Color="Color.Primary" Rounded="true">
-    <MudNavLink Href="@Urls.Shelf" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Rounded.AutoStories">@Translations.SHELF</MudNavLink>
-    <MudNavLink Href="@Urls.Authors" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Rounded.Portrait">@Translations.AUTHORS</MudNavLink>
+﻿@using BookHeaven.Domain.Entities.Base
+@using BookHeaven.Domain.Features.Collections
+@implements IDisposable
+<MudNavMenu Margin="Margin.Dense" Class="p-4 select-none" Color="Color.Primary" Rounded="true">
+    <MudNavLink Href="@Urls.Shelf" Match="NavLinkMatch.All" Icon="@Icons.Material.Rounded.AutoStories">@Translations.SHELF</MudNavLink>
+    <MudNavLink Href="@Urls.Authors" Match="NavLinkMatch.All" Icon="@Icons.Material.Rounded.Portrait">@Translations.AUTHORS</MudNavLink>
     <MudNavLink Href="@Urls.Series" Match="NavLinkMatch.All" Icon="@Icons.Material.Rounded.Label">@Translations.SERIES_PLURAL</MudNavLink>
     <MudNavLink Href="@Urls.Settings" Match="NavLinkMatch.All" Icon="@Icons.Material.Rounded.Settings">@Translations.SETTINGS</MudNavLink>
 </MudNavMenu>
+
+<MudNavMenu Margin="Margin.Dense" Class="p-4 select-none" Color="Color.Primary" Rounded="true">
+    
+    <MudNavLink Href="@Urls.Collections">
+        <div class="flex items-center justify-between">
+            <span class="font-bold">Collections</span>
+            <MudIcon Icon="@Icons.Material.Filled.Settings" Size="Size.Small" />
+        </div>
+    </MudNavLink>
+    @foreach (var collection in _collections.OrderBy(c => c.SortOrder))
+    {
+        <MudNavLink
+            Icon="@(collection.CollectionType == CollectionType.Smart ? Icons.Material.Rounded.FolderSpecial : Icons.Material.Rounded.Folder)"
+            Href="@Urls.GetCollectionUrl(collection.CollectionId)">@collection.Name</MudNavLink>
+    }
+</MudNavMenu>
+
+
+@code {
+    [Inject] private ISender Sender { get; set; } = null!;
+    [Inject] private ISessionService SessionService { get; set; } = null!;
+    [Inject] private GlobalEventsService GlobalEventsService { get; set; } = null!;
+    
+    private Guid ProfileId { get; set; }
+    private List<Collection> _collections = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        GlobalEventsService.Subscribe<CollectionCreated>(OnCollectionAdded);
+        GlobalEventsService.Subscribe<CollectionUpdated>(OnCollectionUpdated);
+        GlobalEventsService.Subscribe<CollectionsPositionsUpdated>(OnPositionsUpdated);
+        GlobalEventsService.Subscribe<CollectionDeleted>(OnCollectionRemoved);
+        
+        ProfileId = await SessionService.GetAsync<Guid>(SessionKey.SelectedProfileId);
+
+        await GetCollections();
+    }
+
+    private async Task GetCollections()
+    {
+        var getCollections = await Sender.Send(new GetPinnedCollectionsByProfile.Query(ProfileId));
+        if (getCollections.IsSuccess)
+        {
+            _collections = getCollections.Value;
+        }
+    }
+    
+    
+    private async Task OnCollectionAdded(CollectionCreated ev)
+    {
+        var getCollection = await Sender.Send(new GetCollectionById.Query(ev.CollectionId));
+        if (getCollection is { IsSuccess: true, Value.Pinned: true } && (getCollection.Value.ProfileId is null || getCollection.Value.ProfileId == ProfileId))
+        {
+            _collections.Add(getCollection.Value);
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+    
+    private async Task OnCollectionUpdated(CollectionUpdated ev)
+    {
+        var getCollection = await Sender.Send(new GetCollectionById.Query(ev.CollectionId));
+        if (getCollection.IsSuccess)
+        {
+            // If existing collection is still pinned, update it, otherwise remove it or add it if newly pinned
+            var existing = _collections.FirstOrDefault(c => c.CollectionId == ev.CollectionId);
+            if (existing is not null)
+            {
+                if (getCollection.Value.Pinned && (getCollection.Value.ProfileId is null || getCollection.Value.ProfileId == ProfileId))
+                {
+                    var index = _collections.IndexOf(existing);
+                    _collections[index] = getCollection.Value;
+                }
+                else
+                {
+                    _collections.Remove(existing);
+                }
+            }
+            else
+            {
+                if (getCollection.Value.Pinned && (getCollection.Value.ProfileId is null || getCollection.Value.ProfileId == ProfileId))
+                {
+                    _collections.Add(getCollection.Value);
+                }
+            }
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task OnPositionsUpdated(CollectionsPositionsUpdated ev)
+    {
+        foreach (var updatedPosition in ev.UpdatedPositions)
+        {
+            var existing = _collections.FirstOrDefault(c => c.CollectionId == updatedPosition.Item1);
+            if (existing is not null)
+            {
+                existing.SortOrder = updatedPosition.Item2;
+            }
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+    
+    private async Task OnCollectionRemoved(CollectionDeleted ev)
+    {
+        var existing = _collections.FirstOrDefault(c => c.CollectionId == ev.CollectionId);
+        if (existing is not null)
+        {
+            _collections.Remove(existing);
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+    
+    public void Dispose()
+    {
+        GlobalEventsService.Unsubscribe<CollectionCreated>(OnCollectionAdded);
+        GlobalEventsService.Unsubscribe<CollectionUpdated>(OnCollectionUpdated);
+        GlobalEventsService.Unsubscribe<CollectionsPositionsUpdated>(OnPositionsUpdated);
+        GlobalEventsService.Unsubscribe<CollectionDeleted>(OnCollectionRemoved);
+    }
+
+}

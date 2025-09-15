@@ -1,0 +1,49 @@
+﻿@using BookHeaven.Domain.Entities.Utilities
+@typeparam TItem
+@typeparam TFilterId
+<article class="flex flex-col">
+    <MudText Color="Color.Secondary">@Label</MudText>
+    @foreach (var item in Items)
+    {
+        var id = GetId(item);
+        <MudCheckBox
+            T="bool"
+            CheckedIcon="@(IsInclude ? Icons.Material.Filled.CheckBox : Icons.Material.Filled.IndeterminateCheckBox)"
+            Color="CurrentColor"
+            Value="SelectedItems.Contains(id)"
+            ValueChanged="b => OnCheckboxChanged(id, b)"
+            Disabled="OppositeItems.Contains(id)">
+            @GetName(item)
+        </MudCheckBox>
+    }
+</article>
+
+@code {
+    [Parameter] public FilterSet<TFilterId> FilterSet { get; set; } = new();
+    [Parameter] public EventCallback<FilterSet<TFilterId>> FilterSetChanged { get; set; }
+    
+    [Parameter] public IEnumerable<TItem> Items { get; set; } = [];
+    [Parameter] public string Label { get; set; } = string.Empty;
+    [Parameter] public Func<TItem, TFilterId> GetId { get; set; } = null!;
+    [Parameter] public Func<TItem, string> GetName { get; set; } = null!;
+    [Parameter] public Color CurrentColor { get; set; } = Color.Primary;
+    [Parameter] public bool IsInclude { get; set; } = true;
+    
+    private List<TFilterId> SelectedItems => IsInclude ? FilterSet.Include : FilterSet.Exclude;
+    private List<TFilterId> OppositeItems => IsInclude ? FilterSet.Exclude : FilterSet.Include;
+    
+
+    private async Task OnCheckboxChanged(TFilterId id, bool isChecked)
+    {
+        if (isChecked)
+        {
+            if (!SelectedItems.Contains(id))
+                SelectedItems.Add(id);
+        }
+        else
+        {
+            SelectedItems.Remove(id);
+        }
+        await FilterSetChanged.InvokeAsync(FilterSet);
+    }
+}

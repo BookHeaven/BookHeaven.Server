@@ -1,0 +1,61 @@
+﻿<section>
+	<MudText Typo="Typo.h4" Color="CurrentColor">@(IsInclude ? "Include" : "Exclude")</MudText>
+	<MudDivider Class="my-2" />
+	<div class="grid grid-cols-4 mt-5">
+		<SmartCollectionCheckboxList 
+			TItem="Author" 
+			TFilterId="Guid"
+			Items="Authors"
+			Label="Authors" 
+			GetId="a => a.AuthorId" 
+			GetName="a => a.Name!" 
+			@bind-FilterSet="SmartCollection.Authors"
+			@bind-FilterSet:after="() => SmartCollectionChanged.InvokeAsync(SmartCollection)"
+			IsInclude="IsInclude"
+			CurrentColor="CurrentColor" />
+		<SmartCollectionCheckboxList
+			TItem="Series"
+			TFilterId="Guid"
+			Items="Series"
+			Label="Series"
+			GetId="s => s.SeriesId"
+			GetName="s => s.Name!"
+			@bind-FilterSet="SmartCollection.Series"
+			@bind-FilterSet:after="() => SmartCollectionChanged.InvokeAsync(SmartCollection)"
+			IsInclude="IsInclude"
+			CurrentColor="CurrentColor"/>
+		<SmartCollectionCheckboxList
+			TItem="Tag"
+			TFilterId="Guid"
+			Items="Tags"
+			Label="Tags"
+			GetId="t => t.TagId"
+			GetName="t => t.Name"
+			@bind-FilterSet="SmartCollection.Tags"
+			@bind-FilterSet:after="() => SmartCollectionChanged.InvokeAsync(SmartCollection)"
+			IsInclude="IsInclude"
+			CurrentColor="CurrentColor"/>
+		<SmartCollectionCheckboxList
+			TItem="BookStatus"
+			TFilterId="BookStatus"
+			Items="[BookStatus.New, BookStatus.Reading, BookStatus.Finished]"
+			Label="Status"
+			GetId="x => x"
+			GetName="x => x.StringValue()"
+			@bind-FilterSet="SmartCollection.Statuses"
+			@bind-FilterSet:after="() => SmartCollectionChanged.InvokeAsync(SmartCollection)"
+			IsInclude="IsInclude"
+			CurrentColor="CurrentColor"/>
+	</div>
+</section>
+
+@code {
+	[Parameter] public SmartCollection SmartCollection { get; set; } = null!;
+	[Parameter] public EventCallback<SmartCollection> SmartCollectionChanged { get; set; }
+	[Parameter] public IEnumerable<Author> Authors { get; set; } = [];
+	[Parameter] public IEnumerable<Series> Series { get; set; } = [];
+	[Parameter] public IEnumerable<Tag> Tags { get; set; } = [];
+	[Parameter] public bool IsInclude { get; set; }
+	
+	private Color CurrentColor => IsInclude ? Color.Primary : Color.Error;
+}

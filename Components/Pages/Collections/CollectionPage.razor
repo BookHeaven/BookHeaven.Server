@@ -1,0 +1,199 @@
+﻿@using BookHeaven.Domain.Entities.Base
+@using BookHeaven.Domain.Features.Authors
+@using BookHeaven.Domain.Features.Books
+@using BookHeaven.Domain.Features.BookSeries
+@using BookHeaven.Domain.Features.Collections
+@using BookHeaven.Domain.Features.Profiles
+@using BookHeaven.Domain.Features.Tags
+@using BookHeaven.Domain.Shared
+@using BookHeaven.Server.Components.Pages.Collections.Components
+@attribute [Route(Urls.NewCollection)]
+@attribute [Route(Urls.Collections + "/{CollectionId:guid}")]
+
+<PageTitle>@PageTitle</PageTitle>
+<ScrollToTop />
+<Topbar>
+	<GoBackButton />
+	<MudSpacer />
+	<MudTooltip Text="@Translations.SAVE">
+		<MudIconButton Icon="@Icons.Material.Filled.Save" Color="Color.Primary" OnClick="@Save"/>
+	</MudTooltip>
+</Topbar>
+
+<Container>
+	<div class="flex items-center flex-wrap mb-10">
+		<div class="w-[400px] flex items-center gap-2 me-auto">
+			<MudTextField 
+				Margin="Margin.Dense" 
+				@bind-Value="_collection!.Name" 
+				Variant="Variant.Outlined" 
+				Label="Collection name" 
+				MaxLength="100"
+				Required/>
+			<MudSwitch Label="Pinned" @bind-Value="@_collection!.Pinned" Color="Color.Primary" />
+		</div>
+		@if (_collection is SmartCollection)
+		{
+			<MudButton
+				OnClick="() => SetCollectionType(CollectionType.Simple)"
+				Variant="Variant.Filled">
+				Convert to Simple Collection
+			</MudButton>
+		}
+		else
+		{
+			<MudButton
+				OnClick="() => SetCollectionType(CollectionType.Smart)"
+				Variant="Variant.Filled"
+				EndIcon="@Icons.Material.Filled.Star">
+				Convert to Smart Collection
+			</MudButton>
+		}
+	</div>
+	@if (_collection is SmartCollection smartCollection)
+	{
+		<div class="flex flex-col gap-10">
+			<SmartCollectionFilters 
+				@bind-SmartCollection="smartCollection" 
+				Authors="_authors" 
+				Series="_series" 
+				Tags="_tags" 
+				IsInclude="true" />
+			<SmartCollectionFilters 
+				@bind-SmartCollection="smartCollection" 
+				Authors="_authors" 
+				Series="_series" 
+				Tags="_tags"
+				IsInclude="false" />
+		</div>
+	}
+	else if (_collection is SimpleCollection simpleCollection)
+	{
+		<section>
+			<MudText Color="Color.Primary" Typo="Typo.h4">Select books</MudText>
+			<MudDivider Class="my-2" />
+			<BookGrid IsLoading="_isLoading" Books="_books" IsSelectMode="true" SingleRow="true" @bind-SelectedBooks="simpleCollection.BookIds" />
+		</section>
+	}
+	<section class="mt-10">
+		<MudText Typo="Typo.h4">Preview</MudText>
+		<MudDivider Class="my-5" />
+		<BookGrid IsLoading="_isLoading" Books="_books.ApplyCollectionFilter(_collection).ToList()" IsInteractive="false" />
+	</section>
+</Container>
+
+@code {
+	[Inject] private NavigationManager NavigationManager { get; set; } = null!;
+	[Inject] private ISender Sender { get; set; } = null!;
+	[Inject] private ISessionService SessionService { get; set; } = null!;
+	
+	[Parameter] public Guid? CollectionId { get; set; }
+	
+	private string PageTitle => CollectionId is null ? "Create collection" : "Edit collection";
+	
+	private bool _isLoading = true;
+	
+	private Collection? _collection;
+	private List<Profile> _profiles = [];
+	private List<Author> _authors = [];
+	private List<Series> _series = [];
+	private List<Tag> _tags = [];
+	
+	private List<Book> _books = [];
+	
+	protected override async Task OnInitializedAsync()
+	{
+		if (CollectionId is not null)
+		{
+			var getCollection = await Sender.Send(new GetCollectionById.Query(CollectionId.Value));
+			if (getCollection.IsFailure)
+			{
+				// Handle error (e.g., show an error message)
+				return;
+			}
+			_collection = getCollection.Value;
+		}
+		else
+		{
+			SetCollectionType(CollectionType.Smart);
+		}
+		
+		var getProfiles = await Sender.Send(new GetAllProfiles.Query());
+		if (getProfiles.IsSuccess)
+		{
+			_profiles = getProfiles.Value;
+		}
+		
+
+		var getAuthors = await Sender.Send(new GetAllAuthors.Query());
+		if (getAuthors.IsSuccess)
+		{
+			_authors = getAuthors.Value;
+		}
+
+		var getSeries = await Sender.Send(new GetAllSeries.Query());
+		if (getSeries.IsSuccess)
+		{
+			_series = getSeries.Value;
+		}
+
+		var getTags = await Sender.Send(new GetAllTags.Query());
+		if (getTags.IsSuccess)
+		{
+			_tags = getTags.Value;
+		}
+
+		var getBooks = await Sender.Send(new GetAllBooks.Query(await SessionService.GetAsync<Guid>(SessionKey.SelectedProfileId)));
+		if (getBooks.IsSuccess)
+		{
+			_books = getBooks.Value;
+		}
+		_isLoading = false;
+	}
+	
+	private void SetCollectionType(CollectionType type)
+	{
+		if (_collection is null)
+		{
+			_collection = type == CollectionType.Smart
+				? new SmartCollection()
+				: new SimpleCollection();
+		}
+		else
+		{
+			var id = _collection.CollectionId;
+			var name = _collection.Name;
+
+			_collection = type == CollectionType.Smart
+				? new SmartCollection()
+				: new SimpleCollection();
+
+			_collection.CollectionId = id;
+			_collection.Name = name;
+		}
+		_collection.CollectionType = type;
+	}
+
+	private async Task Save()
+	{
+		if(_collection is null) return;
+
+		Result result;
+		
+		if (_collection.CollectionId == Guid.Empty)
+		{
+			result = await Sender.Send(new AddCollection.Command(_collection));
+		}
+		else
+		{
+			result = await Sender.Send(new UpdateCollection.Command(_collection));
+		}
+
+		if (result.IsFailure)
+		{
+			return;
+		}
+		
+		NavigationManager.NavigateTo(Urls.Collections);
+	}
+}

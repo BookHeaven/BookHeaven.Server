@@ -1,0 +1,174 @@
+﻿@using BookHeaven.Domain.Abstractions
+@using BookHeaven.Domain.Entities.Base
+@using BookHeaven.Domain.Features.Collections
+@attribute [Route(Urls.Collections)]
+<PageTitle>Manage Collections</PageTitle>
+<ScrollToTop />
+<Container>
+	<MudTable
+		T="Collection"
+		Hover="true"
+		Items="_collections.OrderBy(c => c.SortOrder)">
+		<HeaderContent>
+			<MudTh></MudTh>
+			<MudTh>Name</MudTh>
+			<MudTh>Type</MudTh>
+			<MudTh>Pinned</MudTh>
+			<MudTh>Actions</MudTh>
+		</HeaderContent>
+		<ToolBarContent>
+			<div class="flex items-center w-full">
+				<span class="text-xl">Collections</span>
+				<MudButton Class="ms-auto" Href="@Urls.NewCollection" StartIcon="@Icons.Material.Filled.Add" Variant="Variant.Filled" Color="Color.Tertiary">New</MudButton>
+			</div>
+		</ToolBarContent>
+		<ColGroup>
+			<col style="width: 0;"/>
+			<col/>
+			<col style="width: 0;"/>
+			<col style="width: 0;"/>
+			<col style="width: 0;"/>
+		</ColGroup>
+		<ChildRowContent>
+			@{
+				var isDragged = _draggedCollectionId == context.CollectionId;
+				var isDropTarget = _dropTargetCollectionId == context.CollectionId && !isDragged;
+				var trClass = isDragged
+					? "bg-blue-800/50"
+					: isDropTarget
+						? "bg-green-800/50"
+						: string.Empty;
+			}
+			<MudTr
+				Class="@trClass"
+				@onclick="() => NavigationManager.NavigateTo(Urls.GetCollectionPageUrl(context.CollectionId))"
+				ondragover="event.preventDefault()"
+				@ondrop="async (e) => await HandleDrop(context)"
+				@ondragstart="(e) => HandleDragStart(context)"
+				@ondragend="(e) => HandleDragEnd()"
+				@ondragenter="(e) => HandleDragEnter(context)"
+				@ondragleave="(e) => HandleDragLeave(context)"
+				draggable="true">
+				<MudTd><MudIcon Icon="@Icons.Material.Filled.DragIndicator" /></MudTd>
+				<MudTd>@context.Name</MudTd>
+				<MudTd>
+					<div class="flex items-center gap-2 leading-0">
+						@context.CollectionType.StringValue()
+						@if (context.CollectionType == CollectionType.Smart)
+						{
+							<MudIcon Icon="@Icons.Material.Filled.Star" Size="Size.Small" Color="Color.Warning" />
+						}
+					</div>
+				</MudTd>
+				<MudTd @onclick:stopPropagation="true">
+					<MudSwitch @bind-Value="@context.Pinned" @bind-Value:after="() => TogglePinned(context.CollectionId, context.Pinned)" Color="Color.Primary"></MudSwitch>
+				</MudTd>
+				<MudTd>
+					<div class="flex items-center">
+						<MudIconButton 
+							OnClick="() => DeleteCollection(context.CollectionId)"
+							Icon="@Icons.Material.Filled.Delete" 
+							Color="Color.Error"/>
+					</div>
+				</MudTd>
+			</MudTr>
+		</ChildRowContent>
+	</MudTable>
+</Container>
+
+
+@code {
+	[Inject] private ISender Sender { get; set; } = null!;
+	[Inject] private NavigationManager NavigationManager { get; set; } = null!;
+	[Inject] private IAlertService AlertService { get; set; } = null!;
+	
+	private List<Collection> _collections = [];
+	private Guid? _draggedCollectionId = null;
+	private Guid? _dropTargetCollectionId = null;
+	
+	protected override async Task OnInitializedAsync()
+	{
+		var getCollections = await Sender.Send(new GetAllCollections.Query());
+		if (getCollections.IsFailure)
+		{
+			
+		}
+		_collections = getCollections.Value;
+	}
+	
+	private async Task TogglePinned(Guid collectionId, bool pinned)
+	{
+		var result = await Sender.Send(new UpdateCollectionPinned.Command(collectionId, pinned));
+		if (result.IsFailure)
+		{
+			// Show error
+			return;
+		}
+	}
+	
+	private void HandleDragStart(Collection collection)
+	{
+		_draggedCollectionId = collection.CollectionId;
+		_dropTargetCollectionId = null;
+		StateHasChanged();
+	}
+
+	private void HandleDragEnd()
+	{
+		_draggedCollectionId = null;
+		_dropTargetCollectionId = null;
+		StateHasChanged();
+	}
+
+	private void HandleDragEnter(Collection collection)
+	{
+		if(collection.CollectionId == _draggedCollectionId) return;
+		_dropTargetCollectionId = collection.CollectionId;
+		StateHasChanged();
+	}
+
+	private void HandleDragLeave(Collection collection)
+	{
+		if(collection.CollectionId == _draggedCollectionId) return;
+		if(_dropTargetCollectionId == collection.CollectionId)
+		{
+			_dropTargetCollectionId = null;
+			StateHasChanged();
+		}
+	}
+
+	private async Task HandleDrop(Collection collection)
+	{
+		if(_draggedCollectionId is null) return;
+		
+		var draggedIndex = _collections.FindIndex(c => c.CollectionId == _draggedCollectionId);
+		var targetIndex = _collections.IndexOf(collection);
+
+		var draggedOrder = _collections[draggedIndex].SortOrder;
+		var targetOrder = _collections[targetIndex].SortOrder;
+		
+		_collections[draggedIndex].SortOrder = targetOrder;
+		_collections[targetIndex].SortOrder = draggedOrder;
+		
+		var collectionsToUpdate = new List<(Guid, int)> {(_collections[draggedIndex].CollectionId, targetOrder), (_collections[targetIndex].CollectionId, draggedOrder)};
+		await Sender.Send(new UpdateCollectionsPosition.Command(collectionsToUpdate));
+
+		await InvokeAsync(StateHasChanged);
+	}
+	
+	private async Task DeleteCollection(Guid collectionId)
+	{
+		var confirm = await AlertService.ShowConfirmationAsync("Delete Collection", "Are you sure you want to delete this collection?<br/>This action cannot be undone.");
+		if (!confirm) return;
+		
+		var result = await Sender.Send(new DeleteCollection.Command(collectionId));
+		if (result.IsFailure)
+		{
+			// Show error
+			return;
+		}
+		
+		_collections.RemoveAll(c => c.CollectionId == collectionId);
+		await InvokeAsync(StateHasChanged);
+	}
+}

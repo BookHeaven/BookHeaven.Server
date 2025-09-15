@@ -1,5 +1,8 @@
 ﻿@attribute [Route(Urls.Shelf)]
+@attribute [Route($"{Urls.Collection}/{{CollectionId:guid}}")]
 
+@using BookHeaven.Domain.Entities.Base
+@using BookHeaven.Domain.Features.Collections
 @implements IDisposable
 
 <PageTitle>@Translations.SHELF</PageTitle>
@@ -8,6 +11,9 @@
 
 @if (IsLoading)
 {
+	<BookGrid 
+		IsLoading="true"
+		Center="true"/>
 	return;
 }
 
@@ -20,65 +26,82 @@
 }
 
 <Topbar>
-	<MudChipSet T="BookStatus" @bind-SelectedValue="BookManager.Filter" CheckMark>
-		<MudChip Value="BookStatus.All" Variant="Variant.Text" Color="Color.Primary" Class="mx-0.5">@BookStatus.All.StringValue()</MudChip>	
-		<MudChip Value="BookStatus.New" Variant="Variant.Text" Color="Color.Primary" Class="mx-0.5">@BookStatus.New.StringValue()</MudChip>
-		<MudChip Value="BookStatus.Reading" Variant="Variant.Text" Color="Color.Primary" Class="mx-0.5">@BookStatus.Reading.StringValue()</MudChip>
-		<MudChip Value="BookStatus.Finished" Variant="Variant.Text" Color="Color.Primary" Class="mx-0.5">@BookStatus.Finished.StringValue()</MudChip>
-	</MudChipSet>
+	@if (CollectionId == Guid.Empty)
+	{
+		<MudChipSet T="BookStatus" @bind-SelectedValue="BookManager.Filter" Class="ms-2" CheckMark>
+			<MudChip Value="BookStatus.All" Variant="Variant.Text" Color="Color.Primary" Class="mx-0.5">@BookStatus.All.StringValue()</MudChip>
+			<MudChip Value="BookStatus.New" Variant="Variant.Text" Color="Color.Primary" Class="mx-0.5">@BookStatus.New.StringValue()</MudChip>
+			<MudChip Value="BookStatus.Reading" Variant="Variant.Text" Color="Color.Primary" Class="mx-0.5">@BookStatus.Reading.StringValue()</MudChip>
+			<MudChip Value="BookStatus.Finished" Variant="Variant.Text" Color="Color.Primary" Class="mx-0.5">@BookStatus.Finished.StringValue()</MudChip>
+		</MudChipSet>
+	}
+	else
+	{
+		<div class="text-xl sm:text-2xl ms-2">
+			<span>Collection:</span>
+			<span class="text-nowrap text-(--mud-palette-primary)">@_currentCollection!.Name</span>
+		</div>
+		<MudSpacer />
+		<MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" Href="@Urls.GetCollectionPageUrl(_currentCollection.CollectionId)"/>
+	}
 </Topbar>
 
 @if (BookManager.Books.Count > 0)
 {
 	<BookGrid 
-		Books="BookManager.Books.OrderBy(b => b.Author?.Name).ThenBy(b => b.Series?.Name).ThenBy(b => b.SeriesIndex).ToList()" 
+		Books="@(_currentCollection is not null ? BookManager.Books.ApplyCollectionFilter(_currentCollection).ToList() : BookManager.Books)" 
 		Center="true"
 		IsSelectMode="IsSelectMode"
 		@bind-SelectedBooks="_selectedBooks"/>
-	<BottomToolbar>
-		@if (!IsSelectMode)
-		{
-			<MudButton
-				OnClick="ToggleSelectMode"
-				StartIcon="@Icons.Material.Filled.SelectAll"
-				Color="Color.Secondary"
-				IconSize="Size.Large"
-				Size="Size.Large">
-				Select mode
-			</MudButton>
-		}
-		else
-		{
-			<MudIconButton 
-				OnClick="ToggleSelectMode"
-				Icon="@Icons.Material.Filled.Deselect"
-				Color="Color.Secondary"/>
-			<MudIconButton 
-				OnClick="() => SelectIconAction.Invoke()"
-				Icon="@SelectIcon"
-				Variant="Variant.Filled" />
-			<MudButton
-				OnClick="OpenTagsDialog"
-				Color="Color.Primary"
-				Disabled="_selectedBooks.Count == 0">
-				Tags
-			</MudButton>
-			<MudButton
-				Color="Color.Primary"
-				Disabled="_selectedBooks.Count == 0">
-				Edit
-			</MudButton>
-			<MudButton
-				OnClick="@DeleteBooks"
-				Color="Color.Error"
-				Disabled="_selectedBooks.Count == 0">
-				Delete
-			</MudButton>
-			<MudSpacer/>
+
+	if (CollectionId == Guid.Empty)
+	{
+		<BottomToolbar>
+			@if (!IsSelectMode)
+			{
+				<MudButton
+					OnClick="ToggleSelectMode"
+					StartIcon="@Icons.Material.Filled.SelectAll"
+					Color="Color.Secondary"
+					IconSize="Size.Large"
+					Size="Size.Large">
+					Select mode
+				</MudButton>
+			}
+			else
+			{
+				<MudIconButton 
+					OnClick="ToggleSelectMode"
+					Icon="@Icons.Material.Filled.Deselect"
+					Color="Color.Secondary"/>
+				<MudIconButton 
+					OnClick="() => SelectIconAction.Invoke()"
+					Icon="@SelectIcon"
+					Variant="Variant.Filled" />
+				<MudButton
+					OnClick="OpenTagsDialog"
+					Color="Color.Primary"
+					Disabled="_selectedBooks.Count == 0">
+					Tags
+				</MudButton>
+				<MudButton
+					OnClick="@OpenMetadataDialog"
+					Color="Color.Primary"
+					Disabled="_selectedBooks.Count == 0">
+					Edit
+				</MudButton>
+				<MudButton
+					OnClick="@DeleteBooks"
+					Color="Color.Error"
+					Disabled="_selectedBooks.Count == 0">
+					Delete
+				</MudButton>
+				<MudSpacer/>
 			
-			<span class="ms-auto text-nowrap font-bold">@_selectedBooks.Count selected</span>
-		}
-	</BottomToolbar>
+				<span class="ms-auto text-nowrap font-bold">@_selectedBooks.Count selected</span>
+			}
+		</BottomToolbar>
+	}
 }
 else
 {
@@ -96,9 +119,13 @@ else
 	[Inject] private GlobalEventsService GlobalEventsService { get; set; } = null!;
 	[Inject] private IDialogService DialogService { get; set; } = null!;
 	[Inject] private ISnackbar Snackbar { get; set; } = null!;
+	[Inject] private ISender Sender { get; set; } = null!;
+	
+	[Parameter] public Guid CollectionId { get; set; } = Guid.Empty;
 	
 	private bool IsLoading { get; set; } = true;
 	private Guid ProfileId { get; set; }
+	private Collection? _currentCollection;
 	
 	private bool IsSelectMode { get; set; } = false;
 	private List<Guid> _selectedBooks = [];
@@ -126,7 +153,25 @@ else
 		await BookManager.GetBooksAsync(ProfileId);
 		IsLoading = false;
 	}
-	
+
+	protected override async Task OnParametersSetAsync()
+	{
+		if (CollectionId != Guid.Empty)
+		{
+			var getCollection = await Sender.Send(new GetCollectionById.Query(CollectionId));
+			if (getCollection.IsFailure)
+			{
+				NavigationManager.NavigateTo(Urls.Shelf);
+				return;
+			}
+			_currentCollection = getCollection.Value;
+		}
+		else
+		{
+			_currentCollection = null;
+		}
+	}
+
 	private async Task OnBookAdded(BookAdded e)
 	{
 		await BookManager.AppendBookAsync(ProfileId, e.BookId);
@@ -167,11 +212,23 @@ else
 			// Handle result if needed
 		}
 	}
+	
+	private async Task OpenMetadataDialog()
+	{
+		var parameters = new DialogParameters
+		{
+			{ nameof(BulkMetadataEditDialog.BookIds), _selectedBooks }
+		};
+		
+		var dialog = await DialogService.ShowAsync<BulkMetadataEditDialog>(null, parameters);
+		var result = await dialog.Result;
+	}
+
 	private async Task DeleteBooks()
 	{
 		var result = await DialogService.ShowMessageBox(
 			"Delete Books", 
-			(MarkupString)$"You are about to delete {_selectedBooks.Count} books.<br/>This will delete the progress for all profiles.<br/><br/>The books won't be removed from your devices but you won't be able to sync their progress anymore.<br/><br/>This action cannot be undone!", 
+			(MarkupString)$"You are about to delete {_selectedBooks.Count} book{(_selectedBooks.Count > 1 ? "s" : "")}.<br/>This will delete the progress for all profiles.<br/><br/>The books won't be removed from your devices but you won't be able to sync their progress anymore.<br/><br/>This action cannot be undone!", 
 			yesText: "Delete", 
 			cancelText: "Cancel");
 		if(result != true) return;
@@ -183,7 +240,7 @@ else
 		{
 			Snackbar.Add("An error occurred while deleting one or more books.", Severity.Error);
 		}
-		
+		_selectedBooks.Clear();
 	}
 
 	public void Dispose()
