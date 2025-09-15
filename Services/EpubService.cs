@@ -1,4 +1,5 @@
-﻿using BookHeaven.Domain.Events;
+﻿using BookHeaven.Domain.Entities;
+using BookHeaven.Domain.Events;
 using Microsoft.AspNetCore.Components.Forms;
 using BookHeaven.Domain.Features.Authors;
 using BookHeaven.Domain.Features.Books;
@@ -94,23 +95,26 @@ public class EpubService(
 		}
 		var isbnIdentifiers = epubBook.Metadata.Identifiers.Where(x => x.Scheme == "ISBN").ToList();
 			
-		var createBook = await sender.Send(
-			new CreateBook.Command(
-				AuthorId: authorId.Value,
-				SeriesId: seriesId,
-				SeriesIndex: epubBook.Metadata.SeriesIndex,
-				Title: epubBook.Metadata.Title,
-				Description: epubBook.Metadata.Description,
-				PublishedDate: DateTime.TryParse(epubBook.Metadata.PublishDate, out var tempDate) ? tempDate : DateTime.MinValue,
-				Publisher: epubBook.Metadata.Publisher,
-				Language: epubBook.Metadata.Language,
-				Isbn10: isbnIdentifiers.FirstOrDefault(x => x.Value.Length == 10)?.Value.Split(":").Last(),
-				Isbn13: isbnIdentifiers.FirstOrDefault(x => x.Value.Length == 13)?.Value.Split(":").Last(),
-				Asin: epubBook.Metadata.Identifiers.FirstOrDefault(x => x.Scheme == "ASIN")?.Value.Split(":").Last(),
-				Uuid: epubBook.Metadata.Identifiers.FirstOrDefault(x => x.Scheme == "UUID")?.Value.Split(":").Last()
-			)
-		);
-			
+		var newBook = new Book
+		{
+			Title = epubBook.Metadata.Title,
+			Description = epubBook.Metadata.Description,
+			PublishedDate = DateTime.TryParse(epubBook.Metadata.PublishDate, out var tempDate) ? tempDate : null,
+			Publisher = epubBook.Metadata.Publisher,
+			Language = epubBook.Metadata.Language,
+			AuthorId = authorId,
+			SeriesId = seriesId,
+			SeriesIndex = epubBook.Metadata.SeriesIndex,
+			ISBN10 = isbnIdentifiers.FirstOrDefault(x => x.Value.Length == 10)?.Value.Split(":").Last(),
+			ISBN13 = isbnIdentifiers.FirstOrDefault(x => x.Value.Length == 13)?.Value.Split(":").Last(),
+			ASIN = epubBook.Metadata.Identifiers.FirstOrDefault(x => x.Scheme == "ASIN")?.Value.Split(":").Last(),
+			UUID = epubBook.Metadata.Identifiers.FirstOrDefault(x => x.Scheme == "UUID")?.Value.Split(":").Last()
+		};
+		
+		var tempCoverPath = Path.GetTempFileName();
+		await StoreCover(epubBook.Cover, tempCoverPath);
+		
+		var createBook = await sender.Send(new AddBook.Command(newBook, tempCoverPath, epubBook.FilePath));
 		if (createBook.IsFailure)
 		{
 			return null;
@@ -127,27 +131,10 @@ public class EpubService(
 		{
 			await sender.Send(new CreateBookProgress.Command(createBook.Value, profile.ProfileId));
 		}
-			
-		await StoreCover(epubBook.Cover, GetCoverPath(Program.CoversPath, createBook.Value)!);
-		await StoreBook(epubBook.FilePath, GetBookPath(Program.BooksPath, createBook.Value)!);
 		
 		await globalEventsService.Publish(new BookAdded(createBook.Value));
 			
 		return createBook.Value;
-	}
-	
-	public async Task DownloadAndStoreCoverAsync(string url, string dest)
-	{
-		try
-		{
-			using var httpClient = new HttpClient();
-			var imageBytes = await httpClient.GetByteArrayAsync(url);
-			await StoreCover(imageBytes, dest);
-		}
-		catch (Exception e)
-		{
-			logger.LogError(e, "Failed to download cover from {Url}", url);
-		}
 	}
 
 	public async Task StoreCover(byte[]? image, string dest)
@@ -156,35 +143,5 @@ public class EpubService(
 		var dir = Path.GetDirectoryName(dest);
 		if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir)) Directory.CreateDirectory(dir);
 		await File.WriteAllBytesAsync(dest, image);
-	}
-
-	public async Task StoreBook(string? sourcePath, string dest)
-	{
-		if (sourcePath == null) return;
-		var dir = Path.GetDirectoryName(dest);
-		if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir)) Directory.CreateDirectory(dir);
-		await using var source = File.OpenRead(sourcePath);
-		await using var destination = File.Create(dest);
-		await source.CopyToAsync(destination);
-	}
-
-	private static string? GetBookPath(string booksPath, Guid bookId, bool checkPath = false)
-	{
-		var path = $"{booksPath}/{bookId}.epub";
-		if (checkPath && !File.Exists(path))
-		{
-			return null;
-		}
-		return path;
-	}
-
-	private static string? GetCoverPath(string coversPath, Guid bookId, bool checkPath = false)
-	{
-		var path = $"{coversPath}/{bookId}.jpg";
-		if (checkPath && !File.Exists(path))
-		{
-			return null;
-		}
-		return path;
 	}
 }
