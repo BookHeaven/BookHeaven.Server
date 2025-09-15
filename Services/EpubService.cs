@@ -17,8 +17,7 @@ namespace BookHeaven.Server.Services;
 public class EpubService(
 	IEpubReader epubReader, 
 	ISender sender, 
-	ILogger<EpubService> logger,
-	GlobalEventsService globalEventsService)
+	ILogger<EpubService> logger)
 	: IFormatService
 {
 	public async Task<Guid?> LoadFromFile(IBrowserFile file)
@@ -119,20 +118,6 @@ public class EpubService(
 		{
 			return null;
 		}
-			
-		var getProfiles = await sender.Send(new GetAllProfiles.Query());
-		if (getProfiles.IsFailure)
-		{
-			logger.LogError("Failed to fetch profiles: {Description}", getProfiles.Error.Description);
-			return null;
-		}
-
-		foreach (var profile in getProfiles.Value)
-		{
-			await sender.Send(new CreateBookProgress.Command(createBook.Value, profile.ProfileId));
-		}
-		
-		await globalEventsService.Publish(new BookAdded(createBook.Value));
 			
 		return createBook.Value;
 	}
