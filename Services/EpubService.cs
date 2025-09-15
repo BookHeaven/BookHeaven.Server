@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Components.Forms;
 using BookHeaven.Domain.Features.Authors;
 using BookHeaven.Domain.Features.Books;
+using BookHeaven.Domain.Features.BookSeries;
 using BookHeaven.Domain.Features.BooksProgress;
 using BookHeaven.Domain.Features.Profiles;
-using BookHeaven.Domain.Features.Seriess;
 using BookHeaven.Domain.Services;
 using BookHeaven.EpubManager.Epub.Entities;
 using BookHeaven.EpubManager.Epub.Services;
