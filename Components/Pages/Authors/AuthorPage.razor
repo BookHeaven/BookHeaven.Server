@@ -9,9 +9,7 @@
 	return;
 }
 <Topbar>
-	<MudTooltip Text="@Translations.GO_BACK">
-		<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Color="Color.Primary" Href="@Urls.Authors" />
-	</MudTooltip>
+	<GoBackButton />
 	<MudSpacer />
 	@if (!IsEditing)
 	{

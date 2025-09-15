@@ -18,9 +18,7 @@
 
 <PageTitle>@_book.Title</PageTitle>
 <Topbar>
-	<MudTooltip Text="@Translations.GO_BACK">
-		<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Color="Color.Primary" Href="@Urls.Shelf" />
-	</MudTooltip>
+	<GoBackButton />
 	<MudSpacer />
 	@if (!IsEditing)
 	{
