@@ -66,6 +66,9 @@
 				<MudTd>
 					<div class="flex items-center">
 						<MudIconButton 
+							OnClick="() => NavigationManager.NavigateTo(Urls.GetCollectionPageUrl(context.CollectionId))"
+							Icon="@Icons.Material.Filled.Edit" />
+						<MudIconButton
 							OnClick="() => DeleteCollection(context.CollectionId)"
 							Icon="@Icons.Material.Filled.Delete"
 							Color="Color.Error"/>
