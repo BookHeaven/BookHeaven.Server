@@ -1,7 +1,7 @@
 ﻿<section>
 	<MudText Typo="Typo.h4" Color="CurrentColor">@(IsInclude ? "Include" : "Exclude")</MudText>
 	<MudDivider Class="my-2" />
-	<div class="grid grid-cols-4 mt-5">
+	<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 mt-5 gap-5">
 		<SmartCollectionCheckboxList 
 			TItem="Author" 
 			TFilterId="Guid"
