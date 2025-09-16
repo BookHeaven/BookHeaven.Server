@@ -71,15 +71,15 @@
 	else if (_collection is SimpleCollection simpleCollection)
 	{
 		<section>
-			<MudText Color="Color.Primary" Typo="Typo.h4">Select books</MudText>
+			<MudText Class="text-2xl 2xl:text-4xl" Color="Color.Primary">Preview</MudText>
 			<MudDivider Class="my-2" />
 			<BookGrid IsLoading="_isLoading" Books="_books" IsSelectMode="true" SingleRow="true" @bind-SelectedBooks="simpleCollection.BookIds" />
 		</section>
 	}
 	<section class="mt-10">
-		<MudText Typo="Typo.h4">Preview</MudText>
-		<MudDivider Class="mt-2 mb-5" />
-		<BookGrid IsLoading="_isLoading" Books="_books.ApplyCollectionFilter(_collection).ApplyDefaultSorting().ToList()" IsInteractive="false" />
+		<MudText Class="text-2xl 2xl:text-4xl">Preview</MudText>
+		<MudDivider Class="mt-2 mb-5"/>
+		<BookGrid IsLoading="_isLoading" Books="_books.ApplyCollectionFilter(_collection).ApplyDefaultSorting().ToList()" IsInteractive="false"/>
 	</section>
 </Container>
 
