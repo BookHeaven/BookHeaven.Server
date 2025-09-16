@@ -77,8 +77,8 @@
 	}
 	<section class="mt-10">
 		<MudText Typo="Typo.h4">Preview</MudText>
-		<MudDivider Class="my-5" />
-		<BookGrid IsLoading="_isLoading" Books="_books.ApplyCollectionFilter(_collection).ToList()" IsInteractive="false" />
+		<MudDivider Class="mt-2 mb-5" />
+		<BookGrid IsLoading="_isLoading" Books="_books.ApplyCollectionFilter(_collection).ApplyDefaultSorting().ToList()" IsInteractive="false" />
 	</section>
 </Container>
 
