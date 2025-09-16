@@ -41,7 +41,7 @@
 			}
 			<MudTr
 				Class="@trClass"
-				@onclick="() => NavigationManager.NavigateTo(Urls.GetCollectionPageUrl(context.CollectionId))"
+				@onclick="() => NavigationManager.NavigateTo(Urls.GetCollectionUrl(context.CollectionId))"
 				ondragover="event.preventDefault()"
 				@ondrop="async (e) => await HandleDrop(context)"
 				@ondragstart="(e) => HandleDragStart(context)"
@@ -67,7 +67,7 @@
 					<div class="flex items-center">
 						<MudIconButton 
 							OnClick="() => DeleteCollection(context.CollectionId)"
-							Icon="@Icons.Material.Filled.Delete" 
+							Icon="@Icons.Material.Filled.Delete"
 							Color="Color.Error"/>
 					</div>
 				</MudTd>
