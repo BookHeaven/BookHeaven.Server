@@ -2,7 +2,7 @@
 @typeparam TItem
 @typeparam TFilterId
 <article class="flex flex-col">
-    <MudText Color="Color.Secondary">@Label</MudText>
+    <MudText Color="CurrentColor">@Label</MudText>
     @foreach (var item in Items)
     {
         var id = GetId(item);
@@ -10,6 +10,7 @@
             T="bool"
             CheckedIcon="@(IsInclude ? Icons.Material.Filled.CheckBox : Icons.Material.Filled.IndeterminateCheckBox)"
             Color="CurrentColor"
+            UncheckedColor="Color.Secondary"
             Value="SelectedItems.Contains(id)"
             ValueChanged="b => OnCheckboxChanged(id, b)"
             Disabled="OppositeItems.Contains(id)">
