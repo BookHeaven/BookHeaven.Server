@@ -49,14 +49,14 @@
 				@ondragenter="(e) => HandleDragEnter(context)"
 				@ondragleave="(e) => HandleDragLeave(context)"
 				draggable="true">
-				<MudTd><MudIcon Icon="@Icons.Material.Filled.DragIndicator" /></MudTd>
+				<MudTd><MudIcon Icon="@Icons.Material.Filled.DragIndicator"/></MudTd>
 				<MudTd>@context.Name</MudTd>
 				<MudTd>
 					<div class="flex items-center gap-2 leading-0">
 						@context.CollectionType.StringValue()
 						@if (context.CollectionType == CollectionType.Smart)
 						{
-							<MudIcon Icon="@Icons.Material.Filled.Star" Size="Size.Small" Color="Color.Warning" />
+							<MudIcon Icon="@Icons.Material.Filled.Star" Size="Size.Small" Color="Color.Warning"/>
 						}
 					</div>
 				</MudTd>
@@ -65,9 +65,9 @@
 				</MudTd>
 				<MudTd>
 					<div class="flex items-center">
-						<MudIconButton 
+						<MudIconButton
 							OnClick="() => NavigationManager.NavigateTo(Urls.GetCollectionPageUrl(context.CollectionId))"
-							Icon="@Icons.Material.Filled.Edit" />
+							Icon="@Icons.Material.Filled.Edit"/>
 						<MudIconButton
 							OnClick="() => DeleteCollection(context.CollectionId)"
 							Icon="@Icons.Material.Filled.Delete"
