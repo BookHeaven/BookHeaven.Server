@@ -207,3 +207,7 @@ img {
 .mud-overlay {
     min-height: 100dvh;
 }
+
+.mud-input.mud-input-filled {
+    @apply bg-(--mud-palette-primary)/5 hover:bg-(--mud-palette-primary)/10;
+}
