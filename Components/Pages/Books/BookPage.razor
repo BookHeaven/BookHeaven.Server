@@ -1,7 +1,7 @@
 ﻿@using System.Globalization
 @using BookHeaven.Server.Helpers
 @attribute [Route($"{Urls.Shelf}/{{Id:guid}}")]
-@attribute [Route($"{Urls.Shelf}/{{Id:guid}}/{{Editing}}")]
+@* @attribute [Route($"{Urls.Shelf}/{{Id:guid}}/{{Editing}}")] *@
 <ScrollToTop />
 
 @if (!_book.Progresses.Any())
@@ -35,7 +35,7 @@
 	else
 	{
 		<MudTooltip Text="@Translations.CANCEL" Color="Color.Warning">
-			<MudIconButton Icon="@Icons.Material.Filled.Clear" Color="Color.Warning" OnClick="@DisableEditing"/>
+			<MudIconButton Icon="@Icons.Material.Filled.Clear" Color="Color.Warning" OnClick="() => DisableEditing(true)"/>
 		</MudTooltip>
 		<MudTooltip Text="@Translations.SAVE">
 			<MudIconButton Icon="@Icons.Material.Filled.Save" Color="Color.Primary" OnClick="@Save"/>
@@ -199,26 +199,26 @@
 				</MudTooltip>
 
 			</div>
-			<MudGrid Spacing="4" Class="mb-7">
+			<MudGrid Spacing="4" Class="mb-12">
 				<MudItem xs="12">
-					<MudText Typo="Typo.h5" Class="mb-2">@Translations.PROGRESS</MudText>
+					<MudText Typo="Typo.h5" Class="uppercase">@Translations.PROGRESS</MudText>
 				</MudItem>
-				<MudItem xs="12" md="4">
+				<MudItem xs="12" md="3">
 					<MudDateOffsetPicker @bind-NullableValue="_book.Progress().StartDate" Label="@Translations.START_DATE" Required="false" />
 				</MudItem>
-				<MudItem xs="12" md="4">
+				<MudItem xs="12" md="3">
 					<MudDateOffsetPicker @bind-NullableValue="_book.Progress().EndDate" Label="@Translations.END_DATE" Required="false" />
 				</MudItem>
-				<MudItem xs="12" md="4">
+				<MudItem xs="12" md="3">
 					<MudTextField @bind-Value="_book.Progress().ElapsedTime" HelperText="Hours:Minutes" Label="@Translations.READ_TIME" Variant="Variant.Filled" Converter="_timeReadConverter" Clearable="true"></MudTextField>
 				</MudItem>
-				<MudItem xs="12" md="4">
+				<MudItem xs="12" md="3">
 					<MudNumericField @bind-Value="_book.Progress().Progress" Culture="CultureInfo.InvariantCulture" Max="100" Min="0" Label="@Translations.PROGRESS" Variant="Variant.Filled"></MudNumericField>
 				</MudItem>
 			</MudGrid>
 			<MudGrid Spacing="4" Style="min-width:300px;">
 				<MudItem xs="12">
-					<MudText Typo="Typo.h5" Class="mb-2">Metadata</MudText>
+					<MudText Typo="Typo.h5" Class="uppercase">Metadata</MudText>
 				</MudItem>
 				<MudItem xs="12" md="6">
 					<MudTextField @bind-Value=_book.Title Label="@Translations.TITLE" Variant="Variant.Filled"></MudTextField>

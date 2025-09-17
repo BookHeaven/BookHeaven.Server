@@ -35,16 +35,16 @@ public partial class BookPage
 	[Inject] private BookManager BookManager { get; set; } = null!;
 
 	[Parameter] public Guid Id { get; set; }
-	[Parameter] public string? Editing { get; set; }
+	//[Parameter] public string? Editing { get; set; }
 
 	private Guid _profileId;
 	private ServerSettings _settings = new();
 
 	private bool _addingTags;
 	private string _tagNames = string.Empty;
-		
-	private bool IsEditing => Editing == "edit";
-		
+
+	private bool IsEditing { get; set; }
+
 	private bool CoverExists => File.Exists(_book.CoverPath());
 
 	private Book _book = new();
@@ -74,7 +74,6 @@ public partial class BookPage
 	{
 		if (_book.BookId == Guid.Empty || Id != _book.BookId)
 		{
-				
 			var getAuthors = await Sender.Send(new GetAllAuthors.Query());
 			_authors = getAuthors.Value;
 				
@@ -87,12 +86,20 @@ public partial class BookPage
 
 	private void EnableEditing()
 	{
-		NavigationManager.NavigateTo($"{Urls.GetBookUrl(_book.BookId)}/edit");
+		//NavigationManager.NavigateTo($"{Urls.GetBookUrl(_book.BookId)}/edit");
+		IsEditing = true;
+		StateHasChanged();
 	}
 
-	private void DisableEditing()
+	private async Task DisableEditing(bool revertChanges = false)
 	{
-		NavigationManager.NavigateTo(Urls.GetBookUrl(_book.BookId));
+		//NavigationManager.NavigateTo(Urls.GetBookUrl(_book.BookId));
+		if (revertChanges)
+		{
+			await LoadBook();
+		}
+		IsEditing = false;
+		StateHasChanged();
 	}
 
 	private async Task DeleteBook()
@@ -222,7 +229,7 @@ public partial class BookPage
 		}
 
 		await UpdateEpubFileMetadata();
-		DisableEditing();
+		await DisableEditing();
 	}
 
 	private async Task UpdateEpubFileMetadata()
