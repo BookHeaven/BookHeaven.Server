@@ -34,4 +34,5 @@ RUN dotnet publish "./BookHeaven.Server.csproj" -c $BUILD_CONFIGURATION -o /app/
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+RUN chgrp -R 0 /app && chmod -R g=u /app
 ENTRYPOINT ["dotnet", "BookHeaven.Server.dll"]
