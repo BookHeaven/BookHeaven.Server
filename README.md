@@ -35,8 +35,11 @@ You can also add fonts so they can be easily downloaded and used by your devices
 - Spanish
 
 ## :rocket: Getting Started
-Setting the server up is pretty straightforward using docker.<br/>
-Here's a sample compose.yml file.<br/>
+Setting the server up is pretty straightforward using containers.
+> [!NOTE]
+> Check out the [starting guide](https://bookheaven.ggarrido.dev/getting-started) for more information.
+>
+### Docker Compose
 
 ```yaml
 services:
@@ -62,9 +65,27 @@ services:
     user: 1000:1000
     restart: unless-stopped
 ```
-> [!NOTE]
-> Check out the [starting guide](https://bookheaven.ggarrido.dev/getting-started) for more information.
-> 
+
+### Docker
+```bash
+docker run -d --name bookheaven --user 1000:1000 \
+  -p 8080:8080 -p 27007:27007/udp \
+  -v $PWD/data:/app/data \
+  -v $PWD/import:/app/import \
+  -e SERVER_URL=https://bookheaven.yourdomain.tld \
+  ghcr.io/bookheaven/bookheaven-server:latest
+```
+
+### Podman
+```bash
+podman run -d --name bookheaven --userns=keep-id \
+  -p 8080:8080 -p 27007:27007/udp \
+  -v $PWD/data:/app/data:Z,U \
+  -v $PWD/import:/app/import:Z,U \
+  -e SERVER_URL=https://bookheaven.yourdomain.tld \
+  ghcr.io/bookheaven/bookheaven-server:latest
+```
+
 ## :memo: API definition
 Coming soon
 
