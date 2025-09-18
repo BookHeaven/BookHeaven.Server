@@ -17,6 +17,11 @@ public class ImportFolderWatcher(
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         await Task.Yield();
+        if (!Directory.Exists(Program.ImportPath))
+        {
+            logger.LogWarning("Import folder doesn't exist, can't start folder watcher service.");
+            return;
+        }
         _watcher = new FileSystemWatcher(Program.ImportPath)
         {
             Filter = "*.epub",
