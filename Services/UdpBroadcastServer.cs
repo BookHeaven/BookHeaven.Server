@@ -15,7 +15,7 @@ public class UdpBroadcastServer(ILogger<UdpBroadcastServer> logger) : Background
         await Task.Yield();
         if (Environment.GetEnvironmentVariable("SERVER_URL") == null)
         {
-            logger.LogError("SERVER_URL environment variable is not set, can't start broadcast.");
+            logger.LogWarning("SERVER_URL environment variable is not set, can't start broadcast.");
             return;
         }
         
