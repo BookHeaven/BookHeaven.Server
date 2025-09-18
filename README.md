@@ -77,7 +77,7 @@ docker run -d --name bookheaven --user 1000:1000 \
   ghcr.io/bookheaven/bookheaven-server:latest
 ```
 
-### Podman
+### Podman run
 
 ```bash
 podman run -d --name bookheaven --userns=keep-id \
