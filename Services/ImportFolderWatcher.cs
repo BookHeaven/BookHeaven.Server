@@ -1,5 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using BookHeaven.EpubManager.Epub.Entities;
 using BookHeaven.Server.Abstractions;
 
 namespace BookHeaven.Server.Services;
@@ -29,7 +28,7 @@ public class ImportFolderWatcher(
             IncludeSubdirectories = true
         };
         _watcher.Created += OnCreated;
-        
+
         stoppingToken.Register(() =>
         {
             _watcher.EnableRaisingEvents = false;
@@ -44,13 +43,14 @@ public class ImportFolderWatcher(
             {
                 filePath = _filesToProcess.Take(stoppingToken);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                break;
+                logger.LogError(ex, "Error taking file from processing queue. Exiting import service.");
+                return;
             }
 
             if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath)) continue;
-            
+
             while (!IsFileReady(filePath))
             {
                 await Task.Delay(TimeSpan.FromSeconds(0.5), stoppingToken);
@@ -76,10 +76,10 @@ public class ImportFolderWatcher(
     {
         if (!e.FullPath.EndsWith(".epub")) return;
         if (e.FullPath.StartsWith(_processedPath, StringComparison.OrdinalIgnoreCase) || e.FullPath.StartsWith(_errorPath, StringComparison.OrdinalIgnoreCase)) return;
-        
+
         _filesToProcess.Add(e.FullPath);
     }
-    
+
     private async Task ProcessFileAsync(string filePath)
     {
         if (!filePath.EndsWith(".epub")) return;
