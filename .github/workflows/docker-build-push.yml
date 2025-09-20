@@ -48,8 +48,10 @@ jobs:
       packages: write
       
     env:
-      REGISTRY: ghcr.io
-      IMAGE_NAME: bookheaven/bookheaven-server
+      GITHUB_REGISTRY: ghcr.io
+      GITHUB_IMAGE: bookheaven/bookheaven-server
+      DOCKERHUB_REGISTRY: docker.io
+      DOCKERHUB_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/bookheaven-server
       VERSION: ${{ needs.check-version.outputs.version }}
       
     steps:
@@ -88,19 +90,31 @@ jobs:
         working-directory: ./BookHeaven/BookHeaven.Server
         run: npm run tailwindcss:build
         
-      - name: Build Docker image
+      - name: Build Docker images (GHCR & Docker Hub)
         run: |
           docker build ./BookHeaven \
-          --build-arg GOOGLE_BOOKS_API_KEY=${{ secrets.GOOGLE_BOOKS_API_KEY }} \
-          --file BookHeaven/BookHeaven.Server/Dockerfile \
-          --tag ${{env.REGISTRY}}/${{ env.IMAGE_NAME }}:latest \
-          --tag ${{env.REGISTRY}}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
-          
+            --build-arg GOOGLE_BOOKS_API_KEY=${{ secrets.GOOGLE_BOOKS_API_KEY }} \
+            --file BookHeaven/BookHeaven.Server/Dockerfile \
+            --tag ${{env.GITHUB_REGISTRY}}/${{ env.GITHUB_IMAGE }}:latest \
+            --tag ${{env.GITHUB_REGISTRY}}/${{ env.GITHUB_IMAGE }}:${{ env.VERSION }} \
+            --tag ${{env.DOCKERHUB_REGISTRY}}/${{ env.DOCKERHUB_IMAGE }}:latest \
+            --tag ${{env.DOCKERHUB_REGISTRY}}/${{ env.DOCKERHUB_IMAGE }}:${{ env.VERSION }}
+
       - name: Log in to GitHub Container Registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.repository_owner }}" --password-stdin
-        
-      - name: Push Docker image
-        run: docker push ${{env.REGISTRY}}/${{ env.IMAGE_NAME }} --all-tags
+      
+      - name: Push Docker image to GHCR
+        run: |
+          docker push ${{env.GITHUB_REGISTRY}}/${{ env.GITHUB_IMAGE }}:latest
+          docker push ${{env.GITHUB_REGISTRY}}/${{ env.GITHUB_IMAGE }}:${{ env.VERSION }}
+
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+      - name: Push Docker image to Docker Hub
+        run: |
+          docker push ${{env.DOCKERHUB_REGISTRY}}/${{ env.DOCKERHUB_IMAGE }}:latest
+          docker push ${{env.DOCKERHUB_REGISTRY}}/${{ env.DOCKERHUB_IMAGE }}:${{ env.VERSION }}
         
       - name: Create Tag
         uses: actions/github-script@v7
