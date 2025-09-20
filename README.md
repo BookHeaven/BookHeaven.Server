@@ -39,6 +39,12 @@ Setting the server up is pretty straightforward using containers.
 > [!NOTE]
 > Check out the [starting guide](https://bookheaven.ggarrido.dev/getting-started) for more information.
 >
+
+> [!WARNING]
+> If github is giving you issues, you can use docker hub as well:
+> 
+> **docker.io/heasheartfire/bookheaven-server:latest**
+> 
 ### Docker Compose
 
 ```yaml
