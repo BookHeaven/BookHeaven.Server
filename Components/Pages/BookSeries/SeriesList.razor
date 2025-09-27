@@ -1,20 +1,29 @@
+@using BookHeaven.Domain.Abstractions
 @using BookHeaven.Domain.Features.BookSeries
 @attribute [Route(Urls.Series)]
 <PageTitle>@Translations.SERIES_PLURAL</PageTitle>
 
 <Container>
-    <MudTable 
+    <MudTable
         Breakpoint="Breakpoint.None"
-        Items="_items" 
-        Loading="_items == null" 
-        CanCancelEdit="true" 
-        Hover="true" 
-        RowEditPreview="@(a => _elementBeforeEdit = ((Series)a!).Clone())"
-        RowEditCommit="@(async s => await CommitEdit((Series)s!))"
-        RowEditCancel="CancelEdit"
-        ApplyButtonPosition="TableApplyButtonPosition.Start">
+        Items="_items"
+        Loading="_items == null"
+        Dense="true"
+        Hover="true">
+        <ToolBarContent>
+            <div class="flex items-center w-full">
+                <span class="text-xl">Series</span>
+                <MudButton
+                    OnClick="OpenNewSeriesDialog"
+                    Class="ms-auto"
+                    StartIcon="@Icons.Material.Filled.Add"
+                    Variant="Variant.Filled"
+                    Color="Color.Tertiary">
+                    New
+                </MudButton>
+            </div>
+        </ToolBarContent>
         <ColGroup>
-            <col style="width: 50px;"/>
             <col style="width: 300px;"/>
             <col/>
             <col style="width: 100px;"/>
@@ -22,92 +31,96 @@
         <HeaderContent>
             <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Series, object>(x => x.Name!)">@Translations.NAME</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortBy="new Func<Series, object>(x => x.Books.Count())">@Translations.BOOKS</MudTableSortLabel></MudTh>
-            <MudTh></MudTh>
+            <MudTh>Actions</MudTh>
         </HeaderContent>
         <RowTemplate>
             <MudTd>@context.Name</MudTd>
             <MudTd>@context.Books.Count()</MudTd>
             <MudTd>
-                <MudIconButton Class="ms-2" ClickPropagation="false" Variant="Variant.Filled" Icon="@((_showDetails[context.SeriesId])? Icons.Material.Outlined.RemoveCircle : Icons.Material.Filled.RemoveRedEye)" OnClick="@(() => _showDetails[context.SeriesId] = !_showDetails[context.SeriesId])"></MudIconButton>
+                <MudIconButton
+                    OnClick="() => DeleteSeries(context.SeriesId)"
+                    Icon="@Icons.Material.Filled.Delete"
+                    Color="Color.Error"/>
             </MudTd>
         </RowTemplate>
-        <RowEditingTemplate>
-            <MudTd><MudTextField @bind-Value="context.Name" Variant="Variant.Outlined"/></MudTd>
-            <MudTd>@context.Books.Count()</MudTd>
-        </RowEditingTemplate>
-        <ChildRowContent>
-            @if (_showDetails[context.SeriesId])
-            {
-                <MudTr>
-                    <td colspan="4">
-                        <MudCard Elevation="0">
-                            <MudCardHeader>
-                                <MudText Typo="Typo.h6">@Translations.BOOKS_FROM @context.Name</MudText>
-                            </MudCardHeader>
-                            <MudCardContent>
-                                <MudTable Breakpoint="Breakpoint.None" T="Book" Items="context.Books" Context="book" Elevation="0" Outlined="true" Dense="true" OnRowClick="@(r => NavigationManager.NavigateTo($"/book/{r.Item!.BookId}"))">
-                                    <ColGroup>
-                                        <col style="width: 200px;"/>
-                                        <col style="width: 50px;"/>
-                                        <col/>
-                                    </ColGroup>
-                                    <HeaderContent>
-                                        <MudTh><MudTableSortLabel SortBy="new Func<Book, object>(x => x.Title!)">@Translations.TITLE</MudTableSortLabel></MudTh>
-                                        <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Book, object>(x => x.SeriesIndex ?? 0)">@Translations.SERIES_INDEX</MudTableSortLabel></MudTh>
-                                        <MudTh><MudTableSortLabel SortBy="new Func<Book, object>(x => x.Author?.Name!)">@Translations.AUTHOR</MudTableSortLabel></MudTh>
-                                    </HeaderContent>
-                                    <RowTemplate>
-                                        <MudTd>@book.Title</MudTd>
-                                        <MudTd>@book.SeriesIndex?.ToString("0.##")</MudTd>
-                                        <MudTd>@book.Author?.Name</MudTd>
-                                    </RowTemplate>
-                                </MudTable>
-                            </MudCardContent>
-                        </MudCard>
-                        
-                    </td>
-                </MudTr>
-            }
-        </ChildRowContent>
     </MudTable>
 </Container>
 
+<MudDialog @bind-Visible="_isDialogOpen">
+    <TitleContent>New series</TitleContent>
+    <DialogContent>
+        <MudTextField
+            @bind-Value="_newSeriesName"
+            Variant="Variant.Outlined"
+            Label="Series name"/>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Text" OnClick="() => _isDialogOpen = false">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="CreateNewSeries">Save</MudButton>
+    </DialogActions>
+</MudDialog>
+
 @code {
     [Inject] private ISender Sender { get; set; } = null!;
-    [Inject] private ISnackbar Snackbar { get; set; } = null!;
+    [Inject] private IAlertService AlertService { get; set; } = null!;
     [Inject] private NavigationManager NavigationManager { get; set; } = null!;
     
     private List<Series>? _items;
-    private Series? _elementBeforeEdit;
-    private Dictionary<Guid, bool> _showDetails = new();
+    
+    private bool _isDialogOpen;
+    private string _newSeriesName = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
         var getAllSeries = await Sender.Send(new GetAllSeries.Query(true));
         if (getAllSeries.IsFailure)
         {
-            Snackbar.Add(getAllSeries.Error.Description!, Severity.Error);
+            await AlertService.ShowToastAsync(getAllSeries.Error.Description, AlertSeverity.Error);
             return;
         }
         _items = getAllSeries.Value;
-        _showDetails = _items.ToDictionary(a => a.SeriesId, a => false);
     }
     
-    private async Task CommitEdit(Series series)
+    private void OpenNewSeriesDialog()
     {
-        var updateSeries = await Sender.Send(new UpdateSeries.Command(series));
-        if (updateSeries.IsFailure)
+        _newSeriesName = string.Empty;
+        _isDialogOpen = true;
+    }
+    
+    private async Task CreateNewSeries()
+    {
+        if (string.IsNullOrWhiteSpace(_newSeriesName))
         {
-            Snackbar.Add(updateSeries.Error.Description!, Severity.Error);
+            await AlertService.ShowToastAsync("Series name cannot be empty", AlertSeverity.Warning);
             return;
         }
-        _elementBeforeEdit = null;
+        
+        var result = await Sender.Send(new CreateSeries.Command(_newSeriesName));
+        if (result.IsFailure)
+        {
+            await AlertService.ShowToastAsync(result.Error.Description, AlertSeverity.Error);
+            return;
+        }
+        
+        _items!.Add(result.Value);
+        _isDialogOpen = false;
+        await InvokeAsync(StateHasChanged);
     }
     
-    private void CancelEdit(object element)
+    private async Task DeleteSeries(Guid seriesId)
     {
-        ((Series)element).Name = _elementBeforeEdit!.Name;
-        _elementBeforeEdit = null;
+        var confirm = await AlertService.ShowConfirmationAsync("Delete Series", "Are you sure you want to delete this Series?<br/>This action cannot be undone.");
+        if (!confirm) return;
+		
+        var result = await Sender.Send(new DeleteSeries.Command(seriesId));
+        if (result.IsFailure)
+        {
+            await AlertService.ShowToastAsync(result.Error.Description, AlertSeverity.Error);
+            return;
+        }
+		
+        _items!.RemoveAll(c => c.SeriesId == seriesId);
+        await InvokeAsync(StateHasChanged);
     }
 
 }
