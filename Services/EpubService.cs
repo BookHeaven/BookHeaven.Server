@@ -1,21 +1,16 @@
 ﻿using BookHeaven.Domain.Entities;
-using BookHeaven.Domain.Events;
 using Microsoft.AspNetCore.Components.Forms;
 using BookHeaven.Domain.Features.Authors;
 using BookHeaven.Domain.Features.Books;
 using BookHeaven.Domain.Features.BookSeries;
-using BookHeaven.Domain.Features.BooksProgress;
-using BookHeaven.Domain.Features.Profiles;
-using BookHeaven.Domain.Services;
-using BookHeaven.EpubManager.Epub.Entities;
-using BookHeaven.EpubManager.Epub.Services;
+using BookHeaven.EpubManager.Abstractions;
 using BookHeaven.Server.Abstractions;
 using MediatR;
 
 namespace BookHeaven.Server.Services;
 
 public class EpubService(
-	IEpubReader epubReader, 
+	IEbookReader epubReader, 
 	ISender sender, 
 	ILogger<EpubService> logger)
 	: IFormatService
@@ -48,23 +43,23 @@ public class EpubService(
 		Guid? authorId = null;
 		Guid? seriesId = null;
 			
-		var epubBook = await epubReader.ReadMetadataAsync(path);
+		var ebook = await epubReader.ReadMetadataAsync(path);
 			
-		var getBook = await sender.Send(new GetBook.Query(null, epubBook.Metadata.Title));
+		var getBook = await sender.Send(new GetBook.Query(null, ebook.Title));
 			
 		if (getBook.IsSuccess)
 		{
-			logger.LogWarning("Book with title '{Title}' already exists in the database, ignoring", epubBook.Metadata.Title);
+			logger.LogWarning("Book with title '{Title}' already exists in the database, ignoring", ebook.Title);
 			return null;
 		}
 			
-		var getAuthor = await sender.Send(new GetAuthor.Query(new GetAuthor.Filter {Name = epubBook.Metadata.Author}));
+		var getAuthor = await sender.Send(new GetAuthor.Query(new GetAuthor.Filter {Name = ebook.Author}));
 		if (getAuthor.IsFailure)
 		{
-			var createAuthor = await sender.Send(new CreateAuthor.Command(epubBook.Metadata.Author));
+			var createAuthor = await sender.Send(new CreateAuthor.Command(ebook.Author));
 			if (createAuthor.IsFailure)
 			{
-				logger.LogError("Failed to create author '{Author}': {Description}", epubBook.Metadata.Author, createAuthor.Error.Description);
+				logger.LogError("Failed to create author '{Author}': {Description}", ebook.Author, createAuthor.Error.Description);
 				return null;
 			}
 			authorId = createAuthor.Value.AuthorId;
@@ -74,15 +69,15 @@ public class EpubService(
 			authorId = getAuthor.Value.AuthorId;
 		}
 			
-		if (epubBook.Metadata.Series != null)
+		if (!string.IsNullOrWhiteSpace(ebook.Series))
 		{
-			var getSeries = await sender.Send(new GetSeries.Query(null, epubBook.Metadata.Series));
+			var getSeries = await sender.Send(new GetSeries.Query(null, ebook.Series));
 			if (getSeries.IsFailure)
 			{
-				var createSeries = await sender.Send(new CreateSeries.Command(epubBook.Metadata.Series));
+				var createSeries = await sender.Send(new CreateSeries.Command(ebook.Series));
 				if (createSeries.IsFailure)
 				{
-					logger.LogError("Failed to create series '{Series}': {Description}", epubBook.Metadata.Series, createSeries.Error.Description);
+					logger.LogError("Failed to create series '{Series}': {Description}", ebook.Series, createSeries.Error.Description);
 					return null;
 				}
 				seriesId = createSeries.Value.SeriesId;
@@ -92,28 +87,28 @@ public class EpubService(
 				seriesId = getSeries.Value.SeriesId;
 			}
 		}
-		var isbnIdentifiers = epubBook.Metadata.Identifiers.Where(x => x.Scheme == "ISBN").ToList();
+		var isbnIdentifiers = ebook.Identifiers.Where(x => x.Scheme == "ISBN").ToList();
 			
 		var newBook = new Book
 		{
-			Title = epubBook.Metadata.Title,
-			Description = epubBook.Metadata.Description,
-			PublishedDate = DateTime.TryParse(epubBook.Metadata.PublishDate, out var tempDate) ? tempDate : null,
-			Publisher = epubBook.Metadata.Publisher,
-			Language = epubBook.Metadata.Language,
+			Title = ebook.Title,
+			Description = ebook.Synopsis,
+			PublishedDate = ebook.PublishDate != null && DateTime.TryParse(ebook.PublishDate, out var pubDate) ? pubDate : null,
+			Publisher = ebook.Publisher,
+			Language = ebook.Language,
 			AuthorId = authorId,
 			SeriesId = seriesId,
-			SeriesIndex = epubBook.Metadata.SeriesIndex,
+			SeriesIndex = ebook.SeriesIndex,
 			ISBN10 = isbnIdentifiers.FirstOrDefault(x => x.Value.Length == 10)?.Value.Split(":").Last(),
 			ISBN13 = isbnIdentifiers.FirstOrDefault(x => x.Value.Length == 13)?.Value.Split(":").Last(),
-			ASIN = epubBook.Metadata.Identifiers.FirstOrDefault(x => x.Scheme == "ASIN")?.Value.Split(":").Last(),
-			UUID = epubBook.Metadata.Identifiers.FirstOrDefault(x => x.Scheme == "UUID")?.Value.Split(":").Last()
+			ASIN = ebook.Identifiers.FirstOrDefault(x => x.Scheme == "ASIN")?.Value.Split(":").Last(),
+			UUID = ebook.Identifiers.FirstOrDefault(x => x.Scheme == "UUID")?.Value.Split(":").Last()
 		};
 		
 		var tempCoverPath = Path.GetTempFileName();
-		await StoreCover(epubBook.Cover, tempCoverPath);
+		await StoreCover(ebook.Cover, tempCoverPath);
 		
-		var createBook = await sender.Send(new AddBook.Command(newBook, tempCoverPath, epubBook.FilePath));
+		var createBook = await sender.Send(new AddBook.Command(newBook, tempCoverPath, ebook.FilePath));
 		if (createBook.IsFailure)
 		{
 			return null;

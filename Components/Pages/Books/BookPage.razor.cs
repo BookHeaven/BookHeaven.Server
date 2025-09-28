@@ -8,13 +8,12 @@ using BookHeaven.Domain.Features.BookSeries;
 using BookHeaven.Domain.Features.BooksProgress;
 using BookHeaven.Domain.Features.Tags;
 using BookHeaven.Domain.Services;
+using BookHeaven.EpubManager.Entities;
 using BookHeaven.Server.Abstractions;
 using BookHeaven.Server.Constants;
 using BookHeaven.Server.Entities;
-using BookHeaven.EpubManager.Epub.Entities;
 using BookHeaven.EpubManager.Epub.Services;
 using BookHeaven.Server.Components.Dialogs;
-using BookHeaven.Server.MetadataProviders.DTO;
 using MediatR;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -234,19 +233,19 @@ public partial class BookPage
 
 	private async Task UpdateEpubFileMetadata()
 	{
-		var metadata = new EpubMetadata
+		var ebook = new Ebook
 		{
 			Title = _book.Title!,
-			Authors = [_book.Author?.Name!],
+			Author = _book.Author?.Name!,
 			Publisher = _book.Publisher,
-			Description = _book.Description,
+			Synopsis = _book.Description,
 			Language = _book.Language ?? string.Empty,
 			PublishDate = _book.PublishedDate != null ? string.Concat(_book.PublishedDate.Value.ToString("s"), "Z") : null,
 			Series = _book.Series?.Name,
 			SeriesIndex = _book.SeriesIndex
 		};
 
-		await EpubWriter.ReplaceMetadataAsync(_book.EpubPath(), metadata);
+		await EpubWriter.ReplaceMetadataAsync(_book.EpubPath(), ebook);
 		if(_newCoverTempPath != null)
 		{
 			await EpubWriter.ReplaceCoverAsync(_book.EpubPath(), _book.CoverPath());
