@@ -93,6 +93,8 @@ public partial class BookPage
 
 	private async Task DisableEditing(bool revertChanges = false)
 	{
+		_newCoverTempPath = null;
+		_newEpubTempPath = null;
 		//NavigationManager.NavigateTo(Urls.GetBookUrl(_book.BookId));
 		if (revertChanges)
 		{
@@ -253,9 +255,6 @@ public partial class BookPage
 		{
 			await writer.ReplaceCoverAsync(_book.EpubPath(), _book.CoverPath());
 		}
-		_newCoverTempPath = null;
-		_newEpubTempPath = null;
-			
 	}
 
 	private async Task ShowFetchMetadataDialog()
