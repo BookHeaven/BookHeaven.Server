@@ -2,7 +2,7 @@
 
 namespace BookHeaven.Server.Abstractions;
 
-public interface IFormatService
+public interface IEbookFileLoader
 {
 	Task<Guid?> LoadFromFilePath(string path);
 	Task<Guid?> LoadFromFile(IBrowserFile file);

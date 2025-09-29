@@ -3,17 +3,19 @@ using Microsoft.AspNetCore.Components.Forms;
 using BookHeaven.Domain.Features.Authors;
 using BookHeaven.Domain.Features.Books;
 using BookHeaven.Domain.Features.BookSeries;
+using BookHeaven.EpubManager;
 using BookHeaven.EpubManager.Abstractions;
+using BookHeaven.EpubManager.Enums;
 using BookHeaven.Server.Abstractions;
 using MediatR;
 
 namespace BookHeaven.Server.Services;
 
-public class EpubService(
-	IEbookReader epubReader, 
+public class EbookFileLoader(
+	EbookManagerProvider ebookManagerProvider,
 	ISender sender, 
-	ILogger<EpubService> logger)
-	: IFormatService
+	ILogger<EbookFileLoader> logger)
+	: IEbookFileLoader
 {
 	public async Task<Guid?> LoadFromFile(IBrowserFile file)
 	{
@@ -42,6 +44,8 @@ public class EpubService(
 	{
 		Guid? authorId = null;
 		Guid? seriesId = null;
+		
+		var epubReader = ebookManagerProvider.GetReader(Format.Epub);
 			
 		var ebook = await epubReader.ReadMetadataAsync(path);
 			
@@ -117,7 +121,7 @@ public class EpubService(
 		return createBook.Value;
 	}
 
-	public async Task StoreCover(byte[]? image, string dest)
+	private static async Task StoreCover(byte[]? image, string dest)
 	{
 		if (image == null) return;
 		var dir = Path.GetDirectoryName(dest);

@@ -24,8 +24,8 @@ namespace BookHeaven.Server.Components.Pages.Books;
 public partial class BookPage
 {
 	[Inject] private ISender Sender { get; set; } = null!;
-	[Inject] private IFormatService EpubService { get; set; } = null!;
-	[Inject] private IEpubWriter EpubWriter { get; set; } = null!;
+	[Inject] private IEbookFileLoader EpubService { get; set; } = null!;
+	[Inject] private EbookManagerProvider EbookManagerProvider { get; set; } = null!;
 	[Inject] private NavigationManager NavigationManager { get; set; } = null!;
 	[Inject] private ISettingsManagerService SettingsManager { get; set; } = null!;
 	[Inject] private ISessionService SessionService { get; set; } = null!;
