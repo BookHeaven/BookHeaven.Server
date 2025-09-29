@@ -92,7 +92,7 @@ public class Program
 		});
 
 		builder.Services.AddDomain(BooksPath, CoversPath, FontsPath, DatabasePath);
-		builder.Services.AddEpubManager();
+		builder.Services.AddEbookManager();
 
 		builder.Services.AddTransient<ICoverProvider, DuckDuckGoCoverProvider>();
 		builder.Services.AddTransient<IAlertService, AlertService>();
