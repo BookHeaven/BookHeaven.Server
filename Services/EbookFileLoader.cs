@@ -1,4 +1,7 @@
-﻿using BookHeaven.Domain.Entities;
+﻿using BookHeaven.Domain;
+using BookHeaven.Domain.Entities;
+using BookHeaven.Domain.Enums;
+using BookHeaven.Domain.Extensions;
 using Microsoft.AspNetCore.Components.Forms;
 using BookHeaven.Domain.Features.Authors;
 using BookHeaven.Domain.Features.Books;
@@ -17,12 +20,13 @@ public class EbookFileLoader(
 	ILogger<EbookFileLoader> logger)
 	: IEbookFileLoader
 {
+	
 	public async Task<Guid?> LoadFromFile(IBrowserFile file)
 	{
 		Guid? id;
 		try
 		{
-			var tempPath = Path.GetTempFileName();
+			var tempPath = Path.GetTempFileName() + Path.GetExtension(file.Name);
 			await using (var fileStream = File.Create(tempPath))
 			{
 				await file.OpenReadStream(maxAllowedSize: 1024 * 30000).CopyToAsync(fileStream);
@@ -45,9 +49,16 @@ public class EbookFileLoader(
 		Guid? authorId = null;
 		Guid? seriesId = null;
 		
-		var epubReader = ebookManagerProvider.GetReader(Format.Epub);
+		var extension = Path.GetExtension(path).ToLowerInvariant();
+		if (!Globals.SupportedFormats.Contains(extension))
+		{
+			logger.LogWarning("Unsupported file extension: {Extension}", extension);
+			return null;
+		}
+		
+		var ebookReader = ebookManagerProvider.GetReader((Format)EnumExtensions.GetFormatByExtension(extension));
 			
-		var ebook = await epubReader.ReadMetadataAsync(path);
+		var ebook = await ebookReader.ReadMetadataAsync(path);
 			
 		var getBook = await sender.Send(new GetBook.Query(null, ebook.Title));
 			
@@ -106,16 +117,23 @@ public class EbookFileLoader(
 			ISBN10 = isbnIdentifiers.FirstOrDefault(x => x.Value.Length == 10)?.Value.Split(":").Last(),
 			ISBN13 = isbnIdentifiers.FirstOrDefault(x => x.Value.Length == 13)?.Value.Split(":").Last(),
 			ASIN = ebook.Identifiers.FirstOrDefault(x => x.Scheme == "ASIN")?.Value.Split(":").Last(),
-			UUID = ebook.Identifiers.FirstOrDefault(x => x.Scheme == "UUID")?.Value.Split(":").Last()
+			UUID = ebook.Identifiers.FirstOrDefault(x => x.Scheme == "UUID")?.Value.Split(":").Last(),
+			Format = (EbookFormat)ebook.Format
 		};
 		
 		var tempCoverPath = Path.GetTempFileName();
 		await StoreCover(ebook.Cover, tempCoverPath);
 		
-		var createBook = await sender.Send(new AddBook.Command(newBook, tempCoverPath, ebook.FilePath));
+		var createBook = await sender.Send(new AddBook.Command(newBook, tempCoverPath, path));
 		if (createBook.IsFailure)
 		{
 			return null;
+		}
+		
+		// Cleanup temp cover file
+		if (File.Exists(tempCoverPath))
+		{
+			File.Delete(tempCoverPath);
 		}
 			
 		return createBook.Value;
