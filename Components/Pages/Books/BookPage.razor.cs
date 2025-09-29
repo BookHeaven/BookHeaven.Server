@@ -8,11 +8,12 @@ using BookHeaven.Domain.Features.BookSeries;
 using BookHeaven.Domain.Features.BooksProgress;
 using BookHeaven.Domain.Features.Tags;
 using BookHeaven.Domain.Services;
+using BookHeaven.EpubManager;
 using BookHeaven.EpubManager.Entities;
+using BookHeaven.EpubManager.Enums;
 using BookHeaven.Server.Abstractions;
 using BookHeaven.Server.Constants;
 using BookHeaven.Server.Entities;
-using BookHeaven.EpubManager.Epub.Services;
 using BookHeaven.Server.Components.Dialogs;
 using MediatR;
 using Microsoft.AspNetCore.Components;
@@ -233,6 +234,8 @@ public partial class BookPage
 
 	private async Task UpdateEpubFileMetadata()
 	{
+		var writer = EbookManagerProvider.GetWriter(Format.Epub);
+		if (writer is null) return;
 		var ebook = new Ebook
 		{
 			Title = _book.Title!,
@@ -245,10 +248,10 @@ public partial class BookPage
 			SeriesIndex = _book.SeriesIndex
 		};
 
-		await EpubWriter.ReplaceMetadataAsync(_book.EpubPath(), ebook);
+		await writer.ReplaceMetadataAsync(_book.EpubPath(), ebook);
 		if(_newCoverTempPath != null)
 		{
-			await EpubWriter.ReplaceCoverAsync(_book.EpubPath(), _book.CoverPath());
+			await writer.ReplaceCoverAsync(_book.EpubPath(), _book.CoverPath());
 		}
 		_newCoverTempPath = null;
 		_newEpubTempPath = null;
