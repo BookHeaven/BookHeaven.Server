@@ -113,13 +113,11 @@ public partial class BookPage
 		
 		if (result != true) return;
 
-		try
+		var deleteBook = await Sender.Send(new DeleteBook.Command(_book.BookId));
+
+		if (deleteBook.IsFailure)
 		{
-			await BookManager.DeleteBookAsync(_book);
-		}
-		catch (Exception ex)
-		{
-			await AlertService.ShowToastAsync(ex.Message);
+			await AlertService.ShowToastAsync(deleteBook.Error.Description);
 			return;
 		}
 		await AlertService.ShowToastAsync(Domain.Localization.Translations.BOOK_DELETED, AlertSeverity.Success);
@@ -236,7 +234,7 @@ public partial class BookPage
 
 	private async Task UpdateEpubFileMetadata()
 	{
-		var writer = EbookManagerProvider.GetWriter(Format.Epub);
+		var writer = EbookManagerProvider.GetWriter((Format)_book.Format);
 		if (writer is null) return;
 		var ebook = new Ebook
 		{
@@ -250,10 +248,10 @@ public partial class BookPage
 			SeriesIndex = _book.SeriesIndex
 		};
 
-		await writer.ReplaceMetadataAsync(_book.EpubPath(), ebook);
+		await writer.ReplaceMetadataAsync(_book.EbookPath(), ebook);
 		if(_newCoverTempPath != null)
 		{
-			await writer.ReplaceCoverAsync(_book.EpubPath(), _book.CoverPath());
+			await writer.ReplaceCoverAsync(_book.EbookPath(), _book.CoverPath());
 		}
 	}
 
