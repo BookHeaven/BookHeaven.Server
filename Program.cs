@@ -8,7 +8,6 @@ using System.Text.Json.Serialization;
 using MudBlazor;
 using BookHeaven.Domain;
 using BookHeaven.Domain.Abstractions;
-using BookHeaven.EpubManager.Epub.Entities;
 using BookHeaven.Server.Abstractions;
 using BookHeaven.Server.Endpoints;
 using BookHeaven.Server.Extensions;
