@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using BookHeaven.Domain;
 using BookHeaven.Server.Abstractions;
 
 namespace BookHeaven.Server.Services;
@@ -23,7 +24,7 @@ public class ImportFolderWatcher(
         }
         _watcher = new FileSystemWatcher(Program.ImportPath)
         {
-            Filter = "*.epub",
+            Filter = "*.*",
             EnableRaisingEvents = true,
             IncludeSubdirectories = true
         };
@@ -74,7 +75,7 @@ public class ImportFolderWatcher(
     
     private void OnCreated(object sender, FileSystemEventArgs e)
     {
-        if (!e.FullPath.EndsWith(".epub")) return;
+        if(!Globals.SupportedFormats.Any(f => Path.GetExtension(e.FullPath).Equals(f, StringComparison.OrdinalIgnoreCase))) return;
         if (e.FullPath.StartsWith(_processedPath, StringComparison.OrdinalIgnoreCase) || e.FullPath.StartsWith(_errorPath, StringComparison.OrdinalIgnoreCase)) return;
 
         _filesToProcess.Add(e.FullPath);
@@ -82,8 +83,6 @@ public class ImportFolderWatcher(
 
     private async Task ProcessFileAsync(string filePath)
     {
-        if (!filePath.EndsWith(".epub")) return;
-        
         Guid? id = null;
         
         var fileName = Path.GetFileName(filePath);
