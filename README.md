@@ -32,7 +32,7 @@ You can also add fonts so they can be easily downloaded and used by your devices
 
 ## :globe_with_meridians: Supported UI Languages
 - English
-- Spanish
+- Spanish (features might release without translation for a while, but I'll try to keep up)
 
 ## :rocket: Getting Started
 Setting the server up is pretty straightforward using containers.
