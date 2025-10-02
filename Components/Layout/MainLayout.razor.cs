@@ -1,5 +1,4 @@
 using BookHeaven.Domain.Features.Profiles;
-using BookHeaven.EpubManager.Epub.Entities;
 using BookHeaven.Server.Abstractions;
 using BookHeaven.Server.Constants;
 using Microsoft.AspNetCore.Components;
