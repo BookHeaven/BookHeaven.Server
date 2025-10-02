@@ -70,11 +70,11 @@ jobs:
           shopt -s extglob
           mv !(BookHeaven) BookHeaven/BookHeaven.Server/
           
-      - name: Clone EpubManager
+      - name: Clone EbookManager
         run: |
-          git clone https://${{ secrets.PAT_TOKEN }}@github.com/BookHeaven/BookHeaven.EpubManager.git temp/BookHeaven.EpubManager
-          mkdir -p BookHeaven/BookHeaven.EpubManager
-          mv temp/BookHeaven.EpubManager/* BookHeaven/BookHeaven.EpubManager/
+          git clone https://${{ secrets.PAT_TOKEN }}@github.com/BookHeaven/BookHeaven.EbookManager.git temp/BookHeaven.EbookManager
+          mkdir -p BookHeaven/BookHeaven.EbookManager
+          mv temp/BookHeaven.EbookManager/* BookHeaven/BookHeaven.EbookManager/
           
       - name: Clone BookHeaven.Domain
         run: |
