@@ -2,6 +2,7 @@
 @attribute [Route($"{Urls.Collection}/{{CollectionId:guid}}")]
 
 @using BookHeaven.Domain.Entities.Base
+@using BookHeaven.Domain.Features.Books
 @using BookHeaven.Domain.Features.Collections
 @implements IDisposable
 
@@ -146,6 +147,7 @@ else
 	protected override async Task OnInitializedAsync()
 	{
 		GlobalEventsService.Subscribe<BookAdded>(OnBookAdded);
+		GlobalEventsService.Subscribe<BookDeleted>(OnBookDeleted);
 
 		ProfileId = await SessionService.GetAsync<Guid>(SessionKey.SelectedProfileId);
 
@@ -174,6 +176,12 @@ else
 	private async Task OnBookAdded(BookAdded e)
 	{
 		await BookManager.AppendBookAsync(ProfileId, e.BookId);
+		await InvokeAsync(StateHasChanged);
+	}
+	
+	private async Task OnBookDeleted(BookDeleted e)
+	{
+		BookManager.RemoveBook(e.BookId);
 		await InvokeAsync(StateHasChanged);
 	}
 
@@ -231,20 +239,19 @@ else
 			yesText: "Delete", 
 			cancelText: "Cancel");
 		if(result != true) return;
-		try
+		
+		foreach (var selectedBook in _selectedBooks)
 		{
-			await BookManager.DeleteBooksAsync(_selectedBooks);
+			await Sender.Send(new DeleteBook.Command(selectedBook));
 		}
-		catch (Exception)
-		{
-			Snackbar.Add("An error occurred while deleting one or more books.", Severity.Error);
-		}
+		
 		_selectedBooks.Clear();
 	}
 
 	public void Dispose()
 	{
 		GlobalEventsService.Unsubscribe<BookAdded>(OnBookAdded);
+		GlobalEventsService.Unsubscribe<BookDeleted>(OnBookDeleted);
 		JsRuntime.InvokeVoidAsync("saveScrollPosition", Urls.Shelf);
 	}
 
