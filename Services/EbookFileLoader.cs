@@ -29,7 +29,7 @@ public class EbookFileLoader(
 			var tempPath = Path.GetTempFileName() + Path.GetExtension(file.Name);
 			await using (var fileStream = File.Create(tempPath))
 			{
-				await file.OpenReadStream(maxAllowedSize: 1024 * 30000).CopyToAsync(fileStream);
+				await file.OpenReadStream(maxAllowedSize: 300 * 1024 * 1024).CopyToAsync(fileStream);
 			}
 
 			id = await LoadFromFilePath(tempPath);
