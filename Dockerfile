@@ -15,7 +15,7 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["BookHeaven.Server/BookHeaven.Server.csproj", "BookHeaven.Server/"]
-COPY ["BookHeaven.EpubManager/BookHeaven.EpubManager.csproj", "BookHeaven.EpubManager/"]
+COPY ["BookHeaven.EbookManager/BookHeaven.EbookManager.csproj", "BookHeaven.EbookManager/"]
 COPY ["BookHeaven.Domain/BookHeaven.Domain.csproj", "BookHeaven.Domain/"]
 RUN dotnet restore "./BookHeaven.Server/BookHeaven.Server.csproj"
 #RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
