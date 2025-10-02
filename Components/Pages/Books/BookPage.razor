@@ -23,7 +23,7 @@
 	@if (!IsEditing)
 	{
 		<MudTooltip Text="@Translations.DOWNLOAD">
-			<MudIconButton Icon="@Icons.Material.Filled.Download" Color="Color.Primary" Href="@_book.EpubUrl()" download="@_book.FormattedFileName()"/>
+			<MudIconButton Icon="@Icons.Material.Filled.Download" Color="Color.Primary" Href="@_book.EbookUrl()" download="@_book.FormattedFileName()"/>
 		</MudTooltip>
 		<MudTooltip Text="@Translations.EDIT">
 			<MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" OnClick="@EnableEditing"/>
