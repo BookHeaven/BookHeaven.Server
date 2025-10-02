@@ -1,4 +1,4 @@
-using BookHeaven.EpubManager;
+using BookHeaven.EbookManager;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.FileProviders;
 using MudBlazor.Services;

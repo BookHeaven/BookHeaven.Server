@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Components.Forms;
 using BookHeaven.Domain.Features.Authors;
 using BookHeaven.Domain.Features.Books;
 using BookHeaven.Domain.Features.BookSeries;
-using BookHeaven.EpubManager;
-using BookHeaven.EpubManager.Abstractions;
-using BookHeaven.EpubManager.Enums;
+using BookHeaven.EbookManager;
+using BookHeaven.EbookManager.Abstractions;
+using BookHeaven.EbookManager.Enums;
 using BookHeaven.Server.Abstractions;
 using MediatR;
 

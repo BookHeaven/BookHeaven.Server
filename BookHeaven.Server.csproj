@@ -77,7 +77,7 @@
     <None Include="wwwroot\img\logo.svg" />
   </ItemGroup>
   <ItemGroup Condition="'$(UseNuget)' != 'true'">
-    <ProjectReference Include="..\BookHeaven.EpubManager\BookHeaven.EpubManager.csproj" />
+    <ProjectReference Include="..\BookHeaven.EbookManager\BookHeaven.EbookManager.csproj" />
     <ProjectReference Include="..\BookHeaven.Domain\BookHeaven.Domain.csproj" />
   </ItemGroup>
   <ItemGroup Condition="'$(UseNuget)' == 'true'">
