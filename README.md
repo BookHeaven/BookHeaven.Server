@@ -11,7 +11,7 @@ You can also add fonts so they can be easily downloaded and used by your devices
 ---
 
 > [!NOTE]
-> Only epub format is supported as of right now and there are currently no plans to support other formats.
+> Only epub and PDF format are supported as of right now and there are currently no plans to support other formats.
 > 
 > While the progress sync is completely functional and the UI is pretty enough, the "managing" part still needs a bit more of love. That being said, I want to keep things simple.
 > 
