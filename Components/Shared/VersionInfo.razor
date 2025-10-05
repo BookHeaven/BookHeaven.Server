@@ -1,0 +1,41 @@
+﻿@using System.Text.Json
+@using System.Net
+@if(_localVersion is null) return;
+<div class="flex items-center gap-2 leading-none">
+	@if (_latestVersion is not null)
+	{
+		<span class="size-2 rounded-full @(_latestVersion > _localVersion ? "bg-yellow-500" : "bg-green-500")"></span>
+	}
+	<span>v@(_localVersion)</span>
+</div>
+
+@code {
+	private const string LatestVersionJson = "https://raw.githubusercontent.com/BookHeaven/BookHeaven.Server/refs/heads/main/version.json";
+	private Version? _latestVersion;
+	private Version? _localVersion;
+	
+	protected override async Task OnInitializedAsync()
+	{
+		using var httpClient = new HttpClient();
+		var response = await httpClient.GetAsync(LatestVersionJson);
+		if (response.StatusCode == HttpStatusCode.OK)
+		{
+			_latestVersion = ParseVersion(await response.Content.ReadAsStringAsync());
+		}
+		_localVersion = ParseVersion(await File.ReadAllTextAsync("version.json"));
+	}
+	
+	private static Version? ParseVersion(string version)
+	{
+		try
+		{
+			var json = JsonDocument.Parse(version);
+			return json.RootElement.TryGetProperty("version", out var versionElement) ? new Version(versionElement.GetString()!) : null;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+}
