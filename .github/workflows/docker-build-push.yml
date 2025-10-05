@@ -51,11 +51,8 @@ jobs:
       IMAGE_NAME: bookheaven-server
       GITHUB_REGISTRY: ghcr.io
       GITHUB_USER: bookheaven
-      GITHUB_IMAGE: ${{ env.GITHUB_REGISTRY }}/${{ env.GITHUB_USER }}/${{ env.IMAGE_NAME }}
       DOCKERHUB_REGISTRY: docker.io
       DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USERNAME }}
-      DOCKERHUB_IMAGE: ${{ env.DOCKERHUB_REGISTRY }}/${{ env.DOCKERHUB_USER }}/${{ env.IMAGE_NAME }}
-      
       VERSION: ${{ needs.check-version.outputs.version }}
       
     steps:
@@ -102,12 +99,13 @@ jobs:
 
       - name: Build and push multi-arch image to GHCR
         run: |
+          GITHUB_IMAGE="${GITHUB_REGISTRY}/${GITHUB_USER}/${IMAGE_NAME}"
           docker buildx build ./BookHeaven \
             --build-arg GOOGLE_BOOKS_API_KEY=${{ secrets.GOOGLE_BOOKS_API_KEY }} \
             --file BookHeaven/BookHeaven.Server/Dockerfile \
             --platform linux/amd64,linux/arm64 \
-            --tag ${{ env.GITHUB_IMAGE }}:latest \
-            --tag ${{ env.GITHUB_IMAGE }}:${{ env.VERSION }} \
+            --tag $GITHUB_IMAGE:latest \
+            --tag $GITHUB_IMAGE:$VERSION \
             --push
 
       - name: Log in to Docker Hub
@@ -115,12 +113,13 @@ jobs:
 
       - name: Build and push multi-arch image to Docker Hub
         run: |
+          DOCKERHUB_IMAGE="${DOCKERHUB_REGISTRY}/${DOCKERHUB_USER}/${IMAGE_NAME}"
           docker buildx build ./BookHeaven \
             --build-arg GOOGLE_BOOKS_API_KEY=${{ secrets.GOOGLE_BOOKS_API_KEY }} \
             --file BookHeaven/BookHeaven.Server/Dockerfile \
             --platform linux/amd64,linux/arm64 \
-            --tag ${{ env.DOCKERHUB_IMAGE }}:latest \
-            --tag ${{ env.DOCKERHUB_IMAGE }}:${{ env.VERSION }} \
+            --tag $DOCKERHUB_IMAGE:latest \
+            --tag $DOCKERHUB_IMAGE:$VERSION \
             --push
           
       - name: Create Tag
