@@ -77,7 +77,7 @@
     <ProjectReference Include="..\BookHeaven.Domain\BookHeaven.Domain.csproj" />
   </ItemGroup>
   <ItemGroup Condition="'$(UseNuget)' == 'true'">
-    <PackageReference Include="BookHeaven.Domain" Version="1.1.0" />
+    <PackageReference Include="BookHeaven.Domain" Version="1.1.1" />
     <PackageReference Include="BookHeaven.EbookManager" Version="1.1.2" />
   </ItemGroup>
   <PropertyGroup>
