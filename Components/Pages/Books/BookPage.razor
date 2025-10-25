@@ -248,7 +248,7 @@
 					<MudDatePicker @bind-Date=_book.PublishedDate Label="@Translations.PUBLISHED" Variant="Variant.Filled"></MudDatePicker>
 				</MudItem>
 				<MudItem xs="12">
-					<RichTextEditor @bind-Value="_book.Description" Label="@Translations.DESCRIPTION" />
+					<MudTextField @bind-Value=_book.Description Label="@Translations.DESCRIPTION" Lines="12" AutoGrow="true" Variant="Variant.Filled"></MudTextField>
 				</MudItem>
 			</MudGrid>
 
