@@ -211,3 +211,21 @@ img {
 .mud-input.mud-input-filled {
     @apply bg-(--mud-palette-primary)/5 hover:bg-(--mud-palette-primary)/10;
 }
+
+.mudex-richtexteditor {
+    --quill-border-color: var(--mud-palette-primary) !important;
+    --quill-placeholder-color: var(--mud-palette-text-secondary) !important;
+    --quill-toolbar-bg-color: var(--mud-palette-surface) !important;
+    --quill-bg-color: rgb(31, 39, 53) !important;
+    
+    & .ql-toolbar {
+        border-top-left-radius: 4px;
+        border-top-right-radius: 4px;
+        border: none !important;
+    }
+    
+    & .ql-container {
+        border: none !important;
+        border-top: 1px solid var(--quill-border-color) !important;
+    }
+}

@@ -1,0 +1,30 @@
+﻿@using MudExRichTextEditor
+@using MudExRichTextEditor.Extensibility
+@using MudExRichTextEditor.Types
+
+@if(!string.IsNullOrEmpty(Label))
+{
+	<MudInputLabel Class="mb-2">@Label</MudInputLabel>
+}
+<MudExRichTextEdit
+	@bind-Value="Value"
+	Tools="_tools"
+	Modules="_modules"
+	Placeholder=""
+/>
+
+@code {
+	[Parameter] public string? Value { get; set; }
+	[Parameter] public EventCallback<string?> ValueChanged { get; set; }
+	[Parameter] public string? Label { get; set; }
+	
+	private readonly QuillTool[] _tools = [
+		QuillTools.Header(group: 1, options: ["","1", "2", "3", "4", "5", "6"]),
+		QuillTools.Bold(),
+		QuillTools.Italic(),
+		QuillTools.Underline(),
+		QuillTools.Strike(),
+	];
+
+	private readonly IQuillModule[] _modules = [];
+}
