@@ -6,15 +6,18 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <base href="/" />
+    <ResourcePreloader/>
     <link href="@Assets["_content/MudBlazor/MudBlazor.min.css"]" rel="stylesheet" />
     <link rel="stylesheet" href="@Assets["css/app.min.css"]" />
     <link rel="stylesheet" href="@Assets["BookHeaven.Server.styles.css"]" />
     <link rel="icon" type="image/x-icon" href="img/logo.svg" />
     <title>BookHeaven</title>
+    <ImportMap/>
     <HeadOutlet @rendermode="@InteractiveServer" />
 </head>
 <body class="bg-[rgba(29,32,43,1)]">
     <Routes @rendermode="new InteractiveServerRenderMode(prerender:false)"/>
+    <ReconnectModal/>
     <script src="@Assets["_content/MudBlazor/MudBlazor.min.js"]"></script>
     <script src="@Assets["_framework/blazor.web.js"]"></script>
     <script>

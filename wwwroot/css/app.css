@@ -200,10 +200,6 @@ img {
     gap: 0.5rem;
 }
 
-#components-reconnect-modal {
-    color: black;
-}
-
 .mud-overlay {
     min-height: 100dvh;
 }
