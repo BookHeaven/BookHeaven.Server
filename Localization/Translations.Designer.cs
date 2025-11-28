@@ -436,5 +436,14 @@ namespace BookHeaven.Server.Localization {
                 return ResourceManager.GetString("UPLOADING_BOOK_FAILED", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Book uploaded succesfully.
+        /// </summary>
+        public static string UPLOADING_BOOK_SUCCESS {
+            get {
+                return ResourceManager.GetString("UPLOADING_BOOK_SUCCESS", resourceCulture);
+            }
+        }
     }
 }

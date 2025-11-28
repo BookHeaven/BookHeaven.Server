@@ -199,7 +199,7 @@
     <value>Subiendo libro</value>
   </data>
   <data name="UPLOADING_BOOK_FAILED" xml:space="preserve">
-    <value>No se ha podido subir el libro</value>
+    <value>No se ha podido cargar el libro</value>
   </data>
   <data name="LANGUAGE" xml:space="preserve">
     <value>Idioma</value>
@@ -242,5 +242,8 @@
   </data>
   <data name="PROFILE_DELETE_WARNING_MESSAGE" xml:space="preserve">
     <value>¿De verdad quieres eliminar este perfil? Perderás el progreso de todos los libros para este perfil. Esta acción no se puede deshacer.</value>
+  </data>
+  <data name="UPLOADING_BOOK_SUCCESS" xml:space="preserve">
+    <value>Libro cargado correctamente</value>
   </data>
 </root>

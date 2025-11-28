@@ -32,12 +32,21 @@
                     <MudSpacer />
                 </MudHidden>
                 <SearchBar/>
-
-                <MudFileUpload T="IReadOnlyList<IBrowserFile>" FilesChanged="UploadBook" Class="!m-0">
-                    <ActivatorContent>
-                        <MudIconButton HtmlTag="label" Icon="@Icons.Material.Filled.UploadFile" Color="Color.Secondary"/>
-                    </ActivatorContent>
-                </MudFileUpload>
+                
+                @if (!_uploadingBooks)
+                {
+                    <MudFileUpload T="IReadOnlyList<IBrowserFile>" FilesChanged="UploadBooks" Class="!m-0">
+                        <ActivatorContent>
+                            <MudIconButton HtmlTag="label" Icon="@Icons.Material.Filled.UploadFile" Color="Color.Secondary"/>
+                        </ActivatorContent>
+                    </MudFileUpload>
+                }
+                else
+                {
+                    <div class="flex items-center justify-center mx-3">
+                        <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+                    </div>
+                }
             </div>
         </div>
         <div class="py-2 lg:py-5 md:px-7 relative flex-1">
