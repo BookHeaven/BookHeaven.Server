@@ -1,27 +1,26 @@
-﻿<div class="grid gap-3 sm:gap-5 @(SingleRow 
-    ? "grid-flow-col grid-rows-1 overflow-x-auto auto-cols-[165px] sm:auto-cols-[180px] snap-x snap-mandatory py-5"
-    : $"grid-cols-[repeat(auto-fill,170px)] sm:grid-cols-[repeat(auto-fill,180px)] {(Center ? "justify-center" : "")}")">
-    @if (IsLoading)
-    {
-	    for(var i = 0; i < 8; i++)
-	    {
-		    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="370px" Animation="Animation.Pulse" Class="w-[170px] sm:w-[180px] rounded" />
-	    }
-    }
-    else
-    {
-	    foreach(var book in Books)
-	    {
-		    <BookCard 
-			    @key="book" 
-			    Book="book" 
-			    IsSelectMode="IsSelectMode" 
-			    IsSelected="SelectedBooks.Contains(book.BookId)" 
-			    IsInteractive="IsInteractive" 
-			    OnBookClicked="OnBookClicked" />
-	    }
-    }
-</div>
+﻿@if (IsLoading)
+{
+	<div class="@GridClasses">
+		@for(var i = 0; i < 20; i++)
+		{
+			<MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="370px" Animation="Animation.Pulse" Class="w-[170px] sm:w-[180px] rounded" />
+		}
+	</div>
+	return;
+}
+
+<VirtualGrid Items="Books" ContainerClass="@GridClasses">
+	<ItemTemplate>
+		<BookCard
+			@key="@context.BookId"
+			Book="context"
+			IsSelectMode="IsSelectMode"
+			IsSelected="SelectedBooks.Contains(context.BookId)"
+			IsInteractive="IsInteractive"
+			OnBookClicked="OnBookClicked"/>
+	</ItemTemplate>
+</VirtualGrid>
+
 
 @code {
 	[Inject] private NavigationManager NavigationManager { get; set; } = null!;
@@ -34,6 +33,12 @@
 	[Parameter] public bool IsSelectMode { get; set; }
 	[Parameter] public List<Guid> SelectedBooks { get; set; } = [];
 	[Parameter] public EventCallback<List<Guid>> SelectedBooksChanged { get; set; }
+	
+	private string GridClasses =>
+		"grid gap-3 sm:gap-5 " + (
+		SingleRow
+			? "grid-flow-col grid-rows-1 overflow-x-auto auto-cols-[165px] sm:auto-cols-[180px] snap-x snap-mandatory py-5"
+			: $"grid-cols-[repeat(auto-fill,170px)] sm:grid-cols-[repeat(auto-fill,180px)] {(Center ? "justify-center" : "")}");
 
 	private void OnBookClicked((Guid bookId, bool shiftPressed) args)
 	{
