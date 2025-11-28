@@ -1,0 +1,63 @@
+﻿@implements IAsyncDisposable
+<div @ref="_containerRef" class="@ContainerClass">
+	@foreach (var (index, item) in Items.Index())
+	{
+		var isVisible = index >= _firstIndex && index <= _lastIndex;
+		<div class="flex items-stretch @(!isVisible ? "h-[370px]" : "")" data-virtual-index="@index">
+			@if (isVisible)
+			{
+				@ItemTemplate(item)
+			}
+		</div>
+	}
+</div>
+
+@code {
+	[Inject] private IJSRuntime JsRuntime { get; set; } = null!;
+	
+	[Parameter] public required IReadOnlyList<Book> Items { get; set; }
+	[Parameter] public required RenderFragment<Book> ItemTemplate { get; set; }
+	[Parameter] public int Overscan { get; set; } = 20; // elementos extra antes/después
+	[Parameter] public string? ContainerClass { get; set; }
+
+	private ElementReference _containerRef;
+	private DotNetObjectReference<VirtualGrid>? _dotNetRef;
+	private IJSObjectReference? _jsModule;
+
+	private int _firstIndex = 0;
+	private int _lastIndex = 0;
+
+	protected override void OnInitialized()
+	{
+		_dotNetRef = DotNetObjectReference.Create(this);
+		_lastIndex = Math.Min(Items.Count - 1, Overscan * 2);
+	}
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			_jsModule = await JsRuntime.InvokeAsync<IJSObjectReference>("import", "./" + Assets["Components/Shared/VirtualGrid.razor.js"]);
+			await _jsModule.InvokeVoidAsync("observe", _containerRef, _dotNetRef);
+		}
+	}
+
+	[JSInvokable]
+	public async Task OnVisibilityChanged(int first, int last)
+	{
+		_firstIndex = Math.Max(0, first - Overscan);
+		_lastIndex = Math.Min(Items.Count - 1, last + Overscan);
+		await InvokeAsync(StateHasChanged);
+	}
+
+	public async ValueTask DisposeAsync()
+	{
+		_dotNetRef?.Dispose();
+		if (_jsModule is not null)
+		{
+			await _jsModule.InvokeVoidAsync("dispose");
+			await _jsModule.DisposeAsync();
+		}
+	}
+
+}
