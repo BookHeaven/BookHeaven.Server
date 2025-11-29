@@ -41,7 +41,7 @@
 	[Parameter] public bool IsSelected { get; set; } = false;
 	[Parameter] public EventCallback<(Guid id, bool shiftPressed)> OnBookClicked { get; set; }
 	
-	private string CardClass => $"animate-fade-in animate-duration-200 relative overflow-hidden flex flex-col select-none {(!IsInteractive ? "pointer-events-none" : "group hover:cursor-pointer active:scale-95 transition-transform ")}";
+	private string CardClass => $"animate-fade-in animate-duration-200 flex-1 relative overflow-hidden flex flex-col select-none {(!IsInteractive ? "pointer-events-none" : "group hover:cursor-pointer active:scale-95 transition-transform ")}";
 	
 	private async Task HandleBookClick(MouseEventArgs e)
 	{

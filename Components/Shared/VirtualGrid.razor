@@ -3,7 +3,7 @@
 	@foreach (var (index, item) in Items.Index())
 	{
 		var isVisible = index >= _firstIndex && index <= _lastIndex;
-		<div class="flex items-stretch @(!isVisible ? "h-[370px]" : "")" data-virtual-index="@index">
+		<div class="flex @(!isVisible ? "h-[370px]" : "")" data-virtual-index="@index">
 			@if (isVisible)
 			{
 				@ItemTemplate(item)
