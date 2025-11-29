@@ -33,20 +33,20 @@
                 </MudHidden>
                 <SearchBar/>
                 
-                @if (!_uploadingBooks)
-                {
-                    <MudFileUpload T="IReadOnlyList<IBrowserFile>" FilesChanged="UploadBooks" Class="!m-0">
-                        <ActivatorContent>
+                <MudFileUpload T="IReadOnlyList<IBrowserFile>" FilesChanged="UploadBooks" Class="!m-0" Disabled="_uploadingBooks">
+                    <ActivatorContent>
+                        @if (!_uploadingBooks)
+                        {
                             <MudIconButton HtmlTag="label" Icon="@Icons.Material.Filled.UploadFile" Color="Color.Secondary"/>
-                        </ActivatorContent>
-                    </MudFileUpload>
-                }
-                else
-                {
-                    <div class="flex items-center justify-center mx-3">
-                        <MudProgressCircular Size="Size.Small" Indeterminate="true" />
-                    </div>
-                }
+                        }
+                        else
+                        {
+                            <div class="flex items-center justify-center mx-3">
+                                <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+                            </div>
+                        }
+                    </ActivatorContent>
+                </MudFileUpload>
             </div>
         </div>
         <div class="py-2 lg:py-5 md:px-7 relative flex-1">
