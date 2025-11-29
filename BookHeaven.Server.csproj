@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>6a60f5e0-2a65-4884-9c73-c8acf7989b10</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-<!--    <RuntimeIdentifiers>linux-x64</RuntimeIdentifiers>-->
+    <!--    <RuntimeIdentifiers>linux-x64</RuntimeIdentifiers>-->
     <EnableSdkContainerDebugging>True</EnableSdkContainerDebugging>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
@@ -79,7 +79,7 @@
   </ItemGroup>
   <ItemGroup Condition="'$(UseNuget)' == 'true'">
     <PackageReference Include="BookHeaven.Domain" Version="1.1.4" />
-    <PackageReference Include="BookHeaven.EbookManager" Version="1.1.6" />
+    <PackageReference Include="BookHeaven.EbookManager" Version="1.1.7" />
   </ItemGroup>
   <PropertyGroup>
     <MudAllowedAttributePattern>LowerCase</MudAllowedAttributePattern>
