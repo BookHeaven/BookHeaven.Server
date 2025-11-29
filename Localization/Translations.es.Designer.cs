@@ -321,6 +321,69 @@ namespace BookHeaven.Server.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Recargar página.
+        /// </summary>
+        public static string RECONNECT_MODAL_BUTTON_RECONNECT {
+            get {
+                return ResourceManager.GetString("RECONNECT_MODAL_BUTTON_RECONNECT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reanudar sesión.
+        /// </summary>
+        public static string RECONNECT_MODAL_BUTTON_RESUME {
+            get {
+                return ResourceManager.GetString("RECONNECT_MODAL_BUTTON_RESUME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Se ha pausado la sesión por inactividad..
+        /// </summary>
+        public static string RECONNECT_MODAL_INFO_PAUSE {
+            get {
+                return ResourceManager.GetString("RECONNECT_MODAL_INFO_PAUSE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reconectando con el servidor....
+        /// </summary>
+        public static string RECONNECT_MODAL_INFO_RECONNECT {
+            get {
+                return ResourceManager.GetString("RECONNECT_MODAL_INFO_RECONNECT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No se ha podido reanudar la conexión.&lt;br/&gt;Por favor, recarga la página..
+        /// </summary>
+        public static string RECONNECT_MODAL_INFO_RECONNECT_FAILED {
+            get {
+                return ResourceManager.GetString("RECONNECT_MODAL_INFO_RECONNECT_FAILED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Recargando la página....
+        /// </summary>
+        public static string RECONNECT_MODAL_INFO_RESUME_FAILED {
+            get {
+                return ResourceManager.GetString("RECONNECT_MODAL_INFO_RESUME_FAILED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Conexión fallida... reintentando en {0} segundos..
+        /// </summary>
+        public static string RECONNECT_MODAL_INFO_RETRYING {
+            get {
+                return ResourceManager.GetString("RECONNECT_MODAL_INFO_RETRYING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Reemplazar portada.
         /// </summary>
         public static string REPLACE_COVER {

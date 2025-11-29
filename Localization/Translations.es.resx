@@ -246,4 +246,25 @@
   <data name="UPLOADING_BOOK_SUCCESS" xml:space="preserve">
     <value>Libro cargado correctamente</value>
   </data>
+  <data name="RECONNECT_MODAL_BUTTON_RECONNECT" xml:space="preserve">
+    <value>Recargar página</value>
+  </data>
+  <data name="RECONNECT_MODAL_BUTTON_RESUME" xml:space="preserve">
+    <value>Reanudar sesión</value>
+  </data>
+  <data name="RECONNECT_MODAL_INFO_RESUME_FAILED" xml:space="preserve">
+    <value>Recargando la página...</value>
+  </data>
+  <data name="RECONNECT_MODAL_INFO_RECONNECT_FAILED" xml:space="preserve">
+    <value>No se ha podido reanudar la conexión.&lt;br/&gt;Por favor, recarga la página.</value>
+  </data>
+  <data name="RECONNECT_MODAL_INFO_RECONNECT" xml:space="preserve">
+    <value>Reconectando con el servidor...</value>
+  </data>
+  <data name="RECONNECT_MODAL_INFO_PAUSE" xml:space="preserve">
+    <value>Se ha pausado la sesión por inactividad.</value>
+  </data>
+  <data name="RECONNECT_MODAL_INFO_RETRYING" xml:space="preserve">
+    <value>Conexión fallida... reintentando en {0} segundos.</value>
+  </data>
 </root>

@@ -246,4 +246,25 @@
   <data name="UPLOADING_BOOK_SUCCESS" xml:space="preserve">
     <value>Book uploaded succesfully</value>
   </data>
+  <data name="RECONNECT_MODAL_BUTTON_RECONNECT" xml:space="preserve">
+    <value>Refresh Page</value>
+  </data>
+  <data name="RECONNECT_MODAL_BUTTON_RESUME" xml:space="preserve">
+    <value>Resume Session</value>
+  </data>
+  <data name="RECONNECT_MODAL_INFO_RESUME_FAILED" xml:space="preserve">
+    <value>Reloading the page...</value>
+  </data>
+  <data name="RECONNECT_MODAL_INFO_RECONNECT_FAILED" xml:space="preserve">
+    <value>Connection could not be reestablished.&lt;br/&gt;Please refresh the page.</value>
+  </data>
+  <data name="RECONNECT_MODAL_INFO_RECONNECT" xml:space="preserve">
+    <value>Reconnecting with the server...</value>
+  </data>
+  <data name="RECONNECT_MODAL_INFO_PAUSE" xml:space="preserve">
+    <value>Session has been paused due to inactivity.</value>
+  </data>
+  <data name="RECONNECT_MODAL_INFO_RETRYING" xml:space="preserve">
+    <value>Connection failed... retrying in {0} seconds.</value>
+  </data>
 </root>

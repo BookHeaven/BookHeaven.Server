@@ -7,25 +7,25 @@
 			<div></div>
 		</div>
 		<p class="components-reconnect-first-attempt-visible">
-			Reconnecting with the server...
+			@Translations.RECONNECT_MODAL_INFO_RECONNECT
 		</p>
 		<p class="components-reconnect-repeated-attempt-visible">
-			Connection failed... retrying in <span id="components-seconds-to-next-attempt"></span> seconds.
+			@((MarkupString)string.Format(Translations.RECONNECT_MODAL_INFO_RETRYING, @"<span id='components-seconds-to-next-attempt'></span>"))
 		</p>
 		<p class="components-reconnect-failed-visible">
-			Connection could not be reestablished.<br/>Please refresh the page.
+			@((MarkupString)Translations.RECONNECT_MODAL_INFO_RECONNECT_FAILED)
 		</p>
 		<button id="components-reconnect-button" class="components-reconnect-failed-visible">
-			Refresh Page
+			@Translations.RECONNECT_MODAL_BUTTON_RECONNECT
 		</button>
 		<p class="components-pause-visible">
-			Session has been paused due to inactivity.
+			@Translations.RECONNECT_MODAL_INFO_PAUSE
 		</p>
 		<button id="components-resume-button" class="components-pause-visible">
-			Resume Session
+			@Translations.RECONNECT_MODAL_BUTTON_RESUME
 		</button>
 		<p class="components-resume-failed-visible">
-			Reloading the page...
+			@Translations.RECONNECT_MODAL_INFO_RESUME_FAILED
 		</p>
 	</div>
 </dialog>
