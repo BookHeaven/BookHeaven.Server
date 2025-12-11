@@ -7,17 +7,19 @@
 	<MudInputLabel Class="mb-2">@Label</MudInputLabel>
 }
 <MudExRichTextEdit
-	Value="@Value"
-	ValueChanged="(v) => ValueChanged.InvokeAsync(v)"
+	@bind-Value="Value"
 	Tools="_tools"
 	Modules="_modules"
 	Placeholder=""
+	Immediate="true"
 />
 
 @code {
-	[Parameter] public string Value { get; set; } = string.Empty;
-	[Parameter] public EventCallback<string> ValueChanged { get; set; }
+	[Parameter] public string? Value { get; set; }
+	[Parameter] public EventCallback<string?> ValueChanged { get; set; }
 	[Parameter] public string? Label { get; set; }
+	
+	
 	
 	private readonly QuillTool[] _tools = [
 		QuillTools.Header(group: 1, options: ["","1", "2", "3", "4", "5", "6"]),
