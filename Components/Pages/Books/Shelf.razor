@@ -150,13 +150,11 @@ else
 		GlobalEventsService.Subscribe<BookDeleted>(OnBookDeleted);
 
 		ProfileId = await SessionService.GetAsync<Guid>(SessionKey.SelectedProfileId);
-
-		await BookManager.GetBooksAsync(ProfileId);
-		IsLoading = false;
 	}
 
 	protected override async Task OnParametersSetAsync()
 	{
+		IsLoading = true;
 		if (CollectionId != Guid.Empty)
 		{
 			var getCollection = await Sender.Send(new GetCollectionById.Query(CollectionId));
@@ -171,6 +169,8 @@ else
 		{
 			_currentCollection = null;
 		}
+		await BookManager.GetBooksAsync(ProfileId);
+		IsLoading = false;
 	}
 
 	private async Task OnBookAdded(BookAdded e)
