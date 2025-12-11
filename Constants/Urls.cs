@@ -7,6 +7,7 @@ public static class Urls
 	public const string Collection = $"{Shelf}/collection";
 	public const string NewCollection = $"{Collections}/new";
 	public const string Authors = "/authors";
+	public const string CreateAuthor = $"{Authors}/create";
 	public const string Series = "/series";
 	public const string Settings = "/settings";
 	public const string Profiles = "/profiles";
