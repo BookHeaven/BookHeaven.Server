@@ -57,7 +57,7 @@
     <PackageReference Include="MudBlazor" Version="8.15.0" />
     <PackageReference Include="MudExRichTextEditor" Version="8.14.0" />
     <PackageReference Include="OpenLibrary.NET" Version="0.1.3" />
-    <PackageReference Include="Scalar.AspNetCore" Version="2.11.5" />
+    <PackageReference Include="Scalar.AspNetCore" Version="2.11.6" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.0.1" />
     <PackageReference Include="Toolbelt.Blazor.ViewTransition" Version="1.0.4" />
   </ItemGroup>
@@ -78,7 +78,7 @@
     <ProjectReference Include="..\BookHeaven.Domain\BookHeaven.Domain.csproj" />
   </ItemGroup>
   <ItemGroup Condition="'$(UseNuget)' == 'true'">
-    <PackageReference Include="BookHeaven.Domain" Version="1.1.4" />
+    <PackageReference Include="BookHeaven.Domain" Version="1.1.5" />
     <PackageReference Include="BookHeaven.EbookManager" Version="1.1.7" />
   </ItemGroup>
   <PropertyGroup>
