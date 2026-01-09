@@ -3,9 +3,19 @@
 </MudTooltip>
 @code {
 	[Inject] IJSRuntime JsRuntime { get; set; } = null!;
+	[Inject] NavigationManager NavigationManager { get; set; } = null!;
+	
+	[Parameter] public string? Url { get; set; }
 	
 	private async Task GoBack()
 	{
-		await JsRuntime.InvokeVoidAsync("history.back");
+		if (string.IsNullOrEmpty(Url))
+		{
+			await JsRuntime.InvokeVoidAsync("history.back");
+		}
+		else
+		{
+			NavigationManager.NavigateTo(Url);
+		}
 	}
 }
