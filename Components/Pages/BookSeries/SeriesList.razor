@@ -30,7 +30,7 @@
         </ColGroup>
         <HeaderContent>
             <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Series, object>(x => x.Name!)">@Translations.NAME</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<Series, object>(x => x.Books.Count())">@Translations.BOOKS</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<Series, object>(x => x.Books.Count)">@Translations.BOOKS</MudTableSortLabel></MudTh>
             <MudTh>Actions</MudTh>
         </HeaderContent>
         <RowTemplate>
