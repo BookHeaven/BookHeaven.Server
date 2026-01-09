@@ -1,17 +1,11 @@
-﻿@using BookHeaven.Domain.Enums
-@using BookHeaven.Domain.Features.Authors
-@using BookHeaven.Server.Abstractions
+﻿@using BookHeaven.Domain.Features.Authors
 @attribute [Route($"{Urls.Authors}/{{Id:guid}}")]
-@attribute [Route($"{Urls.Authors}/{{Id:guid}}/{{Editing}}")]
+@attribute [Route(Urls.CreateAuthor)]
 
-@if(!_isLoaded)
-{
-	return;
-}
 <Topbar>
-	<GoBackButton />
+	<GoBackButton Url="@Urls.Authors" />
 	<MudSpacer />
-	@if (!IsEditing)
+	@if (!_editMode)
 	{
 		<MudTooltip Text="@Translations.EDIT">
 			<MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" OnClick="@EnableEditing"/>
@@ -19,9 +13,12 @@
 	}
 	else
 	{
-		<MudTooltip Text="@Translations.CANCEL" Color="Color.Warning">
-			<MudIconButton Icon="@Icons.Material.Filled.Clear" Color="Color.Warning" OnClick="@DisableEditing"/>
-		</MudTooltip>
+		if (Id is not null)
+		{
+			<MudTooltip Text="@Translations.CANCEL" Color="Color.Warning">
+				<MudIconButton Icon="@Icons.Material.Filled.Clear" Color="Color.Warning" OnClick="@DisableEditing"/>
+			</MudTooltip>
+		}
 		<MudTooltip Text="@Translations.SAVE">
 			<MudIconButton Icon="@Icons.Material.Filled.Save" Color="Color.Primary" OnClick="@Save"/>
 		</MudTooltip>
@@ -41,25 +38,36 @@
 			{
 				<img src="@_author.ImageUrl" alt=""/>
 			}
-			<div class="p-2 bg-slate-700">
-				<p class="text-center">@BooksRead finished out of @_author.Books.Count</p>
-			</div>
+			@if (!_editMode)
+			{
+				<div class="p-2 bg-slate-700">
+					<p class="text-center">@BooksRead finished out of @_author.Books.Count</p>
+				</div>
+			}
+			
 		</div>
 		<div class="flex-1">
-			@if (!IsEditing)
+			@if (!_editMode)
 			{
 				<h1>@_author.Name</h1>
-				<p>@_author.Biography</p>
+				if (!string.IsNullOrWhiteSpace(_author.Biography))
+				{
+					<p>@((MarkupString)_author.Biography)</p>
+				}
 			}
 			else
 			{
-				<MudTextField Label="@Translations.NAME" @bind-Value="_author.Name" Variant="Variant.Filled"/>
-				<MudTextField Label="Biography" Lines="12" @bind-Value="_author.Biography" Variant="Variant.Filled"/>
+				<MudTextField Class="mb-5" Label="@Translations.NAME" @bind-Value="_author.Name" Variant="Variant.Filled"/>
+				<RichTextEditor
+					Label="Biography / Info"
+					@bind-Value="_author.Biography"
+					/>
+				//<MudTextField Label="Biography" Lines="12" @bind-Value="_author.Biography" Variant="Variant.Filled"/>
 			}
 			
 		</div>
 	</div>
-	@if (!IsEditing)
+	@if (!_editMode)
 	{
 		<h2 class="mb-5">@_author.Books.Count @(_author.Books.Count > 1 ? "books" : "book")</h2>
 		<BookGrid Books="_author.Books.OrderBy(b => b.Author?.Name).ThenBy(b => b.Series?.Name).ThenBy(b => b.SeriesIndex).ToList()" />
@@ -71,13 +79,12 @@
 	[Inject] private ISender Sender { get; set; } = null!;
 	[Inject] private NavigationManager NavigationManager { get; set; } = null!;
 	[Inject] private ISessionService SessionService { get; set; } = null!;
-	[Parameter] public Guid Id { get; set; }
-	[Parameter] public string? Editing { get; set; }
+	[Parameter] public Guid? Id { get; set; }
 	
-	private bool _isLoaded;
 	private Author _author = new();
-	private bool IsEditing => Editing == "edit";
 	private Guid _profileId;
+
+	private bool _editMode;
 	
 	private int BooksRead => _author.Books.Count(book => book.ReadingStatus() == BookStatus.Finished);
 
@@ -88,6 +95,11 @@
 
 	protected override async Task OnParametersSetAsync()
 	{
+		if (Id is null)
+		{
+			_editMode = true;
+			return;
+		}
 		if (_author.AuthorId == Guid.Empty || Id != _author.AuthorId)
 		{
 			var getAuthor = await Sender.Send(new GetAuthor.Query(new GetAuthor.Filter {AuthorId = Id, ProfileId = _profileId, IncludeBooks = true}));
@@ -96,28 +108,39 @@
 				return;	
 			}
 			_author = getAuthor.Value;
-			_isLoaded = true;
-			StateHasChanged();	
 		}
 	}
 
 	private void EnableEditing()
 	{
-		NavigationManager.NavigateTo($"{Urls.GetAuthorUrl(_author.AuthorId)}/edit");
+		_editMode = true;
 	}
 
 	private void DisableEditing()
 	{
-		NavigationManager.NavigateTo(Urls.GetAuthorUrl(_author.AuthorId));
+		_editMode = false;
 	}
 
 	private async Task Save()
 	{
-		var updateAuthor = await Sender.Send(new UpdateAuthor.Command(_author));
-		if (updateAuthor.IsFailure)
+		if (Id is not null)
 		{
-			return;
+			var updateAuthor = await Sender.Send(new UpdateAuthor.Command(_author!));
+			if (updateAuthor.IsFailure)
+			{
+				return;
+			}
 		}
+		else
+		{
+			var addAuthor = await Sender.Send(new AddAuthor.Command(_author));
+			if (addAuthor.IsFailure)
+			{
+				return;
+			}
+			NavigationManager.NavigateTo(Urls.GetAuthorUrl(_author.AuthorId));
+		}
+		
 		DisableEditing();
 	}
 
