@@ -10,7 +10,6 @@ using BookHeaven.Domain;
 using BookHeaven.Domain.Abstractions;
 using BookHeaven.Server.Abstractions;
 using BookHeaven.Server.Endpoints;
-using BookHeaven.Server.Extensions;
 using BookHeaven.Server.MetadataProviders;
 using BookHeaven.Server.MetadataProviders.Abstractions;
 using BookHeaven.Server.MetadataProviders.DependencyInjection;

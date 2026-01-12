@@ -2,9 +2,9 @@
 using BookHeaven.Server.Abstractions.Api;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace BookHeaven.Server.Extensions;
+namespace BookHeaven.Server.Endpoints;
 
-public static class EndpointExtensions
+public static class Api
 {
     public static IServiceCollection AddEndpoints(this IServiceCollection services, Assembly assembly)
     {
@@ -35,6 +35,4 @@ public static class EndpointExtensions
 
         return app;
     }
-
 }
-
