@@ -1,7 +1,7 @@
 @layer theme, base, components;
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/utilities.css" important; /* Remove utilities layer so it doesn't get overridden by Mudblazor styles */
-@plugin "@midudev/tailwind-animations";
+@import "tailwind-animations";
 /*body {
     --body-font: "Segoe UI Variable", "Segoe UI", sans-serif;
     font-family: var(--body-font);

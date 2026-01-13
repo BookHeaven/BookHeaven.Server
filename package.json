@@ -4,9 +4,8 @@
     "tailwindcss:build": "npx @tailwindcss/cli -i ./wwwroot/css/app.css -o ./wwwroot/css/app.min.css --minify"
   },
   "dependencies": {
-    "@midudev/tailwind-animations": "^0.2.0",
-    "@tailwindcss/cli": "^4.1.4",
-    "tailwindcss": "^4.0.0",
-    "tailwindcss-animated": "^2.0.0"
+    "@tailwindcss/cli": "^4.1.18",
+    "tailwind-animations": "^1.0.1",
+    "tailwindcss": "^4.0.0"
   }
 }
