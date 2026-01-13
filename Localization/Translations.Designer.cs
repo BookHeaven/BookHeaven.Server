@@ -186,6 +186,24 @@ namespace BookHeaven.Server.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Delete Series.
+        /// </summary>
+        public static string DELETE_SERIES {
+            get {
+                return ResourceManager.GetString("DELETE_SERIES", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to delete this Series?.
+        /// </summary>
+        public static string DELETE_SERIES_CONFIRM_MESSAGE {
+            get {
+                return ResourceManager.GetString("DELETE_SERIES_CONFIRM_MESSAGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Description.
         /// </summary>
         public static string DESCRIPTION {
@@ -272,6 +290,15 @@ namespace BookHeaven.Server.Localization {
         public static string NAME {
             get {
                 return ResourceManager.GetString("NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New series.
+        /// </summary>
+        public static string NEW_SERIES {
+            get {
+                return ResourceManager.GetString("NEW_SERIES", resourceCulture);
             }
         }
         
@@ -470,6 +497,15 @@ namespace BookHeaven.Server.Localization {
         public static string SERIES_INDEX {
             get {
                 return ResourceManager.GetString("SERIES_INDEX", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Series name cannot be empty.
+        /// </summary>
+        public static string SERIES_NAME_CANT_BE_EMPTY {
+            get {
+                return ResourceManager.GetString("SERIES_NAME_CANT_BE_EMPTY", resourceCulture);
             }
         }
         

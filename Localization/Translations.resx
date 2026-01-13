@@ -285,4 +285,16 @@
   <data name="ACTIONS" xml:space="preserve">
     <value>Actions</value>
   </data>
+  <data name="NEW_SERIES" xml:space="preserve">
+    <value>New series</value>
+  </data>
+  <data name="SERIES_NAME_CANT_BE_EMPTY" xml:space="preserve">
+    <value>Series name cannot be empty</value>
+  </data>
+  <data name="DELETE_SERIES" xml:space="preserve">
+    <value>Delete Series</value>
+  </data>
+  <data name="DELETE_SERIES_CONFIRM_MESSAGE" xml:space="preserve">
+    <value>Are you sure you want to delete this Series?</value>
+  </data>
 </root>

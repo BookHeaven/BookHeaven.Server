@@ -19,7 +19,7 @@
                     StartIcon="@Icons.Material.Filled.Add"
                     Variant="Variant.Filled"
                     Color="Color.Tertiary">
-                    New
+                    @Domain.Localization.Translations.NEW_F
                 </MudButton>
             </div>
         </ToolBarContent>
@@ -31,7 +31,7 @@
         <HeaderContent>
             <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Series, object>(x => x.Name!)">@Translations.NAME</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortBy="new Func<Series, object>(x => x.Books.Count)">@Translations.BOOKS</MudTableSortLabel></MudTh>
-            <MudTh>Actions</MudTh>
+            <MudTh>@Translations.ACTIONS</MudTh>
         </HeaderContent>
         <RowTemplate>
             <MudTd>@context.Name</MudTd>
@@ -47,16 +47,16 @@
 </Container>
 
 <MudDialog @bind-Visible="_isDialogOpen">
-    <TitleContent>New series</TitleContent>
+    <TitleContent>@Translations.NEW_SERIES</TitleContent>
     <DialogContent>
         <MudTextField
             @bind-Value="_newSeriesName"
             Variant="Variant.Outlined"
-            Label="Series name"/>
+            Label="@Translations.NAME"/>
     </DialogContent>
     <DialogActions>
-        <MudButton Variant="Variant.Text" OnClick="() => _isDialogOpen = false">Cancel</MudButton>
-        <MudButton Color="Color.Primary" OnClick="CreateNewSeries">Save</MudButton>
+        <MudButton Variant="Variant.Text" OnClick="() => _isDialogOpen = false">@Translations.CANCEL</MudButton>
+        <MudButton Color="Color.Primary" OnClick="CreateNewSeries">@Translations.SAVE</MudButton>
     </DialogActions>
 </MudDialog>
 
@@ -91,7 +91,7 @@
     {
         if (string.IsNullOrWhiteSpace(_newSeriesName))
         {
-            await AlertService.ShowToastAsync("Series name cannot be empty", AlertSeverity.Warning);
+            await AlertService.ShowToastAsync(Translations.SERIES_NAME_CANT_BE_EMPTY, AlertSeverity.Warning);
             return;
         }
         
@@ -109,7 +109,7 @@
     
     private async Task DeleteSeries(Guid seriesId)
     {
-        var confirm = await AlertService.ShowConfirmationAsync("Delete Series", "Are you sure you want to delete this Series?<br/>This action cannot be undone.");
+        var confirm = await AlertService.ShowConfirmationAsync(Translations.DELETE_SERIES, Translations.DELETE_SERIES_CONFIRM_MESSAGE + "<br/>" + Translations.CANNOT_BE_UNDONE);
         if (!confirm) return;
 		
         var result = await Sender.Send(new DeleteSeries.Command(seriesId));
