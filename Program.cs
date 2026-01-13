@@ -14,7 +14,6 @@ using BookHeaven.Server.MetadataProviders;
 using BookHeaven.Server.MetadataProviders.Abstractions;
 using BookHeaven.Server.MetadataProviders.DependencyInjection;
 using Microsoft.AspNetCore.DataProtection;
-using Scalar.AspNetCore;
 
 namespace BookHeaven.Server;
 
@@ -181,7 +180,6 @@ public class Program
 		if (app.Environment.IsDevelopment())
 		{
 			app.MapOpenApi();
-			app.MapScalarApiReference();
 		}
 
 		await app.RunAsync();

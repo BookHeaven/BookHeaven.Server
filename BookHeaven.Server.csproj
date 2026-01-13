@@ -54,11 +54,13 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.ApiDescription.Server" Version="10.0.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="MudBlazor" Version="8.15.0" />
     <PackageReference Include="MudExRichTextEditor" Version="8.14.0" />
     <PackageReference Include="OpenLibrary.NET" Version="0.1.3" />
-    <PackageReference Include="Scalar.AspNetCore" Version="2.12.4" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.0" />
     <PackageReference Include="Toolbelt.Blazor.ViewTransition" Version="2.0.0" />
   </ItemGroup>
   <ItemGroup>
@@ -89,4 +91,8 @@
     <CompilerVisibleProperty Include="MudAllowedAttributePattern" />
     <CompilerVisibleProperty Include="MudIllegalParameters" />
   </ItemGroup>
+  <PropertyGroup>
+    <OpenApiDocumentsDirectory>.</OpenApiDocumentsDirectory>
+  </PropertyGroup>
+
 </Project>
