@@ -60,6 +60,15 @@ namespace BookHeaven.Server.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Actions.
+        /// </summary>
+        public static string ACTIONS {
+            get {
+                return ResourceManager.GetString("ACTIONS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add cover.
         /// </summary>
         public static string ADD_COVER {
@@ -74,6 +83,24 @@ namespace BookHeaven.Server.Localization {
         public static string AUTHOR {
             get {
                 return ResourceManager.GetString("AUTHOR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Author deleted successfully..
+        /// </summary>
+        public static string AUTHOR_DELETED {
+            get {
+                return ResourceManager.GetString("AUTHOR_DELETED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot delete author with associated books..
+        /// </summary>
+        public static string AUTHOR_NOT_EMPTY {
+            get {
+                return ResourceManager.GetString("AUTHOR_NOT_EMPTY", resourceCulture);
             }
         }
         
@@ -123,11 +150,38 @@ namespace BookHeaven.Server.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This action cannot be undone..
+        /// </summary>
+        public static string CANNOT_BE_UNDONE {
+            get {
+                return ResourceManager.GetString("CANNOT_BE_UNDONE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Date format.
         /// </summary>
         public static string DATE_FORMAT {
             get {
                 return ResourceManager.GetString("DATE_FORMAT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete Author.
+        /// </summary>
+        public static string DELETE_AUTHOR {
+            get {
+                return ResourceManager.GetString("DELETE_AUTHOR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to delete this author?.
+        /// </summary>
+        public static string DELETE_AUTHOR_CONFIRM_MESSAGE {
+            get {
+                return ResourceManager.GetString("DELETE_AUTHOR_CONFIRM_MESSAGE", resourceCulture);
             }
         }
         

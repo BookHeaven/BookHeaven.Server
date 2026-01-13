@@ -267,4 +267,22 @@
   <data name="RECONNECT_MODAL_INFO_RETRYING" xml:space="preserve">
     <value>Conexión fallida... reintentando en {0} segundos.</value>
   </data>
+  <data name="AUTHOR_NOT_EMPTY" xml:space="preserve">
+    <value>No se puede eliminar el autor si tiene libros asociados</value>
+  </data>
+  <data name="DELETE_AUTHOR" xml:space="preserve">
+    <value>Eliminar autor</value>
+  </data>
+  <data name="CANNOT_BE_UNDONE" xml:space="preserve">
+    <value>Esto no se puede deshacer.</value>
+  </data>
+  <data name="DELETE_AUTHOR_CONFIRM_MESSAGE" xml:space="preserve">
+    <value>¿De verdad quieres eliminar este autor?</value>
+  </data>
+  <data name="AUTHOR_DELETED" xml:space="preserve">
+    <value>Autor eliminado correctamente.</value>
+  </data>
+  <data name="ACTIONS" xml:space="preserve">
+    <value>Acciones</value>
+  </data>
 </root>

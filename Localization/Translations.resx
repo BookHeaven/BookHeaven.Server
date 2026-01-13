@@ -267,4 +267,22 @@
   <data name="RECONNECT_MODAL_INFO_RETRYING" xml:space="preserve">
     <value>Connection failed... retrying in {0} seconds.</value>
   </data>
+  <data name="AUTHOR_NOT_EMPTY" xml:space="preserve">
+    <value>Cannot delete author with associated books.</value>
+  </data>
+  <data name="DELETE_AUTHOR" xml:space="preserve">
+    <value>Delete Author</value>
+  </data>
+  <data name="DELETE_AUTHOR_CONFIRM_MESSAGE" xml:space="preserve">
+    <value>Are you sure you want to delete this author?</value>
+  </data>
+  <data name="CANNOT_BE_UNDONE" xml:space="preserve">
+    <value>This action cannot be undone.</value>
+  </data>
+  <data name="AUTHOR_DELETED" xml:space="preserve">
+    <value>Author deleted successfully.</value>
+  </data>
+  <data name="ACTIONS" xml:space="preserve">
+    <value>Actions</value>
+  </data>
 </root>
