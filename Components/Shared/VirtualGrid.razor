@@ -55,8 +55,12 @@
 		_dotNetRef?.Dispose();
 		if (_jsModule is not null)
 		{
-			await _jsModule.InvokeVoidAsync("dispose");
-			await _jsModule.DisposeAsync();
+			try
+			{
+				await _jsModule.InvokeVoidAsync("dispose");
+				await _jsModule.DisposeAsync();
+			}
+			catch(JSDisconnectedException) {}
 		}
 	}
 
