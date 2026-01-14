@@ -80,7 +80,7 @@
     <ProjectReference Include="..\BookHeaven.Domain\BookHeaven.Domain.csproj" />
   </ItemGroup>
   <ItemGroup Condition="'$(UseNuget)' == 'true'">
-    <PackageReference Include="BookHeaven.Domain" Version="1.1.6" />
+    <PackageReference Include="BookHeaven.Domain" Version="1.1.7" />
     <PackageReference Include="BookHeaven.EbookManager" Version="1.1.8" />
   </ItemGroup>
   <PropertyGroup>
@@ -94,5 +94,4 @@
   <PropertyGroup>
     <OpenApiDocumentsDirectory>.</OpenApiDocumentsDirectory>
   </PropertyGroup>
-
 </Project>
