@@ -8,8 +8,10 @@
     "/opds": {
       "get": {
         "tags": [
-          "Endpoint"
+          "OPDS"
         ],
+        "summary": "OPDS Catalog",
+        "description": "Retrieves the book catalog in OPDS format.",
         "responses": {
           "200": {
             "description": "OK"
@@ -744,7 +746,7 @@
   },
   "tags": [
     {
-      "name": "Endpoint"
+      "name": "OPDS"
     },
     {
       "name": "Profiles"
