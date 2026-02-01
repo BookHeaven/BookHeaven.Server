@@ -15,7 +15,10 @@ public static class Opds
 
     public static IApplicationBuilder MapOpds(this WebApplication app)
     {
-        app.MapGet("/opds", Endpoint.Handler);
+        app.MapGet("/opds", Endpoint.Handler)
+            .WithSummary("OPDS Catalog")
+            .WithTags("OPDS")
+            .WithDescription("Retrieves the book catalog in OPDS format.");
         return app;
     }
     
