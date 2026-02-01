@@ -157,6 +157,7 @@ else
 		IsLoading = true;
 		if (CollectionId != Guid.Empty)
 		{
+			BookManager.Filter = BookStatus.All;
 			var getCollection = await Sender.Send(new GetCollectionById.Query(CollectionId));
 			if (getCollection.IsFailure)
 			{
