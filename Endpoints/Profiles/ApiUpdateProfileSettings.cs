@@ -14,9 +14,9 @@ public static class ApiUpdateProfileSettings
         {
             app.MapPut("/profile/settings/update", ApiHandler)
                 .WithName("UpdateProfileSettings")
-                .WithSummary("Updates the profile settings for a given profile ID.")
+                .WithSummary("Update profile settings.")
                 .WithDescription("This endpoint allows you to update the profile settings for a specific profile. " +
-                                 "If the profile settings do not exist, they will be created.")
+                                 "If the profile has no settings, they will be created.")
                 .Produces(StatusCodes.Status200OK)
                 .ProducesProblem(StatusCodes.Status500InternalServerError)
                 .Accepts<ProfileSettings>("application/json")
