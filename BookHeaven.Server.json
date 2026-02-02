@@ -59,8 +59,8 @@
         "tags": [
           "Profiles"
         ],
-        "summary": "Updates the profile settings for a given profile ID.",
-        "description": "This endpoint allows you to update the profile settings for a specific profile. If the profile settings do not exist, they will be created.",
+        "summary": "Update profile settings.",
+        "description": "This endpoint allows you to update the profile settings for a specific profile. If the profile has no settings, they will be created.",
         "operationId": "UpdateProfileSettings",
         "requestBody": {
           "content": {
