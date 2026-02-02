@@ -94,8 +94,8 @@ podman run -d --name bookheaven --userns=keep-id \
   ghcr.io/bookheaven/bookheaven-server:latest
 ```
 
-## :memo: API definition
-Coming soon
+## :memo: API reference
+The API reference can be found [here](https://bookheaven.ggarrido.dev/api-reference).
 
 ## :framed_picture: Screenshots
 Bear in mind that the UI and features are still a work in progress, so the screenshots may differ slightly.
