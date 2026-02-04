@@ -140,7 +140,13 @@ public class Program
 		{
 			FileProvider = new PhysicalFileProvider(BooksPath),
 			ContentTypeProvider = provider,
-			RequestPath = "/books"
+			RequestPath = "/books",
+			OnPrepareResponse = ctx =>
+			{
+				ctx.Context.Response.Headers.CacheControl = "no-store, no-cache, must-revalidate, max-age=0";
+				ctx.Context.Response.Headers.Pragma = "no-cache";
+				ctx.Context.Response.Headers.Expires = "0";
+			}
 		});
 		app.UseStaticFiles(new StaticFileOptions
 		{
