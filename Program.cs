@@ -58,6 +58,8 @@ public class Program
 		
 	public static async Task Main(string[] args)
 	{
+		Environment.SetEnvironmentVariable("TOOLBELT_BLAZOR_VIEWTRANSITION_JSCACHEBUSTING", "0");
+		
 		var builder = WebApplication.CreateBuilder(args);
 			
 		builder.Services.AddLocalization(options => options.ResourcesPath = "Localization");
