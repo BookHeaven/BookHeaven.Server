@@ -1,7 +1,6 @@
 ﻿@using System.Globalization
 @using BookHeaven.Server.Helpers
 @attribute [Route($"{Urls.Shelf}/{{Id:guid}}")]
-@* @attribute [Route($"{Urls.Shelf}/{{Id:guid}}/{{Editing}}")] *@
 <ScrollToTop />
 
 @if (!_book.Progresses.Any())
@@ -54,11 +53,11 @@
 		@if (!IsEditing)
 		{
 			<div id="book-header" class="mb-6 flex flex-col text-balance">
-				<MudText Typo="Typo.h4"><span style="@Transitions.GetTransitionName("title", _book.BookId)">@_book.Title</span></MudText>
-				<MudText Typo="Typo.h5" Class="mb-2" Color="Color.Secondary"><span style="@Transitions.GetTransitionName("author", _book.BookId)">@_book.Author?.Name</span></MudText>
+				<MudText Typo="Typo.h4" Class="inline-block" style="@Transitions.GetTransitionName("title", _book.BookId)">@_book.Title</MudText>
+				<MudText Typo="Typo.h5" Class="mb-2 inline-block" Color="Color.Secondary" style="@Transitions.GetTransitionName("author", _book.BookId)">@_book.Author?.Name</MudText>
 				@if (_book.Series != null)
 				{
-					<MudText Typo="Typo.h6" Color="Color.Primary"><span style="@Transitions.GetTransitionName("series", _book.BookId)">@_book.Series.Name - @Translations.BOOK @_book.SeriesIndex?.ToString("0.##")</span></MudText>
+					<MudText Typo="Typo.h6" Color="Color.Primary" Class="inline-block" style="@Transitions.GetTransitionName("series", _book.BookId)">@_book.Series.Name - @Translations.BOOK @_book.SeriesIndex?.ToString("0.##")</MudText>
 				}
 			</div>
 			<div class="flex items-center gap-2 mb-6">
@@ -70,7 +69,7 @@
 				{
 					if (_book.Tags.Count > 0)
 					{
-						<MudIconButton Icon="@Icons.Material.Filled.Add" Class="!p-[3px]" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" OnClick="() => _addingTags = true" />
+						<MudIconButton Icon="@Icons.Material.Filled.Add" Class="p-[3px]" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" OnClick="() => _addingTags = true" />
 					}
 					else
 					{
@@ -80,7 +79,7 @@
 				else
 				{
 					<MudFocusTrap>
-						<MudTextField Class="flex-grow-0" Variant="Variant.Outlined" Margin="Margin.Dense" @bind-Value="@_tagNames" @bind-Value:after="@AddTagToBook" />
+						<MudTextField Class="grow-0" Variant="Variant.Outlined" Margin="Margin.Dense" @bind-Value="@_tagNames" @bind-Value:after="@AddTagToBook" />
 					</MudFocusTrap>
 					
 				}
@@ -118,12 +117,13 @@
 					</div>
 
 					<div class="flex gap-3 items-center">
-						<span class="w-full" style="@Transitions.GetTransitionName("progress-bar", _book.BookId)">
+						<span class="w-full">
 							<MudProgressLinear
 								Color="Color.Primary"
 								Rounded="true"
 								Size="Size.Medium"
-								Value="@((double)_book.Progress().Progress)"/>
+								Value="@((double)_book.Progress().Progress)"
+								style="@Transitions.GetTransitionName("progress-bar", _book.BookId)"/>
 						</span>
 						
 						<span class="text-nowrap">@_book.Progress().Progress.ToString("0.##") %</span>
@@ -187,7 +187,7 @@
 					</MudFileUpload>
 				</MudTooltip>
 				<MudTooltip Text="Replace epub file">
-					<MudFileUpload T="IBrowserFile" FilesChanged="UploadEpubToTempPath" Accept=".epub" Class="!m-0">
+					<MudFileUpload T="IBrowserFile" FilesChanged="UploadEpubToTempPath" Accept=".epub" Class="m-0">
 						<ActivatorContent>
 							<MudIconButton HtmlTag="label"
 							               Variant="Variant.Filled"

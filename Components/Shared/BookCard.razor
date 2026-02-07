@@ -1,7 +1,8 @@
 ﻿@using BookHeaven.Server.Helpers
 <MudCard Elevation="4"
          Class="@CardClass"
-         @onclick="HandleBookClick">
+         @onclick="HandleBookClick"
+         style="@Transitions.GetTransitionName("card", Book.BookId)">
 
 	@if (IsSelectMode)
 	{
@@ -13,22 +14,21 @@
 		</span>
 	}
 	<div class="h-[250px] overflow-hidden">
-		<span class="h-full" style="@Transitions.GetTransitionName("img", Book.BookId)">
-			<MudCardMedia Image="@Book.CoverUrl(true)" Class="transition-transform !h-full duration-150 group-hover:scale-105"/>
-		</span>
+		<MudCardMedia Image="@Book.CoverUrl(true)" Class="transition-transform h-full duration-150 group-hover:scale-105" style="@Transitions.GetTransitionName("img", Book.BookId)"/>
 	</div>
 	<MudCardContent
 		Class="flex-1 relative flex flex-col gap-1 transition-colors group-hover:bg-slate-700">
-		<MudText Typo="Typo.body2"><span style="@Transitions.GetTransitionName("title", Book.BookId)">@Book.Title</span></MudText>
-		<MudText Typo="Typo.body2" Color="Color.Secondary"><span style="@Transitions.GetTransitionName("author", Book.BookId)">@Book.Author?.Name</span></MudText>
-		<MudText Typo="Typo.caption" Color="Color.Primary"><span style="@Transitions.GetTransitionName("series", Book.BookId)">@Book.Series?.Name</span></MudText>
+		<MudText Typo="Typo.body2" Class="inline-block" style="@Transitions.GetTransitionName("title", Book.BookId)">@Book.Title</MudText>
+		<MudText Typo="Typo.body2" Color="Color.Secondary" Class="inline-block" style="@Transitions.GetTransitionName("author", Book.BookId)">@Book.Author?.Name</MudText>
+		<MudText Typo="Typo.caption" Color="Color.Primary" Class="inline-block" style="@Transitions.GetTransitionName("series", Book.BookId)">@Book.Series?.Name</MudText>
 		@if (Book.Progresses.Any())
 		{
-			<span class="absolute z-10 bottom-0 inset-x-0" style="@Transitions.GetTransitionName("progress-bar", Book.BookId)">
+			<span class="absolute z-10 bottom-0 inset-x-0">
 				<MudProgressLinear
 					Color="Color.Primary"
 					Size="Size.Small"
-					Value="@((double)Book.Progress().Progress)"/>
+					Value="@((double)Book.Progress().Progress)"
+					style="@Transitions.GetTransitionName("progress-bar", Book.BookId)"/>
 			</span>
 		}
 	</MudCardContent>
