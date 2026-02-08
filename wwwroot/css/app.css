@@ -2,16 +2,11 @@
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/utilities.css" important; /* Remove utilities layer so it doesn't get overridden by Mudblazor styles */
 @import "tailwind-animations";
-/*body {
-    --body-font: "Segoe UI Variable", "Segoe UI", sans-serif;
-    font-family: var(--body-font);
-    font-size: var(--type-ramp-base-font-size);
-    line-height: var(--type-ramp-base-line-height);
-    margin: 0;
-}*/
 
-::view-transition-group(appbar) {
-    z-index: 1300;
+@layer view-transitions {
+    ::view-transition-group(appbar){
+        z-index: 1300;
+    }
 }
 
 html {
