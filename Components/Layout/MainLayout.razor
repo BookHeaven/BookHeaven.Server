@@ -11,7 +11,7 @@
 }
 
 <div class="flex h-full overflow-hidden relative">
-    <MudDrawer @bind-Open="_drawerOpen" Class="lg:!static" Elevation="0">
+    <MudDrawer @bind-Open="_drawerOpen" Class="lg:static" Elevation="0">
         <Logo />
         <ProfileButton />
         <NavMenu/>
@@ -33,7 +33,7 @@
                 </MudHidden>
                 <SearchBar/>
                 
-                <MudFileUpload T="IReadOnlyList<IBrowserFile>" FilesChanged="UploadBooks" Class="!m-0" Disabled="_uploadingBooks">
+                <MudFileUpload T="IReadOnlyList<IBrowserFile>" FilesChanged="UploadBooks" Class="m-0" Disabled="_uploadingBooks">
                     <ActivatorContent>
                         @if (!_uploadingBooks)
                         {
