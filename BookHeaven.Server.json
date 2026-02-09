@@ -702,6 +702,14 @@
             ],
             "format": "double"
           },
+          "pageGap": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
           "selectedLayout": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
