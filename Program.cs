@@ -63,11 +63,6 @@ public class Program
 		var builder = WebApplication.CreateBuilder(args);
 			
 		builder.Services.AddLocalization(options => options.ResourcesPath = "Localization");
-			
-		Directory.CreateDirectory(BooksPath);
-		Directory.CreateDirectory(CoversPath);
-		Directory.CreateDirectory(DatabasePath);
-		Directory.CreateDirectory(FontsPath);
 		
 		builder.Services.AddRazorComponents()
 			.AddInteractiveServerComponents();
@@ -90,7 +85,13 @@ public class Program
 			config.SnackbarConfiguration.PreventDuplicates = false;
 		});
 
-		builder.Services.AddDomain(BooksPath, CoversPath, FontsPath, DatabasePath);
+		builder.Services.AddDomain(options =>
+		{
+			options.BooksPath = BooksPath;
+			options.CoversPath = CoversPath;
+			options.FontsPath = FontsPath;
+			options.DatabasePath = DatabasePath;
+		});
 		builder.Services.AddEbookManager();
 
 		builder.Services.AddTransient<ICoverProvider, DuckDuckGoCoverProvider>();
