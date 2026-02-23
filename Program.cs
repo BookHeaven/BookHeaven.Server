@@ -15,178 +15,139 @@ using BookHeaven.Server.MetadataProviders.Abstractions;
 using BookHeaven.Server.MetadataProviders.DependencyInjection;
 using Microsoft.AspNetCore.DataProtection;
 
-namespace BookHeaven.Server;
+var appDataPath = Path.Combine(Directory.GetCurrentDirectory(), "data");
 
-public class Program
-{
-	private static readonly string AppDataPath = Path.Combine(Directory.GetCurrentDirectory(), "data");
-	public static readonly string ImportPath = Path.Combine(Directory.GetCurrentDirectory(), "import");
+Environment.SetEnvironmentVariable("TOOLBELT_BLAZOR_VIEWTRANSITION_JSCACHEBUSTING", "0");
+		
+var builder = WebApplication.CreateBuilder(args);
 	
-	public static readonly MudTheme Theme = new()
-	{
-		PaletteDark = new()
-		{
-			AppbarBackground = "#1d202bcc",
-			AppbarText = "#a8a8a8",
-			Background = "#1d202b",
-			DrawerBackground = "#1d202b",
-			DrawerText = "#a8a8a8",
-			DrawerIcon = "#a8a8a8",
-			Surface = "#2c3041",
-			TextPrimary = "#ffffff",
-			TextSecondary = "#a8a8a8",
-			Primary = "#56b4ff",
-			Secondary = "#a8a8a8",
-			Tertiary = "#3097f3",
-			TextDisabled = "#595959",
-			LinesDefault = "#515151c2",
-			LinesInputs = "#56b4ff",
-			ActionDefault = "#56b4ff",
-			ActionDisabled = "#595959",
-			HoverOpacity = 0.1,
-			PrimaryContrastText = "#000000",
-			TertiaryContrastText = "#FFFFFF",
-			SecondaryContrastText = "#000000",
-			WarningContrastText = "#000000",
-			TableLines = "#4a5d6d"
-		}
-	};
-		
-	public static async Task Main(string[] args)
-	{
-		Environment.SetEnvironmentVariable("TOOLBELT_BLAZOR_VIEWTRANSITION_JSCACHEBUSTING", "0");
-		
-		var builder = WebApplication.CreateBuilder(args);
-			
-		builder.Services.AddLocalization(options => options.ResourcesPath = "Localization");
-		
-		builder.Services.AddRazorComponents()
-			.AddInteractiveServerComponents();
-		
-		builder.Services.AddDataProtection()
-			.SetApplicationName("BookHeaven")
-			.PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(AppDataPath, "keys")))
-			.SetDefaultKeyLifetime(TimeSpan.FromDays(14));
-		
-		builder.Services.AddControllers().AddJsonOptions(x =>
-		{
-			x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-		});
+builder.Services.AddLocalization(options => options.ResourcesPath = "Localization");
 
-		builder.Services.AddMudServices(config =>
-		{
-			config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.TopRight;
-			config.SnackbarConfiguration.HideTransitionDuration = 500;
-			config.SnackbarConfiguration.ShowTransitionDuration = 500;
-			config.SnackbarConfiguration.PreventDuplicates = false;
-		});
+builder.Services.AddRazorComponents()
+	.AddInteractiveServerComponents();
 
-		builder.Services.AddDomain(options =>
-		{
-			options.BooksPath = Path.Combine(AppDataPath, "books");
-			options.CoversPath = Path.Combine(AppDataPath, "covers");
-			options.FontsPath = Path.Combine(AppDataPath, "fonts");
-			options.DatabasePath = Path.Combine(AppDataPath, "database");
-		});
-		builder.Services.AddEbookManager();
+builder.Services.AddDataProtection()
+	.SetApplicationName("BookHeaven")
+	.PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(appDataPath, "keys")))
+	.SetDefaultKeyLifetime(TimeSpan.FromDays(14));
 
-		builder.Services.AddTransient<ICoverProvider, DuckDuckGoCoverProvider>();
-		builder.Services.AddTransient<IAlertService, AlertService>();
-		builder.Services.AddTransient<IEbookFileLoader, EbookFileLoader>();
-		builder.Services.AddScoped<ISettingsManagerService, SettingsManagerService>();
-		builder.Services.AddScoped<ISessionService, SessionService>();
+builder.Services.AddControllers().AddJsonOptions(x =>
+{
+	x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+});
 
-		builder.Services.AddMetadataProviders();
+builder.Services.AddMudServices(config =>
+{
+	config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.TopRight;
+	config.SnackbarConfiguration.HideTransitionDuration = 500;
+	config.SnackbarConfiguration.ShowTransitionDuration = 500;
+	config.SnackbarConfiguration.PreventDuplicates = false;
+});
 
-		// Background services
-		builder.Services.AddHostedService<UdpBroadcastServer>();
-		builder.Services.AddHostedService<ImportFolderWatcher>();
-			
-		// Add endpoints
-		builder.Services.AddEndpoints(typeof(Program).Assembly);
-		builder.Services.AddOpds();
+builder.Services.AddDomain(options =>
+{
+	options.BooksPath = Path.Combine(appDataPath, "books");
+	options.CoversPath = Path.Combine(appDataPath, "covers");
+	options.FontsPath = Path.Combine(appDataPath, "fonts");
+	options.DatabasePath = Path.Combine(appDataPath, "database");
+});
+builder.Services.AddEbookManager();
 
-		builder.Services.AddOpenApi();
+builder.Services.AddTransient<ICoverProvider, DuckDuckGoCoverProvider>();
+builder.Services.AddTransient<IAlertService, AlertService>();
+builder.Services.AddTransient<IEbookFileLoader, EbookFileLoader>();
+builder.Services.AddScoped<ISettingsManagerService, SettingsManagerService>();
+builder.Services.AddScoped<ISessionService, SessionService>();
 
-		var app = builder.Build();
-			
-		var supportedCultures = new[]{ "en-US", "es-ES" };
-		var localizationOptions = new RequestLocalizationOptions()
-			.SetDefaultCulture(supportedCultures[0])
-			.AddSupportedCultures(supportedCultures)
-			.AddSupportedUICultures(supportedCultures);
-			
-		app.UseRequestLocalization(localizationOptions);
+builder.Services.AddMetadataProviders();
 
-		// Configure the HTTP request pipeline.
-		if (!app.Environment.IsDevelopment())
-		{
-			app.UseExceptionHandler("/Error", createScopeForErrors: true);
-			/*app.UseHsts();
-			app.UseHttpsRedirection();*/
-		}
+// Background services
+builder.Services.AddHostedService<UdpBroadcastServer>();
+builder.Services.AddHostedService<ImportFolderWatcher>();
+	
+// Add endpoints
+builder.Services.AddEndpoints(typeof(Program).Assembly);
+builder.Services.AddOpds();
 
-		FileExtensionContentTypeProvider provider = new()
-		{
-			Mappings =
-			{
-				[".epub"] = "application/epub+zip"
-			}
-		};
+builder.Services.AddOpenApi();
 
-		app.MapStaticAssets();
-		app.UseStaticFiles(new StaticFileOptions
-		{
-			FileProvider = new PhysicalFileProvider(DomainGlobals.BooksPath),
-			ContentTypeProvider = provider,
-			RequestPath = "/books",
-			OnPrepareResponse = ctx =>
-			{
-				ctx.Context.Response.Headers.CacheControl = "no-store, no-cache, must-revalidate, max-age=0";
-				ctx.Context.Response.Headers.Pragma = "no-cache";
-				ctx.Context.Response.Headers.Expires = "0";
-			}
-		});
-		app.UseStaticFiles(new StaticFileOptions
-		{
-			FileProvider = new PhysicalFileProvider(DomainGlobals.CoversPath),
-			RequestPath = "/covers",
-			OnPrepareResponse = ctx =>
-			{
-				ctx.Context.Response.Headers.CacheControl = "public,immutable,max-age=" + (int)TimeSpan.FromDays(30).TotalSeconds;
-			}
-		});
-		app.UseStaticFiles(new StaticFileOptions
-		{
-			FileProvider = new PhysicalFileProvider(DomainGlobals.FontsPath),
-			RequestPath = "/fonts"
-		});
-			
-		app.UseAntiforgery();
+var app = builder.Build();
+	
+var supportedCultures = new[]{ "en-US", "es-ES" };
+var localizationOptions = new RequestLocalizationOptions()
+	.SetDefaultCulture(supportedCultures[0])
+	.AddSupportedCultures(supportedCultures)
+	.AddSupportedUICultures(supportedCultures);
+	
+app.UseRequestLocalization(localizationOptions);
 
-		app.MapRazorComponents<App>()
-			.AddInteractiveServerRenderMode();
-
-		app.Use(async (context, next) =>
-		{
-			if (context.Request.Path == "/")
-			{
-				context.Response.Redirect("/shelf");
-			}
-			else
-			{
-				await next();
-			}
-		});
-		
-		app.MapEndpoints();
-		app.MapOpds();
-
-		if (app.Environment.IsDevelopment())
-		{
-			app.MapOpenApi();
-		}
-
-		await app.RunAsync();
-	}
+// Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
+{
+	app.UseExceptionHandler("/Error", createScopeForErrors: true);
+	/*app.UseHsts();
+	app.UseHttpsRedirection();*/
 }
+
+FileExtensionContentTypeProvider provider = new()
+{
+	Mappings =
+	{
+		[".epub"] = "application/epub+zip"
+	}
+};
+
+app.MapStaticAssets();
+app.UseStaticFiles(new StaticFileOptions
+{
+	FileProvider = new PhysicalFileProvider(DomainGlobals.BooksPath),
+	ContentTypeProvider = provider,
+	RequestPath = "/books",
+	OnPrepareResponse = ctx =>
+	{
+		ctx.Context.Response.Headers.CacheControl = "no-store, no-cache, must-revalidate, max-age=0";
+		ctx.Context.Response.Headers.Pragma = "no-cache";
+		ctx.Context.Response.Headers.Expires = "0";
+	}
+});
+app.UseStaticFiles(new StaticFileOptions
+{
+	FileProvider = new PhysicalFileProvider(DomainGlobals.CoversPath),
+	RequestPath = "/covers",
+	OnPrepareResponse = ctx =>
+	{
+		ctx.Context.Response.Headers.CacheControl = "public,immutable,max-age=" + (int)TimeSpan.FromDays(30).TotalSeconds;
+	}
+});
+app.UseStaticFiles(new StaticFileOptions
+{
+	FileProvider = new PhysicalFileProvider(DomainGlobals.FontsPath),
+	RequestPath = "/fonts"
+});
+	
+app.UseAntiforgery();
+
+app.MapRazorComponents<App>()
+	.AddInteractiveServerRenderMode();
+
+app.Use(async (context, next) =>
+{
+	if (context.Request.Path == "/")
+	{
+		context.Response.Redirect("/shelf");
+	}
+	else
+	{
+		await next();
+	}
+});
+
+app.MapEndpoints();
+app.MapOpds();
+
+if (app.Environment.IsDevelopment())
+{
+	app.MapOpenApi();
+}
+
+await app.RunAsync();
