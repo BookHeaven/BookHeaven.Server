@@ -9,20 +9,22 @@ public class ImportFolderWatcher(
     IEbookFileLoader epubService) 
     : BackgroundService
 {
+    private static readonly string ImportPath = Path.Combine(Directory.GetCurrentDirectory(), "import");
+    
     private FileSystemWatcher? _watcher;
-    private readonly string _processedPath = Path.Combine(Program.ImportPath, "processed");
-    private readonly string _errorPath = Path.Combine(Program.ImportPath, "_error");
+    private readonly string _processedPath = Path.Combine(ImportPath, "processed");
+    private readonly string _errorPath = Path.Combine(ImportPath, "_error");
     private readonly BlockingCollection<string> _filesToProcess = new();
     
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         await Task.Yield();
-        if (!Directory.Exists(Program.ImportPath))
+        if (!Directory.Exists(ImportPath))
         {
             logger.LogWarning("Import folder doesn't exist, can't start folder watcher service.");
             return;
         }
-        _watcher = new FileSystemWatcher(Program.ImportPath)
+        _watcher = new FileSystemWatcher(ImportPath)
         {
             Filter = "*.*",
             EnableRaisingEvents = true,
@@ -103,9 +105,9 @@ public class ImportFolderWatcher(
         CleanUpEmptyDirectories(filePath);
     }
     
-    private static void MoveToFolder(string sourcePath, string destFolder)
+    private void MoveToFolder(string sourcePath, string destFolder)
     {
-        var relativePath = Path.GetRelativePath(Program.ImportPath, sourcePath);
+        var relativePath = Path.GetRelativePath(ImportPath, sourcePath);
         var destPath = Path.Combine(destFolder, relativePath);
         var destDir = Path.GetDirectoryName(destPath);
         if (!string.IsNullOrEmpty(destDir))
@@ -115,11 +117,11 @@ public class ImportFolderWatcher(
         File.Move(sourcePath, destPath, overwrite: true);
     }
     
-    private static void CleanUpEmptyDirectories(string startPath)
+    private void CleanUpEmptyDirectories(string startPath)
     {
         var originalDir = Path.GetDirectoryName(startPath);
         while (!string.IsNullOrEmpty(originalDir) &&
-               !string.Equals(originalDir.TrimEnd(Path.DirectorySeparatorChar), Program.ImportPath.TrimEnd(Path.DirectorySeparatorChar), StringComparison.OrdinalIgnoreCase))
+               !string.Equals(originalDir.TrimEnd(Path.DirectorySeparatorChar), ImportPath.TrimEnd(Path.DirectorySeparatorChar), StringComparison.OrdinalIgnoreCase))
         {
             if (Directory.Exists(originalDir) && Directory.GetFileSystemEntries(originalDir).Length == 0)
             {
