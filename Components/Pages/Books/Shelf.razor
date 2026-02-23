@@ -1,6 +1,7 @@
 ﻿@attribute [Route(Urls.Shelf)]
 @attribute [Route($"{Urls.Collection}/{{CollectionId:guid}}")]
 
+@using BookHeaven.Domain.Abstractions
 @using BookHeaven.Domain.Entities.Base
 @using BookHeaven.Domain.Features.Books
 @using BookHeaven.Domain.Features.Collections
@@ -117,6 +118,7 @@ else
 	[Inject] private BookManager BookManager { get; set; } = null!;
 	[Inject] private ISessionService SessionService { get; set; } = null!;
 	[Inject] private GlobalEventsService GlobalEventsService { get; set; } = null!;
+	[Inject] private IAlertService AlertService { get; set; } = null!;
 	[Inject] private IDialogService DialogService { get; set; } = null!;
 	[Inject] private ISnackbar Snackbar { get; set; } = null!;
 	[Inject] private ISender Sender { get; set; } = null!;
@@ -234,12 +236,12 @@ else
 
 	private async Task DeleteBooks()
 	{
-		var result = await DialogService.ShowMessageBox(
+		var result = await AlertService.ShowConfirmationAsync(
 			"Delete Books", 
-			(MarkupString)$"You are about to delete {_selectedBooks.Count} book{(_selectedBooks.Count > 1 ? "s" : "")}.<br/>This will delete the progress for all profiles.<br/><br/>The books won't be removed from your devices but you won't be able to sync their progress anymore.<br/><br/>This action cannot be undone!", 
-			yesText: "Delete", 
-			cancelText: "Cancel");
-		if(result != true) return;
+			$"You are about to delete {_selectedBooks.Count} book{(_selectedBooks.Count > 1 ? "s" : "")}.<br/>This will delete the progress for all profiles.<br/><br/>The books won't be removed from your devices but you won't be able to sync their progress anymore.<br/><br/>This action cannot be undone!", 
+			accept: "Delete", 
+			cancel: "Cancel");
+		if(!result) return;
 		
 		foreach (var selectedBook in _selectedBooks)
 		{

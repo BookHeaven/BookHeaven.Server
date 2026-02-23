@@ -1,5 +1,4 @@
 ﻿@using BookHeaven.Domain.Features.Books
-@using BookHeaven.Server.Abstractions
 <MudAutocomplete
 	@ref="_autocomplete"
 	Class="!mx-2"
@@ -10,7 +9,6 @@
 	AdornmentIcon="@Icons.Material.Filled.Search"
 	@bind-Value="@_searchItem"
 	@bind-Value:after="NavigateToAndClear"
-	TextUpdateSuppression="false"
 	SearchFunc="Search">
 	<ItemTemplate Context="i">
 		<div class="flex items-center gap-2">

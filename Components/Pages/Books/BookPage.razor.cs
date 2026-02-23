@@ -35,7 +35,6 @@ public partial class BookPage
 	[Inject] private BookManager BookManager { get; set; } = null!;
 
 	[Parameter] public Guid Id { get; set; }
-	//[Parameter] public string? Editing { get; set; }
 
 	private Guid _profileId;
 	private ServerSettings _settings = new();
@@ -58,11 +57,11 @@ public partial class BookPage
 	private string? _authorName;
 	private string? _seriesName;
 
-	private readonly Converter<TimeSpan> _timeReadConverter = new()
-	{
-		SetFunc = value => $"{(int)value.TotalHours:00}:{value.Minutes:00}",
-		GetFunc = text => text != null ? new(int.Parse(text.Split(":")[0]), int.Parse(text.Split(":")[1]), 0) : TimeSpan.Zero
-	};
+	private readonly IConverter<TimeSpan, string?> _timeReadConverter = Conversions
+			.From(
+				(TimeSpan value) => $"{(int)value.TotalHours:00}:{value.Minutes:00}",
+				text => new(int.Parse(text.Split(":")[0]), int.Parse(text.Split(":")[1]), 0)
+			);
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -86,7 +85,6 @@ public partial class BookPage
 
 	private void EnableEditing()
 	{
-		//NavigationManager.NavigateTo($"{Urls.GetBookUrl(_book.BookId)}/edit");
 		IsEditing = true;
 		StateHasChanged();
 	}
@@ -95,7 +93,6 @@ public partial class BookPage
 	{
 		_newCoverTempPath = null;
 		_newEpubTempPath = null;
-		//NavigationManager.NavigateTo(Urls.GetBookUrl(_book.BookId));
 		if (revertChanges)
 		{
 			await LoadBook();
@@ -106,12 +103,12 @@ public partial class BookPage
 
 	private async Task DeleteBook()
 	{
-		var result = await DialogService.ShowMessageBox(
+		var result = await AlertService.ShowConfirmationAsync(
 			"Delete book",
-			(MarkupString)$"Are you sure you want to delete this book?<br/><br/>This will remove the progress for all profiles.<br/>The book won't be removed from your devices but you won't be able to sync its progress anymore.<br/><br/>This action cannot be undone!",
+			$"Are you sure you want to delete this book?<br/><br/>This will remove the progress for all profiles.<br/>The book won't be removed from your devices but you won't be able to sync its progress anymore.<br/><br/>This action cannot be undone!",
 			"Yes", "Cancel");
 		
-		if (result != true) return;
+		if (!result) return;
 
 		var deleteBook = await Sender.Send(new DeleteBook.Command(_book.BookId));
 

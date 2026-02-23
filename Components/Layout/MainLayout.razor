@@ -34,10 +34,10 @@
                 <SearchBar/>
                 
                 <MudFileUpload T="IReadOnlyList<IBrowserFile>" FilesChanged="UploadBooks" Class="m-0" Disabled="_uploadingBooks">
-                    <ActivatorContent>
+                    <CustomContent Context="fileUpload">
                         @if (!_uploadingBooks)
                         {
-                            <MudIconButton HtmlTag="label" Icon="@Icons.Material.Filled.UploadFile" Color="Color.Secondary"/>
+                            <MudIconButton HtmlTag="label" Icon="@Icons.Material.Filled.UploadFile" Color="Color.Secondary" OnClick="fileUpload.OpenFilePickerAsync"/>
                         }
                         else
                         {
@@ -45,7 +45,7 @@
                                 <MudProgressCircular Size="Size.Small" Indeterminate="true" />
                             </div>
                         }
-                    </ActivatorContent>
+                    </CustomContent>
                 </MudFileUpload>
             </div>
         </div>

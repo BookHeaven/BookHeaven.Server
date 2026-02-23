@@ -1,4 +1,5 @@
 ﻿@using BookHeaven.Domain
+@using BookHeaven.Domain.Abstractions
 @using BookHeaven.Domain.Features.Fonts
 <MudDialog>
 	<DialogContent>
@@ -16,15 +17,15 @@
 			@ondragenter="() => _dropZoneActive = true"
 			@ondragleave="() => _dropZoneActive = false"
 			@ondragend="() => _dropZoneActive = false">
-			<ActivatorContent>
-				<MudPaper Height="@DropZoneHeight" Class="@DropZoneClass" Outlined="true">
+			<CustomContent Context="fileUpload">
+				<MudPaper Height="@DropZoneHeight" Class="@DropZoneClass" Outlined="true" @onclick="fileUpload.OpenFilePickerAsync">
 					<MudStack Class="select-none">
 						<MudText Color="Color.Secondary">Drop font files here</MudText>
 						<MudText Color="Color.Secondary">- OR -</MudText>
 						<MudText Color="Color.Secondary">Click to open file picker</MudText>
 					</MudStack>
 				</MudPaper>
-			</ActivatorContent>
+			</CustomContent>
 		</MudFileUpload>
 		@if (_variants.Count > 0)
 		{
@@ -68,16 +69,16 @@
 					}
 				</style>
 				<MudExpansionPanels Outlined="false" Elevation="0">
-					<MudExpansionPanel Class="bg-neutral-300 !text-black" Text="Preview">
+					<MudExpansionPanel Class="bg-neutral-300 text-black" Text="Preview">
 						<div id="font-@_variants.First().Family" class="font-normal not-italic">
 							<span class="text-neutral-700 uppercase">Regular</span>
 							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi at. </p>
 							<span class="text-neutral-700 uppercase">Bold</span>
-							<p class="!font-bold">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi at.</p>
+							<p class="font-bold">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi at.</p>
 							<span class="text-neutral-700 uppercase">Italic</span>
-							<p class="!italic">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi at.</p>
+							<p class="italic">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi at.</p>
 							<span class="text-neutral-700 uppercase">Bold Italic</span>
-							<p class="!font-bold !italic">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi at.</p>
+							<p class="font-bold italic">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi at.</p>
 							<span class="text-neutral-700 uppercase">Sample</span>
 							<p class="text-justify text-pretty italic m-6 mt-2">A wonderful serenity has taken possession of my entire soul, like these sweet mornings of spring which I enjoy with my whole heart.</p>
 							<p class="text-justify text-pretty indent-4">I am alone, and feel the charm of existence in this spot, which was created for the bliss of souls like mine. I am so happy, my dear friend, so absorbed in the exquisite sense of mere tranquil existence, that I neglect my talents. I should be incapable of drawing a single stroke at the present moment.</p>
@@ -99,8 +100,8 @@
 
 @code {
 	[Inject] IDialogService DialogService { get; set; } = null!;
+	[Inject] IAlertService AlertService { get; set; } = null!;
 	[Inject] ISender Sender { get; set; } = null!;
-	[Inject] ISnackbar Snackbar { get; set; } = null!;
 	
 	[CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = null!;
 	[Parameter] public string? Family { get; set; }
@@ -166,13 +167,13 @@
 
 	private async Task DeleteFont()
 	{
-		var result = await DialogService.ShowMessageBox("Warning", "Do you really want to delete this font?", yesText: "Yes", noText: "No");
+		var result = await AlertService.ShowConfirmationAsync("Warning", "Do you really want to delete this font?", accept: "Yes", cancel: "No");
 		if (result == true)
 		{
 			var deleteFont = await Sender.Send(new DeleteFont.Command(Family!));
 			if (deleteFont.IsFailure)
 			{
-				Snackbar.Add(deleteFont.Error.Description!, Severity.Error);
+				await AlertService.ShowToastAsync(deleteFont.Error.Description, AlertSeverity.Error);
 				return;
 			}
 			var folder = Path.Combine(DomainGlobals.FontsPath, Family!);
@@ -188,18 +189,18 @@
 	{
 		if (!string.IsNullOrEmpty(Family))
 		{
-			Snackbar.Add("Font editing not implemented yet", Severity.Info);
+			await AlertService.ShowToastAsync("Font editing not implemented yet");
 			return;
 		}
 		if (string.IsNullOrEmpty(_fontFamily))
 		{
-			Snackbar.Add("Font family name is required", Severity.Error);
+			await AlertService.ShowToastAsync("Font family name is required", AlertSeverity.Error);
 			return;
 		}
 		
 		if (_variants.Count == 0)
 		{
-			Snackbar.Add("At least one font file is required", Severity.Error);
+			await AlertService.ShowToastAsync("At least one font file is required", AlertSeverity.Error);
 			return;
 		}
 
@@ -209,7 +210,7 @@
 			var addFont = await Sender.Send(new AddFont.Command(variant));
 			if (addFont.IsFailure)
 			{
-				Snackbar.Add(addFont.Error.Description!, Severity.Error);
+				await AlertService.ShowToastAsync(addFont.Error.Description, AlertSeverity.Error);
 				return;
 			}
 

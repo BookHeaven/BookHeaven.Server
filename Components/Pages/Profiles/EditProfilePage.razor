@@ -1,4 +1,5 @@
-﻿@using BookHeaven.Domain.Features.Profiles
+﻿@using BookHeaven.Domain.Abstractions
+@using BookHeaven.Domain.Features.Profiles
 @attribute [Route($"{Urls.Profiles}/{{Id:guid}}")]
 @attribute [Route(Urls.CreateProfile)]
 @layout SimpleLayout
@@ -52,7 +53,7 @@
 @code {
 	[Inject] private ISender Sender { get; set; } = null!;
 	[Inject] private NavigationManager NavigationManager { get; set; } = null!;
-	[Inject] private IDialogService DialogService { get; set; } = null!;
+	[Inject] private IAlertService AlertService { get; set; } = null!;
 	[Inject] private ISessionService SessionService { get; set; } = null!;
 	
 	[Parameter] public Guid? Id { get; set; }
@@ -102,11 +103,11 @@
 	private async Task Delete()
 	{
 
-		var result = await DialogService.ShowMessageBox(
+		var result = await AlertService.ShowConfirmationAsync(
 			Domain.Localization.Translations.WARNING,
 			Translations.PROFILE_DELETE_WARNING_MESSAGE,
-			yesText: Domain.Localization.Translations.YES,
-			cancelText: Domain.Localization.Translations.NO);
+			accept: Domain.Localization.Translations.YES,
+			cancel: Domain.Localization.Translations.NO);
 		
 		if (result is not true) return;
 

@@ -6,7 +6,7 @@ public static class Theme
 {
     public static readonly MudTheme Main = new()
     {
-        PaletteDark = new()
+        PaletteDark = new PaletteDark
         {
             AppbarBackground = "#1d202bcc",
             AppbarText = "#a8a8a8",

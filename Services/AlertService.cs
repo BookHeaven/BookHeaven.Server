@@ -9,12 +9,12 @@ public class AlertService(ISnackbar snackbar, IDialogService dialogService) : IA
 {
     public async Task ShowAlertAsync(string title, string message, string cancel = "OK")
     {
-        await dialogService.ShowMessageBox("title", message, cancel);
+        await dialogService.ShowMessageBoxAsync("title", message, cancel);
     }
 
     public async Task<bool> ShowConfirmationAsync(string title, string message, string accept = "Yes", string cancel = "No")
     {
-        var result = await dialogService.ShowMessageBox(title, (MarkupString)message, accept, cancel);
+        var result = await dialogService.ShowMessageBoxAsync(title, (MarkupString)message, accept, cancel);
         return result == true;
     }
 
