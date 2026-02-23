@@ -21,10 +21,6 @@ public class Program
 {
 	private static readonly string AppDataPath = Path.Combine(Directory.GetCurrentDirectory(), "data");
 	public static readonly string ImportPath = Path.Combine(Directory.GetCurrentDirectory(), "import");
-	public static readonly string BooksPath = Path.Combine(AppDataPath, "books");
-	public static readonly string CoversPath = Path.Combine(AppDataPath, "covers");
-	public static readonly string DatabasePath = Path.Combine(AppDataPath, "database");
-	public static readonly string FontsPath = Path.Combine(AppDataPath, "fonts");
 	
 	public static readonly MudTheme Theme = new()
 	{
@@ -87,10 +83,10 @@ public class Program
 
 		builder.Services.AddDomain(options =>
 		{
-			options.BooksPath = BooksPath;
-			options.CoversPath = CoversPath;
-			options.FontsPath = FontsPath;
-			options.DatabasePath = DatabasePath;
+			options.BooksPath = Path.Combine(AppDataPath, "books");
+			options.CoversPath = Path.Combine(AppDataPath, "covers");
+			options.FontsPath = Path.Combine(AppDataPath, "fonts");
+			options.DatabasePath = Path.Combine(AppDataPath, "database");
 		});
 		builder.Services.AddEbookManager();
 
@@ -141,7 +137,7 @@ public class Program
 		app.MapStaticAssets();
 		app.UseStaticFiles(new StaticFileOptions
 		{
-			FileProvider = new PhysicalFileProvider(BooksPath),
+			FileProvider = new PhysicalFileProvider(DomainGlobals.BooksPath),
 			ContentTypeProvider = provider,
 			RequestPath = "/books",
 			OnPrepareResponse = ctx =>
@@ -153,7 +149,7 @@ public class Program
 		});
 		app.UseStaticFiles(new StaticFileOptions
 		{
-			FileProvider = new PhysicalFileProvider(CoversPath),
+			FileProvider = new PhysicalFileProvider(DomainGlobals.CoversPath),
 			RequestPath = "/covers",
 			OnPrepareResponse = ctx =>
 			{
@@ -162,7 +158,7 @@ public class Program
 		});
 		app.UseStaticFiles(new StaticFileOptions
 		{
-			FileProvider = new PhysicalFileProvider(FontsPath),
+			FileProvider = new PhysicalFileProvider(DomainGlobals.FontsPath),
 			RequestPath = "/fonts"
 		});
 			

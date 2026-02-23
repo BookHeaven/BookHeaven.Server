@@ -75,7 +75,7 @@ public class ImportFolderWatcher(
     
     private void OnCreated(object sender, FileSystemEventArgs e)
     {
-        if(!Globals.SupportedFormats.Any(f => Path.GetExtension(e.FullPath).Equals(f, StringComparison.OrdinalIgnoreCase))) return;
+        if(!DomainGlobals.SupportedFormats.Any(f => Path.GetExtension(e.FullPath).Equals(f, StringComparison.OrdinalIgnoreCase))) return;
         if (e.FullPath.StartsWith(_processedPath, StringComparison.OrdinalIgnoreCase) || e.FullPath.StartsWith(_errorPath, StringComparison.OrdinalIgnoreCase)) return;
 
         _filesToProcess.Add(e.FullPath);

@@ -1,4 +1,5 @@
-﻿@using BookHeaven.Domain.Features.Fonts
+﻿@using BookHeaven.Domain
+@using BookHeaven.Domain.Features.Fonts
 <MudDialog>
 	<DialogContent>
 		<MudTextField Class="mb-5" Label="Font Name" HelperText="It can be whatever you want" Variant="Variant.Filled" @bind-Value="_fontFamily"/>
@@ -174,7 +175,7 @@
 				Snackbar.Add(deleteFont.Error.Description!, Severity.Error);
 				return;
 			}
-			var folder = Path.Combine(Program.FontsPath, Family!);
+			var folder = Path.Combine(DomainGlobals.FontsPath, Family!);
 			if (Directory.Exists(folder))
 			{
 				Directory.Delete(folder, true);

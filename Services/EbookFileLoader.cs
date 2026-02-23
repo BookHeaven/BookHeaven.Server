@@ -50,7 +50,7 @@ public class EbookFileLoader(
 		Guid? seriesId = null;
 		
 		var extension = Path.GetExtension(path).ToLowerInvariant();
-		if (!Globals.SupportedFormats.Contains(extension))
+		if (!DomainGlobals.SupportedFormats.Contains(extension))
 		{
 			logger.LogWarning("Unsupported file extension: {Extension}", extension);
 			return null;
