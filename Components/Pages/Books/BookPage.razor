@@ -176,7 +176,7 @@
 					<MudIconButton Icon="@Icons.Material.Rounded.ManageSearch" Variant="Variant.Filled" Color="Color.Tertiary" OnClick="@ShowFetchMetadataDialog"/>
 				</MudTooltip>
 				<MudTooltip Text="@(!CoverExists ? Translations.ADD_COVER : Translations.REPLACE_COVER)">
-					<MudFileUpload T="IBrowserFile" FilesChanged="UploadCoverToTempPath" Accept=".jpg">
+					<MudFileUpload T="IBrowserFile" FilesChanged="UploadCoverToTempPath" SelectedTemplate="file => builder => { }" Accept=".jpg">
 						<CustomContent Context="fileUpload">
 							<MudIconButton HtmlTag="label"
 							               Variant="Variant.Filled"
@@ -188,7 +188,7 @@
 					</MudFileUpload>
 				</MudTooltip>
 				<MudTooltip Text="Replace epub file">
-					<MudFileUpload T="IBrowserFile" FilesChanged="UploadEpubToTempPath" Accept=".epub" Class="m-0">
+					<MudFileUpload T="IBrowserFile" FilesChanged="UploadEpubToTempPath" SelectedTemplate="file => builder => { }" Accept=".epub" Class="m-0">
 						<CustomContent Context="fileUpload">
 							<MudIconButton HtmlTag="label"
 							               Variant="Variant.Filled"

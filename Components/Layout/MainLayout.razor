@@ -33,7 +33,7 @@
                 </MudHidden>
                 <SearchBar/>
                 
-                <MudFileUpload T="IReadOnlyList<IBrowserFile>" FilesChanged="UploadBooks" Class="m-0" Disabled="_uploadingBooks">
+                <MudFileUpload T="IReadOnlyList<IBrowserFile>" FilesChanged="UploadBooks" SelectedTemplate="files => builder => { }" Class="m-0" Disabled="_uploadingBooks">
                     <CustomContent Context="fileUpload">
                         @if (!_uploadingBooks)
                         {
