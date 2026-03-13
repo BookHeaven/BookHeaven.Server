@@ -8,12 +8,20 @@ using System.Text.Json.Serialization;
 using MudBlazor;
 using BookHeaven.Domain;
 using BookHeaven.Domain.Abstractions;
-using BookHeaven.Server.Abstractions;
-using BookHeaven.Server.Endpoints;
-using BookHeaven.Server.MetadataProviders;
-using BookHeaven.Server.MetadataProviders.Abstractions;
-using BookHeaven.Server.MetadataProviders.DependencyInjection;
+using BookHeaven.Server.Features.Api.DependencyInjection;
+using BookHeaven.Server.Features.Api.Endpoints;
+using BookHeaven.Server.Features.Discovery.Services;
+using BookHeaven.Server.Features.Files.Abstractions;
+using BookHeaven.Server.Features.Files.Services;
+using BookHeaven.Server.Features.Import.Services;
+using BookHeaven.Server.Features.Metadata.Abstractions;
+using BookHeaven.Server.Features.Metadata.DependencyInjection;
+using BookHeaven.Server.Features.Session.Abstractions;
+using BookHeaven.Server.Features.Session.Services;
+using BookHeaven.Server.Features.Settings.Abstractions;
+using BookHeaven.Server.Features.Settings.Services;
 using Microsoft.AspNetCore.DataProtection;
+using DuckDuckGoCoverProvider = BookHeaven.Server.Features.Metadata.Services.DuckDuckGoCoverProvider;
 
 var appDataPath = Path.Combine(Directory.GetCurrentDirectory(), "data");
 

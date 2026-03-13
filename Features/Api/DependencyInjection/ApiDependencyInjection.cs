@@ -1,0 +1,38 @@
+﻿using System.Reflection;
+using BookHeaven.Server.Features.Api.Abstractions;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+
+namespace BookHeaven.Server.Features.Api.DependencyInjection;
+
+public static class ApiDependencyInjection
+{
+    public static IServiceCollection AddEndpoints(this IServiceCollection services, Assembly assembly)
+    {
+        var serviceDescriptors = assembly
+            .DefinedTypes
+            .Where(type => type is { IsAbstract: false, IsInterface: false } &&
+                           type.IsAssignableTo(typeof(IEndpoint)))
+            .Select(type => ServiceDescriptor.Transient(typeof(IEndpoint), type))
+            .ToArray();
+
+        services.TryAddEnumerable(serviceDescriptors);
+
+        return services;
+    }
+    
+    public static IApplicationBuilder MapEndpoints(
+        this WebApplication app)
+    {
+        var group = app.MapGroup("/api");
+        
+        var endpoints = app.Services
+            .GetRequiredService<IEnumerable<IEndpoint>>();
+
+        foreach (var endpoint in endpoints)
+        {
+            endpoint.MapEndpoint(group);
+        }
+
+        return app;
+    }
+}
