@@ -364,7 +364,7 @@ FodyWeavers.xsd
 
 # BookHeaven test data
 data/
-import/
+/import/
 wwwroot/books/
 wwwroot/covers/
 
