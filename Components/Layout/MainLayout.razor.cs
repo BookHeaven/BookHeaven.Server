@@ -1,5 +1,4 @@
 using BookHeaven.Domain.Features.Profiles;
-using BookHeaven.Server.Abstractions;
 using BookHeaven.Server.Constants;
 using BookHeaven.Server.Features.Files.Abstractions;
 using BookHeaven.Server.Features.Session.Abstractions;
