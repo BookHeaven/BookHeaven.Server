@@ -1,6 +1,6 @@
-﻿using BookHeaven.Server.Features.Import.DTOs;
+﻿using BookHeaven.Server.Features.Files.DTOs;
 
-namespace BookHeaven.Server.Features.Import.Abstractions;
+namespace BookHeaven.Server.Features.Files.Abstractions;
 
 public interface IImportProgressNotifier
 {

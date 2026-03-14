@@ -1,3 +1,3 @@
-﻿namespace BookHeaven.Server.Features.Import.DTOs;
+﻿namespace BookHeaven.Server.Features.Files.DTOs;
 
 public record ImportProgressDto();

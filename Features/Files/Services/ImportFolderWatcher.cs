@@ -1,9 +1,8 @@
 ﻿using System.Collections.Concurrent;
 using BookHeaven.Domain;
-using BookHeaven.Server.Abstractions;
 using BookHeaven.Server.Features.Files.Abstractions;
 
-namespace BookHeaven.Server.Features.Import.Services;
+namespace BookHeaven.Server.Features.Files.Services;
 
 public class ImportFolderWatcher(
     ILogger<ImportFolderWatcher> logger, 
