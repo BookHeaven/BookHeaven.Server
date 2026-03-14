@@ -65,6 +65,7 @@ builder.Services.AddTransient<IAlertService, AlertService>();
 builder.Services.AddTransient<IEbookFileLoader, EbookFileLoader>();
 builder.Services.AddScoped<ISettingsManagerService, SettingsManagerService>();
 builder.Services.AddScoped<ISessionService, SessionService>();
+builder.Services.AddSingleton<IEbookLoadNotifier, EbookLoadNotifier>();
 
 builder.Services.AddMetadataProviders();
 

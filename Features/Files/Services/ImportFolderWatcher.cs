@@ -1,12 +1,15 @@
 ﻿using System.Collections.Concurrent;
 using BookHeaven.Domain;
 using BookHeaven.Server.Features.Files.Abstractions;
+using BookHeaven.Server.Features.Files.DTOs;
+using BookHeaven.Server.Features.Files.Enums;
 
 namespace BookHeaven.Server.Features.Files.Services;
 
 public class ImportFolderWatcher(
     ILogger<ImportFolderWatcher> logger, 
-    IEbookFileLoader epubService) 
+    IEbookFileLoader epubService,
+    IEbookLoadNotifier loadNotifier) 
     : BackgroundService
 {
     private static readonly string ImportPath = Path.Combine(Directory.GetCurrentDirectory(), "import");
@@ -14,7 +17,7 @@ public class ImportFolderWatcher(
     private FileSystemWatcher? _watcher;
     private readonly string _processedPath = Path.Combine(ImportPath, "processed");
     private readonly string _errorPath = Path.Combine(ImportPath, "_error");
-    private readonly BlockingCollection<string> _filesToProcess = new();
+    private readonly BlockingCollection<(Guid FileId, string Path)> _filesToProcess = new();
     
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -41,10 +44,11 @@ public class ImportFolderWatcher(
 
         while (!stoppingToken.IsCancellationRequested)
         {
+            Guid? fileId;
             string? filePath;
             try
             {
-                filePath = _filesToProcess.Take(stoppingToken);
+                (fileId, filePath) = _filesToProcess.Take(stoppingToken);
             }
             catch (Exception ex)
             {
@@ -58,7 +62,7 @@ public class ImportFolderWatcher(
             {
                 await Task.Delay(TimeSpan.FromSeconds(0.5), stoppingToken);
             }
-            await ProcessFileAsync(filePath);
+            await ProcessFileAsync(fileId.Value, filePath);
         }
     }
     
@@ -80,19 +84,31 @@ public class ImportFolderWatcher(
         if(!DomainGlobals.SupportedFormats.Any(f => Path.GetExtension(e.FullPath).Equals(f, StringComparison.OrdinalIgnoreCase))) return;
         if (e.FullPath.StartsWith(_processedPath, StringComparison.OrdinalIgnoreCase) || e.FullPath.StartsWith(_errorPath, StringComparison.OrdinalIgnoreCase)) return;
 
-        _filesToProcess.Add(e.FullPath);
+        var id = Guid.NewGuid();
+        _filesToProcess.Add((id, e.FullPath));
+        loadNotifier.Publish(new EbookLoadNotificationDto
+        {
+            ItemId = id,
+            FileName = e.Name ?? Path.GetFileName(e.FullPath),
+        });
     }
 
-    private async Task ProcessFileAsync(string filePath)
+    private async Task ProcessFileAsync(Guid fileId, string filePath)
     {
-        Guid? id = null;
+        Guid? ebookId = null;
         
         var fileName = Path.GetFileName(filePath);
+        loadNotifier.Publish(new EbookLoadNotificationDto
+        {
+            ItemId = fileId,
+            FileName = fileName,
+            Status = EbookLoadStatus.InProgress
+        });
         logger.LogInformation("Loading '{FileName}' from import path", fileName);
 
         try
         {
-            id = await epubService.LoadFromFilePath(filePath);
+            ebookId = await epubService.LoadFromFilePath(filePath);
             logger.LogInformation("Loaded '{FileName}'.", fileName);
         }
         catch (Exception ex)
@@ -100,9 +116,16 @@ public class ImportFolderWatcher(
             logger.LogError(ex, "Book '{FileName}' could not be imported", fileName);
         }
         
-        MoveToFolder(filePath, id is not null ? _processedPath : _errorPath);
+        MoveToFolder(filePath, ebookId is not null ? _processedPath : _errorPath);
         
         CleanUpEmptyDirectories(filePath);
+        
+        loadNotifier.Publish(new EbookLoadNotificationDto
+        {
+            ItemId = fileId,
+            FileName = fileName,
+            Status = ebookId is not null ? EbookLoadStatus.Success : EbookLoadStatus.Failed
+        });
     }
     
     private void MoveToFolder(string sourcePath, string destFolder)
