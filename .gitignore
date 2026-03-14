@@ -363,7 +363,7 @@ MigrationBackup/
 FodyWeavers.xsd
 
 # BookHeaven test data
-data/
+/data/
 /import/
 wwwroot/books/
 wwwroot/covers/
