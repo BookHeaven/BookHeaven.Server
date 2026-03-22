@@ -1,11 +1,9 @@
-﻿using BookHeaven.Domain.Abstractions;
-using BookHeaven.Domain.Features.KoreaderProgress;
+﻿using BookHeaven.Domain.Features.KoreaderProgress;
 using BookHeaven.Domain.Features.Profiles;
 using BookHeaven.Server.Features.Api.Abstractions;
 using MediatR;
-using Microsoft.AspNetCore.Mvc;
 
-namespace BookHeaven.Server.Features.Api.Endpoints.KOReaderSync;
+namespace BookHeaven.Server.Features.Api.Endpoints.Koreader;
 
 public static class ApiGetKoreaderProgress
 {

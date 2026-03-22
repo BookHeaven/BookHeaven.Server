@@ -2,7 +2,7 @@
 using BookHeaven.Server.Features.Api.Abstractions;
 using MediatR;
 
-namespace BookHeaven.Server.Features.Api.Endpoints.KOReaderSync;
+namespace BookHeaven.Server.Features.Api.Endpoints.Koreader;
 
 public static class ApiKoreaderLogin
 {
