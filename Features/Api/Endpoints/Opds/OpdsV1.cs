@@ -36,6 +36,8 @@ public static class OpdsV1
             XNamespace opds = "http://opds-spec.org/2010/catalog";
             XNamespace atom = "http://www.w3.org/2005/Atom";
             XNamespace dc = "http://purl.org/dc/terms/";
+
+            var latestUpdate = books.Max(b => b.UpdatedAt).ToUniversalTime();
             
             var feed = new XDocument(
                 new XElement(atom + "feed",
@@ -43,12 +45,12 @@ public static class OpdsV1
                     new XAttribute(XNamespace.Xmlns + "dc", dc),
                     new XElement(atom+"title", "BookHeaven Catalog"),
                     new XElement(atom+"id", "bookheaven-catalog"),
-                    new XElement(atom+"updated", DateTime.UtcNow.ToString("o")),
+                    new XElement(atom+"updated", latestUpdate.ToString("o")),
                     books.Select(book =>
                         new XElement(atom+"entry",
                             new XElement(atom+"title", book.Title),
                             new XElement(atom+"id", $"urn:uuid:{book.BookId}"),
-                            new XElement(atom+"updated", DateTime.UtcNow.ToString("o")),
+                            new XElement(atom+"updated", book.UpdatedAt.ToUniversalTime().ToString("o")),
                             new XElement(atom+"author", new XElement(atom+"name", book.Author?.Name ?? "Unknown")),
                             !string.IsNullOrEmpty(book.Description) ? new XElement(atom+"content", new XAttribute("type", "text"), book.Description) : null,
                             new XElement(atom+"link",
@@ -67,7 +69,7 @@ public static class OpdsV1
             );
             
             // Add last-modified response header
-            httpContextAccessor.HttpContext?.Response.Headers.LastModified = DateTime.UtcNow.ToString("R");
+            httpContextAccessor.HttpContext?.Response.Headers.LastModified = latestUpdate.ToString("R");
             
             
             return Results.Content(feed.ToString(), "application/atom+xml");
