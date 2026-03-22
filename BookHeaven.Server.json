@@ -308,6 +308,10 @@
               "null",
               "string"
             ]
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
           }
         }
       },
@@ -427,6 +431,10 @@
             "items": {
               "$ref": "#/components/schemas/Tag"
             }
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
           }
         }
       },
@@ -567,6 +575,10 @@
           },
           "fileName": {
             "type": "string"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
           }
         }
       },
