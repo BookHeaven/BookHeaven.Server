@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
 using BookHeaven.Server.Localization;
-using MediatR;
+using Mediator;
 
 namespace BookHeaven.Server.Components.Layout
 {

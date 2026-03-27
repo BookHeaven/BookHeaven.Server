@@ -12,6 +12,8 @@ public static class Urls
 	public const string Settings = "/settings";
 	public const string Profiles = "/profiles";
 	public const string CreateProfile = $"{Profiles}/create";
+	public const string Reader = "/reader";
+	public const string ReaderBook = "/reader/{{bookId}}";
 
 	public static string GetBookUrl(Guid bookId)
 	{
@@ -42,4 +44,6 @@ public static class Urls
 	{
 		return $"{Collections}/{collectionId}";
 	}
+	
+	public static string GetReaderUrl(Guid bookId) => $"{Reader}/{bookId}";
 }

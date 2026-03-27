@@ -1,7 +1,7 @@
 ﻿using BookHeaven.Domain.Entities;
 using BookHeaven.Domain.Features.BooksProgress;
 using BookHeaven.Server.Features.Api.Abstractions;
-using MediatR;
+using Mediator;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookHeaven.Server.Features.Api.Endpoints.BooksProgress;

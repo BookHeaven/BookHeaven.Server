@@ -1,6 +1,6 @@
 ﻿using BookHeaven.Domain.Features.Authors;
 using BookHeaven.Server.Features.Api.Abstractions;
-using MediatR;
+using Mediator;
 
 namespace BookHeaven.Server.Features.Api.Endpoints.Authors;
 
@@ -21,7 +21,7 @@ public static class ApiGetAllAuthors
 
         private static async Task<IResult> ApiHandler(
             ISender sender,
-            ILogger<ApiGetAllAuthors.Endpoint> logger)
+            ILogger<Endpoint> logger)
         {
             var getAuthors = await sender.Send(new GetAllAuthors.Query());
             if (getAuthors.IsSuccess)

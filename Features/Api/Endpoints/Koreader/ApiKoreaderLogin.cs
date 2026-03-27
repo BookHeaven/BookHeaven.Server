@@ -1,6 +1,6 @@
 ﻿using BookHeaven.Domain.Features.Profiles;
 using BookHeaven.Server.Features.Api.Abstractions;
-using MediatR;
+using Mediator;
 
 namespace BookHeaven.Server.Features.Api.Endpoints.Koreader;
 
@@ -15,7 +15,7 @@ public static class ApiKoreaderLogin
         }
 
         private static async Task<IResult> Handler(
-            ISender  sender,
+            ISender sender,
             IHttpContextAccessor httpContextAccessor)
         {
             var profileName = httpContextAccessor.HttpContext?.Request.Headers["x-auth-user"].ToString();

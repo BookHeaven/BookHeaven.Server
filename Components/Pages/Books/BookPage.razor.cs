@@ -16,7 +16,7 @@ using BookHeaven.Server.Features.Metadata.DTOs;
 using BookHeaven.Server.Features.Session.Abstractions;
 using BookHeaven.Server.Features.Settings.Abstractions;
 using BookHeaven.Server.Features.Settings.DTOs;
-using MediatR;
+using Mediator;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;

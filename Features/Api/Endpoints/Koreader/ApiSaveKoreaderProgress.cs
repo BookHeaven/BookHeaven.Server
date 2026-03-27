@@ -4,7 +4,7 @@ using BookHeaven.Domain.Features.BooksProgress;
 using BookHeaven.Domain.Features.KoreaderProgress;
 using BookHeaven.Domain.Features.Profiles;
 using BookHeaven.Server.Features.Api.Abstractions;
-using MediatR;
+using Mediator;
 
 namespace BookHeaven.Server.Features.Api.Endpoints.Koreader;
 

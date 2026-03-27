@@ -9,7 +9,7 @@ using BookHeaven.Domain.Helpers;
 using BookHeaven.EbookManager;
 using BookHeaven.EbookManager.Enums;
 using BookHeaven.Server.Features.Files.Abstractions;
-using MediatR;
+using Mediator;
 using Microsoft.AspNetCore.Components.Forms;
 
 namespace BookHeaven.Server.Features.Files.Services;
