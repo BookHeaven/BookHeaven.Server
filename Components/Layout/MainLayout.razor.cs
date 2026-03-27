@@ -4,9 +4,7 @@ using BookHeaven.Server.Features.Files.Abstractions;
 using BookHeaven.Server.Features.Session.Abstractions;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using MudBlazor;
 using BookHeaven.Server.Localization;
-using Mediator;
 
 namespace BookHeaven.Server.Components.Layout
 {

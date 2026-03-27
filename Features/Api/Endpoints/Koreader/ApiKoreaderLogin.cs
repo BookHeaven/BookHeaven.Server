@@ -1,6 +1,5 @@
 ﻿using BookHeaven.Domain.Features.Profiles;
 using BookHeaven.Server.Features.Api.Abstractions;
-using Mediator;
 
 namespace BookHeaven.Server.Features.Api.Endpoints.Koreader;
 

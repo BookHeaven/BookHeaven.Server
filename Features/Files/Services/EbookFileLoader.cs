@@ -1,7 +1,5 @@
 ﻿using BookHeaven.Domain;
-using BookHeaven.Domain.Entities;
 using BookHeaven.Domain.Enums;
-using BookHeaven.Domain.Extensions;
 using BookHeaven.Domain.Features.Authors;
 using BookHeaven.Domain.Features.Books;
 using BookHeaven.Domain.Features.BookSeries;
@@ -9,7 +7,6 @@ using BookHeaven.Domain.Helpers;
 using BookHeaven.EbookManager;
 using BookHeaven.EbookManager.Enums;
 using BookHeaven.Server.Features.Files.Abstractions;
-using Mediator;
 using Microsoft.AspNetCore.Components.Forms;
 
 namespace BookHeaven.Server.Features.Files.Services;

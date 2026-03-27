@@ -1,6 +1,5 @@
 ﻿using BookHeaven.Domain.Features.Books;
 using BookHeaven.Server.Features.Api.Abstractions;
-using Mediator;
 
 namespace BookHeaven.Server.Features.Api.Endpoints.Books;
 

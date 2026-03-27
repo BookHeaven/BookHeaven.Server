@@ -1,6 +1,4 @@
-﻿using MudBlazor;
-
-namespace BookHeaven.Server.Components.Layout;
+﻿namespace BookHeaven.Server.Components.Layout;
 
 public static class Theme
 {

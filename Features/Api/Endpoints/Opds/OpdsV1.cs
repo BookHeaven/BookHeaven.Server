@@ -1,8 +1,6 @@
 ﻿using System.Xml.Linq;
-using BookHeaven.Domain.Extensions;
 using BookHeaven.Domain.Features.Books;
 using BookHeaven.Server.Features.Api.Abstractions;
-using Mediator;
 
 namespace BookHeaven.Server.Features.Api.Endpoints.Opds;
 

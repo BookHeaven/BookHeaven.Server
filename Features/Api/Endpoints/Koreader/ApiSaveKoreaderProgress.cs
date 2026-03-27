@@ -1,10 +1,8 @@
-﻿using BookHeaven.Domain.Entities;
-using BookHeaven.Domain.Features.Books;
+﻿using BookHeaven.Domain.Features.Books;
 using BookHeaven.Domain.Features.BooksProgress;
 using BookHeaven.Domain.Features.KoreaderProgress;
 using BookHeaven.Domain.Features.Profiles;
 using BookHeaven.Server.Features.Api.Abstractions;
-using Mediator;
 
 namespace BookHeaven.Server.Features.Api.Endpoints.Koreader;
 

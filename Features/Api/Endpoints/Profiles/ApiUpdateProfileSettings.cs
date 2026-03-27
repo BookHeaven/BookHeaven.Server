@@ -1,7 +1,5 @@
-﻿using BookHeaven.Domain.Entities;
-using BookHeaven.Domain.Features.ProfileSettingss;
+﻿using BookHeaven.Domain.Features.ProfileSettingss;
 using BookHeaven.Server.Features.Api.Abstractions;
-using Mediator;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookHeaven.Server.Features.Api.Endpoints.Profiles;

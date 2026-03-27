@@ -1,5 +1,4 @@
-﻿using BookHeaven.Domain.Extensions;
-using BookHeaven.Server.Features.Metadata.Abstractions;
+﻿using BookHeaven.Server.Features.Metadata.Abstractions;
 using BookHeaven.Server.Features.Metadata.Services;
 
 namespace BookHeaven.Server.Features.Metadata.Factories;

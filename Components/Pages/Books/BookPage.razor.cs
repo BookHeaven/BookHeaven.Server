@@ -1,7 +1,5 @@
 using BookHeaven.Domain.Abstractions;
-using BookHeaven.Domain.Entities;
 using BookHeaven.Domain.Enums;
-using BookHeaven.Domain.Extensions;
 using BookHeaven.Domain.Features.Authors;
 using BookHeaven.Domain.Features.Books;
 using BookHeaven.Domain.Features.BookSeries;
@@ -16,10 +14,8 @@ using BookHeaven.Server.Features.Metadata.DTOs;
 using BookHeaven.Server.Features.Session.Abstractions;
 using BookHeaven.Server.Features.Settings.Abstractions;
 using BookHeaven.Server.Features.Settings.DTOs;
-using Mediator;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using MudBlazor;
 
 namespace BookHeaven.Server.Components.Pages.Books;
 
