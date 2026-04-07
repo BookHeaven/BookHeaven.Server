@@ -37,7 +37,7 @@
 		_profileId = await SessionService.GetAsync<Guid>(SessionKey.SelectedProfileId);
 	}
 
-	private async Task<IEnumerable<SearchItem?>> Search(string value, CancellationToken token)
+	private async Task<IEnumerable<SearchItem?>> Search(string? value, CancellationToken token)
 	{
 		
 		if (string.IsNullOrEmpty(value)) return [];
