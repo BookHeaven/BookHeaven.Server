@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System.Reflection;
+﻿using System.Reflection;
 using BookHeaven.Server.Features.Api.Abstractions;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Nextended.Core.Helper;
 
 namespace BookHeaven.Server.Features.Api.DependencyInjection;
 
