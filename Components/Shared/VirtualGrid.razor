@@ -45,8 +45,13 @@
 	[JSInvokable]
 	public async Task OnVisibilityChanged(int first, int last)
 	{
-		_firstIndex = Math.Max(0, first - Overscan);
-		_lastIndex = Math.Min(Items.Count - 1, last + Overscan);
+		var newFirst = Math.Max(0, first - Overscan);
+		var newLast = Math.Min(Items.Count - 1, last + Overscan);
+
+		if (newFirst == _firstIndex && newLast == _lastIndex) return;
+
+		_firstIndex = newFirst;
+		_lastIndex = newLast;
 		await InvokeAsync(StateHasChanged);
 	}
 
