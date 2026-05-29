@@ -1,5 +1,6 @@
 ﻿let observer = null;
 let mutationObserver = null;
+let observedNodes = null;
 
 export function observe(container, dotnetRef) {
     const options = {
@@ -10,6 +11,7 @@ export function observe(container, dotnetRef) {
 
     let visibleSet = new Set();
     let lastVisible = { first: 0, last: 0 };
+    observedNodes = new WeakSet();
 
     observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -33,12 +35,17 @@ export function observe(container, dotnetRef) {
         }
     }, options);
 
-    const items = container.querySelectorAll("[data-virtual-index]");
-    items.forEach(i => observer.observe(i));
+    const observeNew = (node) => {
+        if (!observedNodes.has(node)) {
+            observedNodes.add(node);
+            observer.observe(node);
+        }
+    };
+
+    container.querySelectorAll("[data-virtual-index]").forEach(observeNew);
 
     mutationObserver = new MutationObserver(() => {
-        const items = container.querySelectorAll("[data-virtual-index]");
-        items.forEach(i => observer.observe(i));
+        container.querySelectorAll("[data-virtual-index]").forEach(observeNew);
     });
 
     mutationObserver.observe(container, { childList: true, subtree: true });
