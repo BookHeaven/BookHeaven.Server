@@ -72,9 +72,15 @@
 	else if (_collection is SimpleCollection simpleCollection)
 	{
 		<section>
-			<MudText Class="text-2xl 2xl:text-4xl" Color="Color.Primary">Preview</MudText>
+			<MudText Class="text-2xl 2xl:text-4xl" Color="Color.Primary">Select books</MudText>
 			<MudDivider Class="my-2" />
-			<BookGrid IsLoading="_isLoading" Books="_books" IsSelectMode="true" SingleRow="true" @bind-SelectedBooks="simpleCollection.BookIds" />
+			<BookGrid 
+				IsLoading="_isLoading" 
+				Books="_books" 
+				IsSelectMode="true" 
+				SingleRow="true" 
+				@bind-SelectedBooks="_selectedBookIds"
+				@bind-SelectedBooks:after="FilterBooks"/>
 		</section>
 	}
 	<section class="mt-10">
@@ -102,6 +108,7 @@
 	private List<Tag> _tags = [];
 	
 	private List<Book> _books = [];
+	private HashSet<Guid> _selectedBookIds = [];
 	
 	protected override async Task OnInitializedAsync()
 	{
@@ -174,6 +181,14 @@
 			_collection.Name = name;
 		}
 		_collection.CollectionType = type;
+	}
+
+	private void FilterBooks()
+	{
+		if(_collection is SimpleCollection simpleCollection)
+		{
+			simpleCollection.BookIds = _selectedBookIds.ToList();
+		}
 	}
 
 	private async Task Save()

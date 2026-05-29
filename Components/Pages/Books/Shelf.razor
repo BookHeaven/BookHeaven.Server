@@ -132,7 +132,7 @@ else
 	private List<Book> _filteredBooks = [];
 	
 	private bool IsSelectMode { get; set; } = false;
-	private List<Guid> _selectedBooks = [];
+	private HashSet<Guid> _selectedBooks = [];
 	private string SelectIcon => _selectedBooks.Count switch
 	{
 		0 => Icons.Material.Filled.CheckBoxOutlineBlank,
@@ -205,7 +205,7 @@ else
 	private void SelectAllBooks()
 	{
 		_selectedBooks.Clear();
-		_selectedBooks.AddRange(_filteredBooks.Select(b => b.BookId));
+		_selectedBooks.UnionWith(_filteredBooks.Select(b => b.BookId));
 	}
 	
 	private void DeselectAllBooks()
@@ -229,7 +229,7 @@ else
 		}
 
 		var ids = _filteredBooks.Select(b => b.BookId).ToHashSet();
-		_selectedBooks.RemoveAll(bookId => !ids.Contains(bookId));
+		_selectedBooks.RemoveWhere(bookId => !ids.Contains(bookId));
 	}
 	
 	private async Task OpenTagsDialog()
