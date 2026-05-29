@@ -31,7 +31,7 @@
 <Topbar>
 	@if (CollectionId == Guid.Empty)
 	{
-		<MudChipSet T="BookStatus" @bind-SelectedValue="BookManager.Filter" Class="ms-2" CheckMark>
+		<MudChipSet T="BookStatus" @bind-SelectedValue="BookManager.Filter" @bind-SelectedValue:after="FilterBooks" Class="ms-2" CheckMark>
 			<MudChip Value="BookStatus.All" Variant="Variant.Text" Color="Color.Primary" Class="mx-0.5">@BookStatus.All.StringValue()</MudChip>
 			<MudChip Value="BookStatus.New" Variant="Variant.Text" Color="Color.Primary" Class="mx-0.5">@BookStatus.New.StringValue()</MudChip>
 			<MudChip Value="BookStatus.Reading" Variant="Variant.Text" Color="Color.Primary" Class="mx-0.5">@BookStatus.Reading.StringValue()</MudChip>
@@ -49,10 +49,10 @@
 	}
 </Topbar>
 
-@if (BookManager.Books.Count > 0)
+@if (_filteredBooks.Count > 0)
 {
 	<BookGrid 
-		Books="@(_currentCollection is not null ? BookManager.Books.ApplyCollectionFilter(_currentCollection).ToList() : BookManager.Books)" 
+		Books="@_filteredBooks" 
 		Center="true"
 		IsSelectMode="IsSelectMode"
 		@bind-SelectedBooks="_selectedBooks"/>
@@ -129,20 +129,21 @@ else
 	private bool IsLoading { get; set; } = true;
 	private Guid ProfileId { get; set; }
 	private Collection? _currentCollection;
+	private List<Book> _filteredBooks = [];
 	
 	private bool IsSelectMode { get; set; } = false;
 	private List<Guid> _selectedBooks = [];
 	private string SelectIcon => _selectedBooks.Count switch
 	{
 		0 => Icons.Material.Filled.CheckBoxOutlineBlank,
-		_ when _selectedBooks.Count == BookManager.Books.Count => Icons.Material.Filled.CheckBox,
+		_ when _selectedBooks.Count == _filteredBooks.Count => Icons.Material.Filled.CheckBox,
 		_ => Icons.Material.Filled.IndeterminateCheckBox
 	};
 	
 	private Action SelectIconAction => _selectedBooks.Count switch
 	{
 		0 => SelectAllBooks,
-		_ when _selectedBooks.Count == BookManager.Books.Count => DeselectAllBooks,
+		_ when _selectedBooks.Count == _filteredBooks.Count => DeselectAllBooks,
 		_ => SelectAllBooks
 	};
 	
@@ -174,18 +175,21 @@ else
 			_currentCollection = null;
 		}
 		await BookManager.GetBooksAsync(ProfileId);
+		FilterBooks();
 		IsLoading = false;
 	}
 
 	private async Task OnBookAdded(BookAdded e)
 	{
 		await BookManager.AppendBookAsync(ProfileId, e.BookId);
+		FilterBooks();
 		await InvokeAsync(StateHasChanged);
 	}
 	
 	private async Task OnBookDeleted(BookDeleted e)
 	{
 		BookManager.RemoveBook(e.BookId);
+		FilterBooks();
 		await InvokeAsync(StateHasChanged);
 	}
 
@@ -201,12 +205,31 @@ else
 	private void SelectAllBooks()
 	{
 		_selectedBooks.Clear();
-		_selectedBooks.AddRange(BookManager.Books.Select(b => b.BookId));
+		_selectedBooks.AddRange(_filteredBooks.Select(b => b.BookId));
 	}
 	
 	private void DeselectAllBooks()
 	{
 		_selectedBooks.Clear();
+	}
+
+	private void FilterBooks()
+	{
+		IEnumerable<Book> books = BookManager.Books;
+		if (_currentCollection is not null)
+		{
+			books = books.ApplyCollectionFilter(_currentCollection);
+		}
+
+		_filteredBooks = books.ToList();
+
+		if (_selectedBooks.Count == 0)
+		{
+			return;
+		}
+
+		var ids = _filteredBooks.Select(b => b.BookId).ToHashSet();
+		_selectedBooks.RemoveAll(bookId => !ids.Contains(bookId));
 	}
 	
 	private async Task OpenTagsDialog()
