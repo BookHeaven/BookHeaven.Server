@@ -5,7 +5,7 @@
 		<SmartCollectionCheckboxList 
 			TItem="Author" 
 			TFilterId="Guid"
-			Items="Authors"
+			Items="Authors.OrderBy(a => a.Name)"
 			Label="Authors" 
 			GetId="a => a.AuthorId" 
 			GetName="a => a.Name!" 
@@ -16,7 +16,7 @@
 		<SmartCollectionCheckboxList
 			TItem="Series"
 			TFilterId="Guid"
-			Items="Series"
+			Items="Series.OrderBy(s => s.Name)"
 			Label="Series"
 			GetId="s => s.SeriesId"
 			GetName="s => s.Name!"
