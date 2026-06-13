@@ -10,25 +10,29 @@
 	return;
 }
 
-<SectionContent SectionName="Tools">
+@if (_profiles.Count > 0)
+{
+	<SectionContent SectionName="Tools">
 
-	@switch (_layout)
-	{
-		case Layout.Select:
-			<MudButton Variant="Variant.Outlined" OnClick="() => _layout = Layout.Manage">
-				@Translations.PROFILES_MANAGE
-			</MudButton>
-			break;
-		case Layout.Manage:
-			<MudButton
-				OnClick="() => _layout = Layout.Select"
-				Class="w-[150px]"
-				Variant="Variant.Outlined">
-				@Translations.DONE
-			</MudButton>
-			break;
-	}
-</SectionContent>
+		@switch (_layout)
+		{
+			case Layout.Select:
+				<MudButton Variant="Variant.Outlined" OnClick="() => _layout = Layout.Manage">
+					@Translations.PROFILES_MANAGE
+				</MudButton>
+				break;
+			case Layout.Manage:
+				<MudButton
+					OnClick="() => _layout = Layout.Select"
+					Class="w-[150px]"
+					Variant="Variant.Outlined">
+					@Translations.DONE
+				</MudButton>
+				break;
+		}
+	</SectionContent>
+}
+
 
 
 <div class="flex flex-col items-center h-full">
