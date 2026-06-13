@@ -33,15 +33,13 @@
 
 @code {
 	[Inject] private IEbookLoadNotifier EbookLoadNotifier { get; set; } = null!;
-
-	private readonly List<EbookLoadNotificationDto> _notifications = [];
-	private int Total => _notifications.GroupBy(n => n.ItemId).Count();
-	private int Success => _notifications.Where(n => n.Status == EbookLoadStatus.Success).GroupBy(n => n.ItemId).Count();
-	private int Failed => _notifications.Where(n => n.Status == EbookLoadStatus.Failed).GroupBy(n => n.ItemId).Count();
+	
+	private readonly Dictionary<Guid, EbookLoadNotificationDto> _notifications = new();
+	private int Total => _notifications.Count;
+	private int Success => _notifications.Values.Count(n => n.Status == EbookLoadStatus.Success);
+	private int Failed => _notifications.Values.Count(n => n.Status == EbookLoadStatus.Failed);
 	private int Processed => Success + Failed;
 	
-	// Cancellation token source used to cancel a pending clear delay.
-	// We keep it nullable and recreate it every time a new delay is started.
 	private CancellationTokenSource? _clearCts;
 
 	protected override void OnInitialized()
@@ -49,28 +47,29 @@
 		EbookLoadNotifier.OnNotificationPublished += OnNotification;
 	}
 
-	private async void OnNotification(EbookLoadNotificationDto notification)
+	private void OnNotification(EbookLoadNotificationDto notification)
 	{
-		// Cancel and dispose any previous clear delay so the notifications remain visible when new items arrive.
 		try
 		{
-			if(_clearCts is not null) await _clearCts.CancelAsync();
+			_clearCts?.Cancel();
 		}
-		catch { 
-			//Ignore
+		catch
+		{
+			// ignore
 		}
 		_clearCts?.Dispose();
 		_clearCts = new CancellationTokenSource();
 		var token = _clearCts.Token;
 
-		_notifications.Add(notification);
-		await InvokeAsync(StateHasChanged);
+		_ = InvokeAsync(() => {
+			_notifications[notification.ItemId] = notification;
+			StateHasChanged();
 
-		if (Processed == Total)
-		{
-			// Start a delayed clear using the captured token. If another notification comes in, that token will be cancelled.
-			_ = DelayedClearAsync(token);
-		}
+			if (Processed == Total)
+			{
+				_ = DelayedClearAsync(token);
+			}
+		});
 	}
 
 	private async Task DelayedClearAsync(CancellationToken token)
@@ -81,7 +80,6 @@
 		}
 		catch (OperationCanceledException)
 		{
-			// The delay was cancelled because a new notification arrived - do nothing.
 			return;
 		}
 
@@ -89,7 +87,6 @@
 		await InvokeAsync(StateHasChanged);
 	}
 
-	// Clean up event subscription and any pending CTS when the component is disposed.
 	public void Dispose()
 	{
 		EbookLoadNotifier.OnNotificationPublished -= OnNotification;
