@@ -41,6 +41,8 @@
 	private int Processed => Success + Failed;
 	
 	private CancellationTokenSource? _clearCts;
+	// Lock to protect concurrent access/disposal of _clearCts from different threads
+	private readonly object _ctsLock = new();
 
 	protected override void OnInitialized()
 	{
@@ -49,17 +51,21 @@
 
 	private void OnNotification(EbookLoadNotificationDto notification)
 	{
-		try
+		CancellationToken token;
+		lock (_ctsLock)
 		{
-			_clearCts?.Cancel();
+			try
+			{
+				_clearCts?.Cancel();
+			}
+			catch
+			{
+				// ignore
+			}
+			_clearCts?.Dispose();
+			_clearCts = new CancellationTokenSource();
+			token = _clearCts.Token;
 		}
-		catch
-		{
-			// ignore
-		}
-		_clearCts?.Dispose();
-		_clearCts = new CancellationTokenSource();
-		var token = _clearCts.Token;
 
 		_ = InvokeAsync(() => {
 			_notifications[notification.ItemId] = notification;
@@ -90,14 +96,18 @@
 	public void Dispose()
 	{
 		EbookLoadNotifier.OnNotificationPublished -= OnNotification;
-		try
+		lock (_ctsLock)
 		{
-			_clearCts?.Cancel();
+			try
+			{
+				_clearCts?.Cancel();
+			}
+			catch
+			{
+				// ignore
+			}
+			_clearCts?.Dispose();
+			_clearCts = null;
 		}
-		catch
-		{
-			// ignore
-		}
-		_clearCts?.Dispose();
 	}
 }
