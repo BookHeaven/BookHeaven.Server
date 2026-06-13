@@ -1,22 +1,29 @@
 ﻿@using BookHeaven.Domain.Entities.Utilities
 @typeparam TItem
 @typeparam TFilterId
-<article class="flex flex-col">
+@if (!Items.Any())
+{
+    return;
+}
+<article class="flex flex-col h-[300px]">
     <MudText Color="CurrentColor">@Label</MudText>
-    @foreach (var item in Items)
-    {
-        var id = GetId(item);
-        <MudCheckBox
-            T="bool"
-            CheckedIcon="@(IsInclude ? Icons.Material.Filled.CheckBox : Icons.Material.Filled.IndeterminateCheckBox)"
-            Color="CurrentColor"
-            UncheckedColor="Color.Secondary"
-            Value="SelectedItems.Contains(id)"
-            ValueChanged="b => OnCheckboxChanged(id, b)"
-            Disabled="OppositeItems.Contains(id)">
-            @GetName(item)
-        </MudCheckBox>
-    }
+    <div class="h-full overflow-y-scroll">
+        <Virtualize TItem="TItem" Items="Items.ToList()" Context="item">
+            @{
+                var id = GetId(item);
+            }
+            <MudCheckBox
+                T="bool"
+                CheckedIcon="@(IsInclude ? Icons.Material.Filled.CheckBox : Icons.Material.Filled.IndeterminateCheckBox)"
+                Color="CurrentColor"
+                UncheckedColor="Color.Secondary"
+                Value="SelectedItems.Contains(id)"
+                ValueChanged="b => OnCheckboxChanged(id, b)"
+                Disabled="OppositeItems.Contains(id)">
+                @GetName(item)
+            </MudCheckBox>
+        </Virtualize>
+    </div>
 </article>
 
 @code {
