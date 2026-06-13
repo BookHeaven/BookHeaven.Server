@@ -27,6 +27,13 @@ public class ImportFolderWatcher(
             logger.LogWarning("Import folder doesn't exist, can't start folder watcher service.");
             return;
         }
+        
+        var existingFiles = Directory.EnumerateFiles(ImportPath, "*.*", SearchOption.AllDirectories);
+        foreach (var file in existingFiles)
+        {
+            AddFileToQueue(file, Path.GetFileName(file));
+        }
+
         _watcher = new FileSystemWatcher(ImportPath)
         {
             Filter = "*.*",
@@ -81,15 +88,20 @@ public class ImportFolderWatcher(
     
     private void OnCreated(object sender, FileSystemEventArgs e)
     {
-        if(!DomainGlobals.SupportedFormats.Any(f => Path.GetExtension(e.FullPath).Equals(f, StringComparison.OrdinalIgnoreCase))) return;
-        if (e.FullPath.StartsWith(_processedPath, StringComparison.OrdinalIgnoreCase) || e.FullPath.StartsWith(_errorPath, StringComparison.OrdinalIgnoreCase)) return;
+        AddFileToQueue(e.FullPath, e.Name);
+    }
+
+    private void AddFileToQueue(string path, string? fileName)
+    {
+        if (IsExcludedDirectory(path)) return;
+        if(!DomainGlobals.SupportedFormats.Any(f => Path.GetExtension(path).Equals(f, StringComparison.OrdinalIgnoreCase))) return;
 
         var id = Guid.NewGuid();
-        _filesToProcess.Add((id, e.FullPath));
+        _filesToProcess.Add((id, path));
         loadNotifier.Publish(new EbookLoadNotificationDto
         {
             ItemId = id,
-            FileName = e.Name ?? Path.GetFileName(e.FullPath),
+            FileName = fileName ?? Path.GetFileName(path),
         });
     }
 
@@ -104,12 +116,12 @@ public class ImportFolderWatcher(
             FileName = fileName,
             Status = EbookLoadStatus.InProgress
         });
-        logger.LogInformation("Loading '{FileName}' from import path", fileName);
+        logger.LogDebug("Loading '{FileName}' from import path", fileName);
 
         try
         {
             ebookId = await epubService.LoadFromFilePath(filePath);
-            logger.LogInformation("Loaded '{FileName}'.", fileName);
+            logger.LogDebug("Loaded '{FileName}'.", fileName);
         }
         catch (Exception ex)
         {
@@ -128,7 +140,7 @@ public class ImportFolderWatcher(
         });
     }
     
-    private void MoveToFolder(string sourcePath, string destFolder)
+    private static void MoveToFolder(string sourcePath, string destFolder)
     {
         var relativePath = Path.GetRelativePath(ImportPath, sourcePath);
         var destPath = Path.Combine(destFolder, relativePath);
@@ -140,7 +152,7 @@ public class ImportFolderWatcher(
         File.Move(sourcePath, destPath, overwrite: true);
     }
     
-    private void CleanUpEmptyDirectories(string startPath)
+    private static void CleanUpEmptyDirectories(string startPath)
     {
         var originalDir = Path.GetDirectoryName(startPath);
         while (!string.IsNullOrEmpty(originalDir) &&
@@ -156,5 +168,11 @@ public class ImportFolderWatcher(
                 break;
             }
         }
+    }
+
+    private bool IsExcludedDirectory(string path)
+    {
+        return path.StartsWith(_processedPath, StringComparison.OrdinalIgnoreCase) 
+               || path.StartsWith(_errorPath, StringComparison.OrdinalIgnoreCase);
     }
 }
