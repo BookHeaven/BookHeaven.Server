@@ -51,6 +51,13 @@
 				Convert to Smart Collection
 			</MudButton>
 		}
+		<MudButton
+			OnClick="() => _showDialog = true"
+			Color="Color.Primary"
+			Variant="Variant.Filled"
+			StartIcon="@Icons.Material.Filled.OpenInNew">
+			Open preview
+		</MudButton>
 	</div>
 	@if (_collection is SmartCollection smartCollection)
 	{
@@ -83,12 +90,16 @@
 				@bind-SelectedBooks:after="FilterBooks"/>
 		</section>
 	}
-	<section class="mt-10">
-		<MudText Class="text-2xl 2xl:text-4xl">Preview</MudText>
-		<MudDivider Class="mt-2 mb-5"/>
-		<BookGrid IsLoading="_isLoading" Books="_books.ApplyCollectionFilter(_collection).ApplyDefaultSorting().ToList()" IsInteractive="false"/>
-	</section>
 </Container>
+
+<MudDialog @bind-Visible="_showDialog" Options="_dialogOptions">
+	<TitleContent>
+		<MudText Class="text-2xl 2xl:text-4xl">Preview</MudText>
+	</TitleContent>
+	<DialogContent>
+		<BookGrid IsLoading="_isLoading" Books="_books.ApplyCollectionFilter(_collection!).ApplyDefaultSorting().ToList()" IsInteractive="false"/>
+	</DialogContent>
+</MudDialog>
 
 @code {
 	[Inject] private NavigationManager NavigationManager { get; set; } = null!;
@@ -109,6 +120,15 @@
 	
 	private List<Book> _books = [];
 	private HashSet<Guid> _selectedBookIds = [];
+
+	private bool _showDialog;
+	private readonly DialogOptions _dialogOptions = new()
+	{
+		MaxWidth = MaxWidth.Large,
+		CloseButton = true,
+		CloseOnEscapeKey = true,
+		FullWidth = true
+	};
 	
 	protected override async Task OnInitializedAsync()
 	{
