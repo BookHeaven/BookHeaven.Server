@@ -17,7 +17,14 @@
         <NavMenu/>
         <div class="mt-auto grid gap-5 p-5">
             <EbookLoadInfo />
-            <VersionInfo/>
+            <div class="flex items-center justify-between gap-2">
+                <MudIconButton 
+                    Href="https://github.com/bookheaven/bookheaven.server"
+                    Target="_blank"
+                    Icon="@Icons.Custom.Brands.GitHub" 
+                    Color="Color.Secondary" />
+                <VersionInfo/>
+            </div>
         </div>
     </MudDrawer>
     <main class="flex flex-col w-full overflow-y-auto">
