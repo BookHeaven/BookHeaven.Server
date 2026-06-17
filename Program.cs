@@ -75,6 +75,8 @@ builder.Services.AddHostedService<ImportFolderWatcher>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddEndpoints(typeof(Program).Assembly);
 
+builder.Services.AddHttpClient();
+
 builder.Services.AddOpenApi();
 
 var app = builder.Build();

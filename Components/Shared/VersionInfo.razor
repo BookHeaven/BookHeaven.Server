@@ -1,22 +1,28 @@
 ﻿@using System.Text.Json
 @using System.Net
 @if(_localVersion is null) return;
-<div class="flex items-center gap-2 leading-none">
-	@if (_latestVersion is not null)
-	{
-		<span class="size-2 rounded-full @(_latestVersion > _localVersion ? "bg-yellow-500" : "bg-green-500")"></span>
-	}
-	<span>v@(_localVersion)</span>
-</div>
+<MudTooltip Text="@TooltipText" Placement="Placement.Top">
+	<div class="flex items-center gap-2 leading-none">
+		@if (_latestVersion is not null)
+		{
+			<span class="size-2 rounded-full @(_latestVersion > _localVersion ? "bg-yellow-500" : "bg-green-500")"></span>
+		}
+		<span>v@(_localVersion)</span>
+	</div>
+</MudTooltip>
 
 @code {
+	[Inject] private IHttpClientFactory HttpClientFactory { get; set; } = null!;
+	
 	private const string LatestVersionJson = "https://raw.githubusercontent.com/BookHeaven/BookHeaven.Server/refs/heads/main/version.json";
 	private Version? _latestVersion;
 	private Version? _localVersion;
-	
+
+	private string TooltipText => _latestVersion == _localVersion ? "You are on the latest version" : "There is a new version available";
+
 	protected override async Task OnInitializedAsync()
 	{
-		using var httpClient = new HttpClient();
+		var httpClient = HttpClientFactory.CreateClient();
 		var response = await httpClient.GetAsync(LatestVersionJson);
 		if (response.StatusCode == HttpStatusCode.OK)
 		{
@@ -24,7 +30,7 @@
 		}
 		_localVersion = ParseVersion(await File.ReadAllTextAsync("version.json"));
 	}
-	
+
 	private static Version? ParseVersion(string version)
 	{
 		try
