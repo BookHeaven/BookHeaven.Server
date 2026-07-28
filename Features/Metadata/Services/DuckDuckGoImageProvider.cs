@@ -6,7 +6,7 @@ using BookHeaven.Server.Features.Metadata.DTOs;
 
 namespace BookHeaven.Server.Features.Metadata.Services;
 
-public partial class DuckDuckGoCoverProvider(ILogger<DuckDuckGoCoverProvider> logger) : ICoverProvider
+public partial class DuckDuckGoImageProvider(ILogger<DuckDuckGoImageProvider> logger) : IImageProvider
 {
     private const string BASE_URL = "https://duckduckgo.com/";
     private const string USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";

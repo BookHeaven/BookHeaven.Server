@@ -58,7 +58,7 @@ builder.Services.AddDomain(options =>
 });
 builder.Services.AddEbookManager();
 
-builder.Services.AddTransient<ICoverProvider, DuckDuckGoCoverProvider>();
+builder.Services.AddTransient<IImageProvider, DuckDuckGoImageProvider>();
 builder.Services.AddTransient<IAlertService, AlertService>();
 builder.Services.AddTransient<IEbookFileLoader, EbookFileLoader>();
 builder.Services.AddScoped<ISettingsManagerService, SettingsManagerService>();
