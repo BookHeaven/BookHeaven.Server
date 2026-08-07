@@ -1,11 +1,14 @@
 <p align="center">
   <img src="wwwroot/img/logo.svg" alt="BookHeaven Logo" width="120" />
 </p>
-
 <h1 align="center">BookHeaven Server</h1>
+<p align="center">
+  <img alt="GitHub Release" src="https://img.shields.io/github/v/release/bookheaven/bookheaven.server?style=for-the-badge&logo=github&label=Version&color=green">
+</p>
+
 
 BookHeaven Server is part of the BookHeaven "ecosystem", which aims to provide a very convenient way to manage and read your ebook library.<br/>
-It allows to organize your books into authors and series, as well as add tags for filtering purposes.<br/>
+It allows to organize your books into authors, series and collections, as well as adding tags.<br/>
 You can also add fonts so they can be easily downloaded and used by your devices.
 
 ---
