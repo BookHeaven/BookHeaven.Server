@@ -49,7 +49,7 @@ builder.Services.AddMudServices(config =>
 	config.SnackbarConfiguration.PreventDuplicates = false;
 });
 
-builder.Services.AddDomain(options =>
+builder.Services.AddCore(options =>
 {
 	options.BooksPath = Path.Combine(appDataPath, "books");
 	options.CoversPath = Path.Combine(appDataPath, "covers");
@@ -80,6 +80,8 @@ builder.Services.AddHttpClient();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+app.Services.ApplyDatabaseMigrations();
 	
 var supportedCultures = new[]{ "en-US", "es-ES" };
 var localizationOptions = new RequestLocalizationOptions()
