@@ -77,11 +77,11 @@ jobs:
           mkdir -p BookHeaven/BookHeaven.EbookManager
           mv temp/BookHeaven.EbookManager/* BookHeaven/BookHeaven.EbookManager/
           
-      - name: Clone BookHeaven.Domain
+      - name: Clone BookHeaven.Core
         run: |
-          git clone https://${{ secrets.PAT_TOKEN }}@github.com/BookHeaven/BookHeaven.Domain.git temp/BookHeaven.Domain
-          mkdir -p BookHeaven/BookHeaven.Domain
-          mv temp/BookHeaven.Domain/* BookHeaven/BookHeaven.Domain/
+          git clone https://${{ secrets.PAT_TOKEN }}@github.com/BookHeaven/BookHeaven.Core.git temp/BookHeaven.Core
+          mkdir -p BookHeaven/BookHeaven.Core
+          mv temp/BookHeaven.Core/* BookHeaven/BookHeaven.Core/
           
       - name: Install npm packages
         working-directory: ./BookHeaven/BookHeaven.Server
