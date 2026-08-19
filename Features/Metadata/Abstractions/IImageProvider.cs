@@ -1,4 +1,4 @@
-﻿using BookHeaven.Domain.Shared;
+﻿using BookHeaven.Core.Shared;
 using BookHeaven.Server.Features.Metadata.DTOs;
 
 namespace BookHeaven.Server.Features.Metadata.Abstractions;

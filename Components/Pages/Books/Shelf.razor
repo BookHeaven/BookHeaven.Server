@@ -1,10 +1,10 @@
 ﻿@attribute [Route(Urls.Shelf)]
 @attribute [Route($"{Urls.Collection}/{{CollectionId:guid}}")]
 
-@using BookHeaven.Domain.Abstractions
-@using BookHeaven.Domain.Entities.Base
-@using BookHeaven.Domain.Features.Books
-@using BookHeaven.Domain.Features.Collections
+@using BookHeaven.Core.Abstractions
+@using BookHeaven.Core.Entities.Base
+@using BookHeaven.Core.Features.Books
+@using BookHeaven.Core.Features.Collections
 @using BookHeaven.Server.Features.Session.Abstractions
 @implements IDisposable
 

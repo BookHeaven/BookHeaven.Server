@@ -1,4 +1,4 @@
-﻿using BookHeaven.Domain.Features.Books;
+﻿using BookHeaven.Core.Features.Books;
 using BookHeaven.Server.Features.Api.Abstractions;
 
 namespace BookHeaven.Server.Features.Api.Endpoints.Books;
@@ -14,7 +14,7 @@ public static class ApiGetAllBooks
                 .WithTags("Books")
                 .WithSummary("Get all books")
                 .WithDescription("Retrieves a list of all books in the system.")
-                .Produces<List<Domain.Entities.Book>>()
+                .Produces<List<Core.Entities.Book>>()
                 .ProducesProblem(StatusCodes.Status500InternalServerError);
         }
         

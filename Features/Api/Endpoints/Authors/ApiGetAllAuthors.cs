@@ -1,4 +1,4 @@
-﻿using BookHeaven.Domain.Features.Authors;
+﻿using BookHeaven.Core.Features.Authors;
 using BookHeaven.Server.Features.Api.Abstractions;
 
 namespace BookHeaven.Server.Features.Api.Endpoints.Authors;
@@ -14,7 +14,7 @@ public static class ApiGetAllAuthors
                 .WithTags("Authors")
                 .WithSummary("Get all authors")
                 .WithDescription("Retrieves a list of all authors in the system.")
-                .Produces<List<Domain.Entities.Author>>()
+                .Produces<List<Core.Entities.Author>>()
                 .ProducesProblem(StatusCodes.Status500InternalServerError);
         }
 

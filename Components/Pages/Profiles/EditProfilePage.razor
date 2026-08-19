@@ -1,5 +1,5 @@
-﻿@using BookHeaven.Domain.Abstractions
-@using BookHeaven.Domain.Features.Profiles
+﻿@using BookHeaven.Core.Abstractions
+@using BookHeaven.Core.Features.Profiles
 @using BookHeaven.Server.Features.Session.Abstractions
 @attribute [Route($"{Urls.Profiles}/{{Id:guid}}")]
 @attribute [Route(Urls.CreateProfile)]
@@ -18,7 +18,7 @@
 			OnClick="Delete"
 			Variant="Variant.Outlined"
 			Color="Color.Error">
-			@Domain.Localization.Translations.DELETE
+			@Core.Localization.Translations.DELETE
 		</MudButton>
 	</SectionContent>
 }
@@ -105,10 +105,10 @@
 	{
 
 		var result = await AlertService.ShowConfirmationAsync(
-			Domain.Localization.Translations.WARNING,
+			Core.Localization.Translations.WARNING,
 			Translations.PROFILE_DELETE_WARNING_MESSAGE,
-			accept: Domain.Localization.Translations.YES,
-			cancel: Domain.Localization.Translations.NO);
+			accept: Core.Localization.Translations.YES,
+			cancel: Core.Localization.Translations.NO);
 		
 		if (result is not true) return;
 

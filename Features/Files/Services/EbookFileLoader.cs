@@ -1,9 +1,8 @@
-﻿using BookHeaven.Domain;
-using BookHeaven.Domain.Enums;
-using BookHeaven.Domain.Features.Authors;
-using BookHeaven.Domain.Features.Books;
-using BookHeaven.Domain.Features.BookSeries;
-using BookHeaven.Domain.Helpers;
+﻿using BookHeaven.Core;
+using BookHeaven.Core.Features.Authors;
+using BookHeaven.Core.Features.Books;
+using BookHeaven.Core.Features.BookSeries;
+using BookHeaven.Core.Helpers;
 using BookHeaven.EbookManager;
 using BookHeaven.EbookManager.Enums;
 using BookHeaven.Server.Features.Files.Abstractions;
@@ -47,7 +46,7 @@ public class EbookFileLoader(
 		Guid? seriesId = null;
 		
 		var extension = Path.GetExtension(path).ToLowerInvariant();
-		if (!DomainGlobals.SupportedFormats.Contains(extension))
+		if (!CoreGlobals.SupportedFormats.Contains(extension))
 		{
 			logger.LogWarning("Unsupported file extension: {Extension}", extension);
 			return null;

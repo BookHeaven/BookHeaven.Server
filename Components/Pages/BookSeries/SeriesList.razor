@@ -1,5 +1,5 @@
-@using BookHeaven.Domain.Abstractions
-@using BookHeaven.Domain.Features.BookSeries
+@using BookHeaven.Core.Abstractions
+@using BookHeaven.Core.Features.BookSeries
 @attribute [Route(Urls.Series)]
 <PageTitle>@Translations.SERIES_PLURAL</PageTitle>
 
@@ -19,7 +19,7 @@
                     StartIcon="@Icons.Material.Filled.Add"
                     Variant="Variant.Filled"
                     Color="Color.Tertiary">
-                    @Domain.Localization.Translations.NEW_F
+                    @Core.Localization.Translations.NEW_F
                 </MudButton>
             </div>
         </ToolBarContent>

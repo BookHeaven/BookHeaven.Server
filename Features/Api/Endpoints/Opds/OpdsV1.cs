@@ -1,5 +1,5 @@
 ﻿using System.Xml.Linq;
-using BookHeaven.Domain.Features.Books;
+using BookHeaven.Core.Features.Books;
 using BookHeaven.Server.Features.Api.Abstractions;
 
 namespace BookHeaven.Server.Features.Api.Endpoints.Opds;

@@ -1,4 +1,4 @@
-﻿using BookHeaven.Domain.Features.ProfileSettingss;
+﻿using BookHeaven.Core.Features.ProfileSettingss;
 using BookHeaven.Server.Features.Api.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 

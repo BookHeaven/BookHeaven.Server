@@ -1,5 +1,5 @@
 ﻿using System.Text.Json;
-using BookHeaven.Domain;
+using BookHeaven.Core;
 using BookHeaven.Server.Features.Settings.Abstractions;
 using BookHeaven.Server.Features.Settings.DTOs;
 
@@ -13,7 +13,7 @@ public class SettingsManagerService : ISettingsManagerService
     {
         try
         {
-            var file = await File.ReadAllTextAsync(Path.Combine(DomainGlobals.DatabasePath, SettingsFileName));
+            var file = await File.ReadAllTextAsync(Path.Combine(CoreGlobals.DatabasePath, SettingsFileName));
             return JsonSerializer.Deserialize<ServerSettings>(file) ?? new();
         }
         catch (Exception)
@@ -25,6 +25,6 @@ public class SettingsManagerService : ISettingsManagerService
     public async Task SaveSettingsAsync(ServerSettings serverSettings)
     {
         var json = JsonSerializer.Serialize(serverSettings);
-        await File.WriteAllTextAsync(Path.Combine(DomainGlobals.DatabasePath, SettingsFileName), json);
+        await File.WriteAllTextAsync(Path.Combine(CoreGlobals.DatabasePath, SettingsFileName), json);
     }
 }

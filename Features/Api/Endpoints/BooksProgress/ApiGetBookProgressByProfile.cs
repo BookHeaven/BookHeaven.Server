@@ -1,4 +1,4 @@
-﻿using BookHeaven.Domain.Features.BooksProgress;
+﻿using BookHeaven.Core.Features.BooksProgress;
 using BookHeaven.Server.Features.Api.Abstractions;
 
 namespace BookHeaven.Server.Features.Api.Endpoints.BooksProgress;
@@ -14,7 +14,7 @@ public static class ApiGetBookProgressByProfile
                 .WithTags("Book Progress")
                 .WithSummary("Get book progress by profile")
                 .WithDescription("Retrieves the reading progress of a specific book for a given profile.")
-                .Produces<Domain.Entities.BookProgress>()
+                .Produces<Core.Entities.BookProgress>()
                 .ProducesProblem(StatusCodes.Status500InternalServerError);
         }
         

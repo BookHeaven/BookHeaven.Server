@@ -1,4 +1,4 @@
-﻿using BookHeaven.Domain.Features.Profiles;
+﻿using BookHeaven.Core.Features.Profiles;
 using BookHeaven.Server.Features.Api.Abstractions;
 
 namespace BookHeaven.Server.Features.Api.Endpoints.Koreader;

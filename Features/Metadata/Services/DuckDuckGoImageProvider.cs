@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using System.Web;
-using BookHeaven.Domain.Shared;
+using BookHeaven.Core.Shared;
 using BookHeaven.Server.Features.Metadata.Abstractions;
 using BookHeaven.Server.Features.Metadata.DTOs;
 

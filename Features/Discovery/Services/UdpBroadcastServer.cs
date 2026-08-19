@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using BookHeaven.Domain.Constants;
+using BookHeaven.Core.Constants;
 
 namespace BookHeaven.Server.Features.Discovery.Services;
 

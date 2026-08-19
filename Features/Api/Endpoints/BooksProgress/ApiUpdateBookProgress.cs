@@ -1,4 +1,4 @@
-﻿using BookHeaven.Domain.Features.BooksProgress;
+﻿using BookHeaven.Core.Features.BooksProgress;
 using BookHeaven.Server.Features.Api.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 

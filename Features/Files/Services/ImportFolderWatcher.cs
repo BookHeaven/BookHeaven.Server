@@ -1,5 +1,5 @@
 ﻿using System.Collections.Concurrent;
-using BookHeaven.Domain;
+using BookHeaven.Core;
 using BookHeaven.Server.Features.Files.Abstractions;
 using BookHeaven.Server.Features.Files.DTOs;
 using BookHeaven.Server.Features.Files.Enums;
@@ -94,7 +94,7 @@ public class ImportFolderWatcher(
     private void AddFileToQueue(string path, string? fileName)
     {
         if (IsExcludedDirectory(path)) return;
-        if(!DomainGlobals.SupportedFormats.Any(f => Path.GetExtension(path).Equals(f, StringComparison.OrdinalIgnoreCase))) return;
+        if(!CoreGlobals.SupportedFormats.Any(f => Path.GetExtension(path).Equals(f, StringComparison.OrdinalIgnoreCase))) return;
 
         var id = Guid.NewGuid();
         _filesToProcess.Add((id, path));

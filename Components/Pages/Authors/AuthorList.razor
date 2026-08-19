@@ -1,5 +1,5 @@
-@using BookHeaven.Domain.Abstractions
-@using BookHeaven.Domain.Features.Authors
+@using BookHeaven.Core.Abstractions
+@using BookHeaven.Core.Features.Authors
 @attribute [Route(Urls.Authors)]
 <PageTitle>@Translations.AUTHORS</PageTitle>
 
@@ -21,7 +21,7 @@
                     Variant="Variant.Filled"
                     Href="@Urls.CreateAuthor"
                     Color="Color.Tertiary">
-                    @Domain.Localization.Translations.NEW
+                    @Core.Localization.Translations.NEW
                 </MudButton>
             </div>
         </ToolBarContent>

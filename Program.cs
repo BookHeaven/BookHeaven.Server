@@ -5,8 +5,8 @@ using MudBlazor.Services;
 using BookHeaven.Server.Components;
 using BookHeaven.Server.Services;
 using System.Text.Json.Serialization;
-using BookHeaven.Domain;
-using BookHeaven.Domain.Abstractions;
+using BookHeaven.Core;
+using BookHeaven.Core.Abstractions;
 using BookHeaven.Server.Features.Api.DependencyInjection;
 using BookHeaven.Server.Features.Discovery.Services;
 using BookHeaven.Server.Features.Files.Abstractions;
@@ -108,7 +108,7 @@ FileExtensionContentTypeProvider provider = new()
 app.MapStaticAssets();
 app.UseStaticFiles(new StaticFileOptions
 {
-	FileProvider = new PhysicalFileProvider(DomainGlobals.BooksPath),
+	FileProvider = new PhysicalFileProvider(CoreGlobals.BooksPath),
 	ContentTypeProvider = provider,
 	RequestPath = "/books",
 	OnPrepareResponse = ctx =>
@@ -120,7 +120,7 @@ app.UseStaticFiles(new StaticFileOptions
 });
 app.UseStaticFiles(new StaticFileOptions
 {
-	FileProvider = new PhysicalFileProvider(DomainGlobals.CoversPath),
+	FileProvider = new PhysicalFileProvider(CoreGlobals.CoversPath),
 	RequestPath = "/covers",
 	OnPrepareResponse = ctx =>
 	{
@@ -129,7 +129,7 @@ app.UseStaticFiles(new StaticFileOptions
 });
 app.UseStaticFiles(new StaticFileOptions
 {
-	FileProvider = new PhysicalFileProvider(DomainGlobals.FontsPath),
+	FileProvider = new PhysicalFileProvider(CoreGlobals.FontsPath),
 	RequestPath = "/fonts"
 });
 	

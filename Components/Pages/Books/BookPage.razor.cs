@@ -1,10 +1,9 @@
-using BookHeaven.Domain.Abstractions;
-using BookHeaven.Domain.Enums;
-using BookHeaven.Domain.Features.Authors;
-using BookHeaven.Domain.Features.Books;
-using BookHeaven.Domain.Features.BookSeries;
-using BookHeaven.Domain.Features.BooksProgress;
-using BookHeaven.Domain.Features.Tags;
+using BookHeaven.Core.Abstractions;
+using BookHeaven.Core.Features.Authors;
+using BookHeaven.Core.Features.Books;
+using BookHeaven.Core.Features.BookSeries;
+using BookHeaven.Core.Features.BooksProgress;
+using BookHeaven.Core.Features.Tags;
 using BookHeaven.EbookManager;
 using BookHeaven.EbookManager.Entities;
 using BookHeaven.EbookManager.Enums;
@@ -112,7 +111,7 @@ public partial class BookPage
 			await AlertService.ShowToastAsync(deleteBook.Error.Description);
 			return;
 		}
-		await AlertService.ShowToastAsync(Domain.Localization.Translations.BOOK_DELETED, AlertSeverity.Success);
+		await AlertService.ShowToastAsync(Core.Localization.Translations.BOOK_DELETED, AlertSeverity.Success);
 		NavigationManager.NavigateTo(Urls.Shelf);
 	}
 

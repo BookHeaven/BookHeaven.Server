@@ -1,4 +1,4 @@
-﻿using BookHeaven.Domain;
+﻿using BookHeaven.Core;
 using BookHeaven.Server.Features.Api.Abstractions;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,7 +15,7 @@ public static class ApiGetAllFonts
                 .WithTags("Fonts")
                 .WithSummary("Get all available fonts")
                 .WithDescription("Retrieves a list of all fonts available in the system.")
-                .Produces<List<Domain.Entities.Font>>()
+                .Produces<List<Core.Entities.Font>>()
                 .ProducesProblem(StatusCodes.Status500InternalServerError);
         }
 
