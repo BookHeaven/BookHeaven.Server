@@ -1,7 +1,7 @@
-﻿# Features
-- The import folder will now process existing files when the server starts.
+﻿# ⚠️ Breaking Changes
+- A new property called "chapterProgress" has been added to the /progress/update api endpoint
+- The properties "page", "pageCount", "pageCountPrev" and "pageCountNext" are now considered obsolete and will be removed in future versions.
 
-# Changes
-- Added a link to the github repo on the sidebar.
-- Adjustments to the shelf on smaller screens.
-- A message has been added to authors, series and collections pages when no items are found.
+The new property is meant to provide a more accurate representation of the current position inside the chapter, rather than just the page number which is not reliable when transfered between devices with different screen sizes or after changing the styling.
+
+It is a float value between 0 and 1, where 0 represents the start of the chapter and 1 represents the end of the chapter.
