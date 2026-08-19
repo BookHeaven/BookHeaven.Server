@@ -19,20 +19,22 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["BookHeaven.Server/BookHeaven.Server.csproj", "BookHeaven.Server/"]
-COPY ["BookHeaven.EbookManager/BookHeaven.EbookManager.csproj", "BookHeaven.EbookManager/"]
-COPY ["BookHeaven.Domain/BookHeaven.Domain.csproj", "BookHeaven.Domain/"]
-RUN dotnet restore "./BookHeaven.Server/BookHeaven.Server.csproj"
-#RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
-#RUN apt-get install -y nodejs
+
+RUN --mount=type=secret,id=NUGET_TOKEN \
+    dotnet nuget add source "https://nuget.pkg.github.com/BookHeaven/index.json" \
+        --name BookHeaven \
+        --username heasheartfire \
+        --password $(cat /run/secrets/NUGET_TOKEN) \
+        --store-password-in-clear-text
+
 COPY . .
 WORKDIR "/src/BookHeaven.Server"
-#RUN npm install
-RUN dotnet build "./BookHeaven.Server.csproj" -c $BUILD_CONFIGURATION -o /app/build /p:OpenApiGenerateDocumentsOnBuild=${OPENAPI_GENERATE}
+RUN dotnet build "./BookHeaven.Server.csproj" -c $BUILD_CONFIGURATION -o /app/build /p:OpenApiGenerateDocumentsOnBuild=${OPENAPI_GENERATE} /p:UseNuget=true
 
 # Esta fase se usa para publicar el proyecto de servicio que se copiará en la fase final.
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./BookHeaven.Server.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false /p:OpenApiGenerateDocumentsOnBuild=${OPENAPI_GENERATE}
+RUN dotnet publish "./BookHeaven.Server.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false /p:OpenApiGenerateDocumentsOnBuild=${OPENAPI_GENERATE} /p:UseNuget=true
 
 # Esta fase se usa en producción o cuando se ejecuta desde VS en modo normal (valor predeterminado cuando no se usa la configuración de depuración)
 FROM base AS final
