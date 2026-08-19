@@ -489,6 +489,14 @@
             ],
             "format": "int32"
           },
+          "chapterProgress": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
           "pageCount": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
