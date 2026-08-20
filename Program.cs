@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using BookHeaven.EbookManager;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.FileProviders;
@@ -19,6 +20,7 @@ using BookHeaven.Server.Features.Session.Services;
 using BookHeaven.Server.Features.Settings.Abstractions;
 using BookHeaven.Server.Features.Settings.Services;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.OpenApi;
 
 var appDataPath = Path.Combine(Directory.GetCurrentDirectory(), "data");
 
@@ -77,7 +79,26 @@ builder.Services.AddEndpoints(typeof(Program).Assembly);
 
 builder.Services.AddHttpClient();
 
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(options =>
+{
+	options.AddSchemaTransformer((schema, context, ct) =>
+	{
+		if (!context.JsonTypeInfo.Type.IsEnum) return Task.CompletedTask;
+
+		List<JsonNode> values = [];
+		var names = new JsonArray();
+		foreach (var name in context.JsonTypeInfo.Type.GetEnumNames())
+		{
+			var value = Convert.ToInt32(Enum.Parse(context.JsonTypeInfo.Type, name));
+			values.Add(JsonValue.Create(value));
+			names.Add(name);
+		}
+		
+		schema.Enum = values;
+		schema.AddExtension("x-enum-varnames", new JsonNodeExtension(names));
+		return Task.CompletedTask;
+	});
+});
 
 var app = builder.Build();
 

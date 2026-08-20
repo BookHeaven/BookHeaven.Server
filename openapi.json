@@ -547,17 +547,17 @@
         }
       },
       "EbookFormat": {
+        "enum": [
+          0,
+          1,
+          2
+        ],
         "type": "integer",
         "x-enum-varnames": [
           "None",
           "Epub",
           "Pdf"
-        ],
-        "x-enum-values": {
-          "None": 0,
-          "Epub": 1,
-          "Pdf": 2
-        }
+        ]
       },
       "Font": {
         "type": "object",
