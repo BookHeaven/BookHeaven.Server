@@ -41,20 +41,7 @@
                 </MudHidden>
                 <SearchBar/>
                 
-                <MudFileUpload T="IReadOnlyList<IBrowserFile>" FilesChanged="UploadBooks" SelectedTemplate="files => builder => { }" Class="m-0" Disabled="_uploadingBooks">
-                    <CustomContent Context="fileUpload">
-                        @if (!_uploadingBooks)
-                        {
-                            <MudIconButton HtmlTag="label" Icon="@Icons.Material.Filled.UploadFile" Color="Color.Secondary" OnClick="fileUpload.OpenFilePickerAsync"/>
-                        }
-                        else
-                        {
-                            <div class="flex items-center justify-center mx-3">
-                                <MudProgressCircular Size="Size.Small" Indeterminate="true" />
-                            </div>
-                        }
-                    </CustomContent>
-                </MudFileUpload>
+                <EbookUploadButton />
             </div>
         </div>
         <div class="py-2 lg:py-5 md:px-7 relative flex-1">

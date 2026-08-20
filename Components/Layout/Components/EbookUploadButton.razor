@@ -1,0 +1,49 @@
+﻿@using BookHeaven.Server.Features.Files.Abstractions
+<MudFileUpload 
+	T="IReadOnlyList<IBrowserFile>" 
+	FilesChanged="UploadBooks" 
+	SelectedTemplate="files => builder => { }" 
+	Class="m-0" 
+	Disabled="_uploadingBooks">
+	<CustomContent Context="fileUpload">
+		@if (!_uploadingBooks)
+		{
+			<MudIconButton HtmlTag="label" Icon="@Icons.Material.Filled.UploadFile" Color="Color.Secondary" OnClick="fileUpload.OpenFilePickerAsync"/>
+		}
+		else
+		{
+			<div class="flex items-center justify-center mx-3">
+				<MudProgressCircular Size="Size.Small" Indeterminate="true" />
+			</div>
+		}
+	</CustomContent>
+</MudFileUpload>
+
+@code {
+	[Inject] private IEbookFileLoader EbookFileLoader { get; set; } = null!;
+	[Inject] private ISnackbar Snackbar { get; set; } = null!;
+	
+	private bool _uploadingBooks;
+	
+	private async Task UploadBooks(IReadOnlyList<IBrowserFile>? files)
+	{
+		if (files is null || files.Count == 0) return;
+
+		_uploadingBooks = true;
+		await InvokeAsync(StateHasChanged);
+		foreach (var file in files)
+		{
+			var id = await EbookFileLoader.LoadFromFile(file);
+			if (id is null)
+			{
+				Snackbar.Add(Translations.UPLOADING_BOOK_FAILED + $" '{file.Name}'", Severity.Error);
+			}
+			else
+			{
+				Snackbar.Add(Translations.UPLOADING_BOOK_SUCCESS + $" '{file.Name}'", Severity.Success);
+			}
+		}
+		_uploadingBooks = false;
+		await InvokeAsync(StateHasChanged);
+	}
+}
