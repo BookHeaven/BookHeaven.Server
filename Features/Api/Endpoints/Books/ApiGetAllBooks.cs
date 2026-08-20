@@ -14,7 +14,7 @@ public static class ApiGetAllBooks
                 .WithTags("Books")
                 .WithSummary("Get all books")
                 .WithDescription("Retrieves a list of all books in the system.")
-                .Produces<List<Core.Entities.Book>>()
+                .Produces<List<Book>>()
                 .ProducesProblem(StatusCodes.Status500InternalServerError);
         }
         
