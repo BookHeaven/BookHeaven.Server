@@ -449,29 +449,9 @@
             "type": "string",
             "format": "uuid"
           },
-          "book": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "$ref": "#/components/schemas/Book"
-              }
-            ]
-          },
           "profileId": {
             "type": "string",
             "format": "uuid"
-          },
-          "profile": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "$ref": "#/components/schemas/Profile"
-              }
-            ]
           },
           "chapter": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
