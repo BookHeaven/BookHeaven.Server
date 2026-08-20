@@ -59,36 +59,37 @@
 			Open preview
 		</MudButton>
 	</div>
-	@if (_collection is SmartCollection smartCollection)
+	@switch (_collection)
 	{
-		<div class="flex flex-col gap-10">
-			<SmartCollectionFilters 
-				@bind-SmartCollection="smartCollection" 
-				Authors="_authors" 
-				Series="_series" 
-				Tags="_tags" 
-				IsInclude="true" />
-			<SmartCollectionFilters 
-				@bind-SmartCollection="smartCollection" 
-				Authors="_authors" 
-				Series="_series" 
-				Tags="_tags"
-				IsInclude="false" />
-		</div>
-	}
-	else if (_collection is SimpleCollection simpleCollection)
-	{
-		<section>
-			<MudText Class="text-2xl 2xl:text-4xl" Color="Color.Primary">Select books</MudText>
-			<MudDivider Class="my-2" />
-			<BookGrid 
-				IsLoading="_isLoading" 
-				Books="_books" 
-				IsSelectMode="true" 
-				SingleRow="true" 
-				@bind-SelectedBooks="_selectedBookIds"
-				@bind-SelectedBooks:after="FilterBooks"/>
-		</section>
+		case SmartCollection smartCollection:
+			<div class="flex flex-col gap-10">
+				<SmartCollectionFilters 
+					@bind-SmartCollection="smartCollection" 
+					Authors="_authors" 
+					Series="_series" 
+					Tags="_tags" 
+					IsInclude="true" />
+				<SmartCollectionFilters 
+					@bind-SmartCollection="smartCollection" 
+					Authors="_authors" 
+					Series="_series" 
+					Tags="_tags"
+					IsInclude="false" />
+			</div>
+			break;
+		case SimpleCollection simpleCollection:
+			<section>
+				<MudText Class="text-2xl 2xl:text-4xl" Color="Color.Primary">Select books</MudText>
+				<MudDivider Class="my-2" />
+				<BookGrid 
+					IsLoading="_isLoading" 
+					Books="_books" 
+					IsSelectMode="true" 
+					SingleRow="true" 
+					@bind-SelectedBooks="_selectedBookIds"
+					@bind-SelectedBooks:after="FilterBooks"/>
+			</section>
+			break;
 	}
 </Container>
 
