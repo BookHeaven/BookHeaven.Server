@@ -31,8 +31,8 @@
 	[Parameter] public bool SingleRow { get; set; }
 	[Parameter] public bool IsInteractive { get; set; } = true;
 	[Parameter] public bool IsSelectMode { get; set; }
-	[Parameter] public HashSet<Guid> SelectedBooks { get; set; } = [];
-	[Parameter] public EventCallback<HashSet<Guid>> SelectedBooksChanged { get; set; }
+	[Parameter] public List<Guid> SelectedBooks { get; set; } = [];
+	[Parameter] public EventCallback<List<Guid>> SelectedBooksChanged { get; set; }
 	
 	private Dictionary<Guid, int> _bookIndex = [];
 
