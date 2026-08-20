@@ -94,5 +94,6 @@
   </ItemGroup>
   <PropertyGroup>
     <OpenApiDocumentsDirectory>.</OpenApiDocumentsDirectory>
+    <OpenApiGenerateDocumentsOptions>--file-name openapi</OpenApiGenerateDocumentsOptions>
   </PropertyGroup>
 </Project>
