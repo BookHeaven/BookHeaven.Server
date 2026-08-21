@@ -10,6 +10,7 @@ using System.Text.Json.Serialization;
 using BookHeaven.Core;
 using BookHeaven.Core.Abstractions;
 using BookHeaven.Server.Features.Api.DependencyInjection;
+using BookHeaven.Server.Features.Api.Transformers;
 using BookHeaven.Server.Features.Discovery.Services;
 using BookHeaven.Server.Features.Files.Abstractions;
 using BookHeaven.Server.Features.Files.Services;
@@ -21,7 +22,6 @@ using BookHeaven.Server.Features.Session.Services;
 using BookHeaven.Server.Features.Settings.Abstractions;
 using BookHeaven.Server.Features.Settings.Services;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.OpenApi;
 using Scalar.AspNetCore;
 
 var appDataPath = Path.Combine(Directory.GetCurrentDirectory(), "data");
@@ -83,29 +83,8 @@ builder.Services.AddHttpClient();
 
 builder.Services.AddOpenApi(options =>
 {
-	options.AddSchemaTransformer((schema, context, ct) =>
-	{
-		if (!context.JsonTypeInfo.Type.IsEnum) return Task.CompletedTask;
-
-		List<JsonNode> values = [];
-		var names = new JsonArray();
-		// Must exclude values with the [JsonIgnore] attribute
-		foreach (var name in context.JsonTypeInfo.Type.GetEnumNames())
-		{
-			var member = context.JsonTypeInfo.Type.GetMember(name).FirstOrDefault();
-			if (member != null && member.GetCustomAttribute<JsonIgnoreAttribute>() != null)
-			{
-				continue;
-			}
-			var value = Convert.ToInt32(Enum.Parse(context.JsonTypeInfo.Type, name));
-			values.Add(JsonValue.Create(value));
-			names.Add(name);
-		}
-		
-		schema.Enum = values;
-		schema.AddExtension("x-enum-varnames", new JsonNodeExtension(names));
-		return Task.CompletedTask;
-	});
+	options.AddEnumSchemaTransformer();
+	options.AddDeprecatedOperationTransformer();
 });
 
 var app = builder.Build();
