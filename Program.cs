@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Text.Json.Nodes;
 using BookHeaven.EbookManager;
 using Microsoft.AspNetCore.StaticFiles;
@@ -21,6 +22,7 @@ using BookHeaven.Server.Features.Settings.Abstractions;
 using BookHeaven.Server.Features.Settings.Services;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.OpenApi;
+using Scalar.AspNetCore;
 
 var appDataPath = Path.Combine(Directory.GetCurrentDirectory(), "data");
 
@@ -87,8 +89,14 @@ builder.Services.AddOpenApi(options =>
 
 		List<JsonNode> values = [];
 		var names = new JsonArray();
+		// Must exclude values with the [JsonIgnore] attribute
 		foreach (var name in context.JsonTypeInfo.Type.GetEnumNames())
 		{
+			var member = context.JsonTypeInfo.Type.GetMember(name).FirstOrDefault();
+			if (member != null && member.GetCustomAttribute<JsonIgnoreAttribute>() != null)
+			{
+				continue;
+			}
 			var value = Convert.ToInt32(Enum.Parse(context.JsonTypeInfo.Type, name));
 			values.Add(JsonValue.Create(value));
 			names.Add(name);
@@ -178,6 +186,7 @@ app.MapEndpoints();
 if (app.Environment.IsDevelopment())
 {
 	app.MapOpenApi();
+	app.MapScalarApiReference();
 }
 
 await app.RunAsync();
