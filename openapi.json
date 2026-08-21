@@ -82,7 +82,7 @@
         ],
         "summary": "Get all available fonts",
         "description": "Retrieves a list of all fonts available in the system.",
-        "operationId": "GetAllFonts",
+        "operationId": "GetFonts",
         "responses": {
           "200": {
             "description": "OK",
@@ -110,14 +110,74 @@
         }
       }
     },
+    "/api/collections": {
+      "get": {
+        "tags": [
+          "Collections"
+        ],
+        "summary": "Get list of collections.",
+        "description": "Retrieves a list of all collections.",
+        "operationId": "GetCollections",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Collection"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/books": {
       "get": {
         "tags": [
           "Books"
         ],
-        "summary": "Get all books",
-        "description": "Retrieves a list of all books in the system.",
-        "operationId": "GetAllBooks",
+        "summary": "Get list of books",
+        "description": "Retrieves a list of all books, optionally filtered by collection ID or a search filter. When filtering by collection, the profile ID is required to check reading status.",
+        "operationId": "GetBooks",
+        "parameters": [
+          {
+            "name": "profileId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "collectionId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -145,7 +205,7 @@
         }
       }
     },
-    "/api/profiles/{profileId}/{bookId}": {
+    "/api/progress/{profileId}/{bookId}": {
       "get": {
         "tags": [
           "Book Progress"
@@ -239,7 +299,7 @@
         ],
         "summary": "Get all authors",
         "description": "Retrieves a list of all authors in the system.",
-        "operationId": "GetAllAuthors",
+        "operationId": "GetAuthors",
         "responses": {
           "200": {
             "description": "OK",
@@ -546,15 +606,57 @@
           }
         }
       },
-      "EbookFormat": {
+      "Collection": {
+        "type": "object",
+        "properties": {
+          "collectionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "collectionType": {
+            "$ref": "#/components/schemas/CollectionType"
+          },
+          "profileId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "sortOrder": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "pinned": {
+            "type": "boolean"
+          }
+        }
+      },
+      "CollectionType": {
         "enum": [
           0,
+          1
+        ],
+        "type": "integer",
+        "x-enum-varnames": [
+          "Simple",
+          "Smart"
+        ]
+      },
+      "EbookFormat": {
+        "enum": [
           1,
           2
         ],
         "type": "integer",
         "x-enum-varnames": [
-          "None",
           "Epub",
           "Pdf"
         ]
@@ -771,6 +873,9 @@
     },
     {
       "name": "Fonts"
+    },
+    {
+      "name": "Collections"
     },
     {
       "name": "Books"
