@@ -4,18 +4,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BookHeaven.Server.Features.Api.Endpoints.Fonts;
 
-public static class ApiGetAllFonts
+public static class ApiGetFonts
 {
     public class Endpoint : IEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)
         {
             app.MapGet("/fonts", Handler)
-                .WithName("GetAllFonts")
+                .WithName("GetFonts")
                 .WithTags("Fonts")
                 .WithSummary("Get all available fonts")
                 .WithDescription("Retrieves a list of all fonts available in the system.")
-                .Produces<List<Core.Entities.Font>>()
+                .Produces<List<Font>>()
                 .ProducesProblem(StatusCodes.Status500InternalServerError);
         }
 
