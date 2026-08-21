@@ -3,18 +3,18 @@ using BookHeaven.Server.Features.Api.Abstractions;
 
 namespace BookHeaven.Server.Features.Api.Endpoints.Authors;
 
-public static class ApiGetAllAuthors
+public static class ApiGetAuthors
 {
     public class Endpoint : IEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)
         {
             app.MapGet("/authors", ApiHandler)
-                .WithName("GetAllAuthors")
+                .WithName("GetAuthors")
                 .WithTags("Authors")
                 .WithSummary("Get all authors")
                 .WithDescription("Retrieves a list of all authors in the system.")
-                .Produces<List<Core.Entities.Author>>()
+                .Produces<List<Author>>()
                 .ProducesProblem(StatusCodes.Status500InternalServerError);
         }
 
