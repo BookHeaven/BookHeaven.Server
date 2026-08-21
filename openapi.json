@@ -257,6 +257,59 @@
         }
       }
     },
+    "/api/profiles/{profileId}/{bookId}": {
+      "get": {
+        "tags": [
+          "Book Progress"
+        ],
+        "summary": "Get book progress by profile",
+        "description": "Retrieves the reading progress of a specific book for a given profile.",
+        "operationId": "GetBookProgressByProfileDeprecated",
+        "parameters": [
+          {
+            "name": "bookId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "profileId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookProgress"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "deprecated": true
+      }
+    },
     "/api/progress/update": {
       "put": {
         "tags": [
