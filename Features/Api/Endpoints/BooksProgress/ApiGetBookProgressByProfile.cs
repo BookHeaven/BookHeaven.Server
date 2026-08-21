@@ -16,6 +16,15 @@ public static class ApiGetBookProgressByProfile
                 .WithDescription("Retrieves the reading progress of a specific book for a given profile.")
                 .Produces<BookProgress>()
                 .ProducesProblem(StatusCodes.Status500InternalServerError);
+
+            app.MapGet("/profiles/{profileId:guid}/{bookId:guid}", ApiHandler)
+                .WithName("GetBookProgressByProfileDeprecated")
+                .WithTags("Book Progress")
+                .WithSummary("Get book progress by profile (deprecated)")
+                .WithDescription("Retrieves the reading progress of a specific book for a given profile.")
+                .Produces<BookProgress>()
+                .ProducesProblem(StatusCodes.Status500InternalServerError)
+                .IsDeprecated();
         }
         
         private static async Task<IResult> ApiHandler(
