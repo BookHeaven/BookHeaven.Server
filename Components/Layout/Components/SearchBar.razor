@@ -43,7 +43,7 @@
 		if (string.IsNullOrEmpty(value)) return [];
 		
 		var getBooks = await Sender.Send(
-			new GetAllBooks.Query(_profileId,value.ToUpper())
+			new GetAllBooks.Query(_profileId,value)
 			,token);
 
 		if (getBooks.IsFailure)
