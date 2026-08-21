@@ -66,10 +66,18 @@ jobs:
           node-version: latest
           cache: 'npm'
           
+      - name: Move Server to BookHeaven directory
+        run: |
+          mkdir -p BookHeaven/BookHeaven.Server
+          shopt -s extglob
+          mv !(BookHeaven) BookHeaven/BookHeaven.Server/
+            
       - name: Install npm packages
+        working-directory: ./BookHeaven/BookHeaven.Server
         run: npm ci
         
       - name: Build tailwindcss
+        working-directory: ./BookHeaven/BookHeaven.Server
         run: npm run tailwindcss:build
         
       - name: Set up Docker Buildx
@@ -85,8 +93,9 @@ jobs:
         run: |
           GITHUB_IMAGE="${GITHUB_REGISTRY}/${GITHUB_USER}/${IMAGE_NAME}"
           DOCKERHUB_IMAGE="${DOCKERHUB_REGISTRY}/${DOCKERHUB_USER}/${IMAGE_NAME}"
-          docker buildx build . \
+          docker buildx build ./BookHeaven \
             --build-arg GOOGLE_BOOKS_API_KEY=${{ secrets.GOOGLE_BOOKS_API_KEY }} \
+            --file BookHeaven/BookHeaven.Server/Dockerfile \
             --secret id=NUGET_TOKEN,env=GITHUB_NUGET_TOKEN \
             --platform linux/amd64,linux/arm64 \
             --tag $GITHUB_IMAGE:latest \
@@ -114,6 +123,6 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           tag_name: v${{ env.VERSION }}
-          body_path: ./ReleaseNotes.md
+          body_path: ./BookHeaven/BookHeaven.Server/ReleaseNotes.md
           generate_release_notes: true
           make_latest: true
