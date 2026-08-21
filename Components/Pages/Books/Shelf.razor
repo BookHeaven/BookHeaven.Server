@@ -31,7 +31,7 @@
 <Topbar>
 	@if (CollectionId == Guid.Empty)
 	{
-		<MudChipSet T="BookStatus" @bind-SelectedValue="BookManager.Filter" @bind-SelectedValue:after="FilterBooks" Class="ms-2" CheckMark>
+		<MudChipSet T="BookStatus" @bind-SelectedValue="BookManager.Filter" @bind-SelectedValue:after="DeselectAllBooks" Class="ms-2" CheckMark>
 			<MudChip Value="BookStatus.All" Variant="Variant.Text" Color="Color.Primary" Class="mx-0.5">@BookStatus.All.StringValue()</MudChip>
 			<MudChip Value="BookStatus.New" Variant="Variant.Text" Color="Color.Primary" Class="mx-0.5">@BookStatus.New.StringValue()</MudChip>
 			<MudChip Value="BookStatus.Reading" Variant="Variant.Text" Color="Color.Primary" Class="mx-0.5">@BookStatus.Reading.StringValue()</MudChip>
@@ -42,17 +42,17 @@
 	{
 		<div class="text-xl sm:text-2xl ms-2">
 			<span>Collection:</span>
-			<span class="text-nowrap text-(--mud-palette-primary)">@_currentCollection!.Name</span>
+			<span class="text-nowrap text-(--mud-palette-primary)">@BookManager.CurrentCollection!.Name</span>
 		</div>
 		<MudSpacer />
-		<MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" Href="@Urls.GetCollectionPageUrl(_currentCollection.CollectionId)"/>
+		<MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" Href="@Urls.GetCollectionPageUrl(BookManager.CurrentCollection!.CollectionId)"/>
 	}
 </Topbar>
 
-@if (_filteredBooks.Count > 0)
+@if (BookManager.Books.Count > 0)
 {
 	<BookGrid 
-		Books="@_filteredBooks" 
+		Books="@BookManager.Books" 
 		Center="true"
 		IsSelectMode="IsSelectMode"
 		@bind-SelectedBooks="_selectedBooks"/>
@@ -128,22 +128,20 @@ else
 	
 	private bool IsLoading { get; set; } = true;
 	private Guid ProfileId { get; set; }
-	private Collection? _currentCollection;
-	private List<Book> _filteredBooks = [];
 	
-	private bool IsSelectMode { get; set; } = false;
+	private bool IsSelectMode { get; set; }
 	private List<Guid> _selectedBooks = [];
 	private string SelectIcon => _selectedBooks.Count switch
 	{
 		0 => Icons.Material.Filled.CheckBoxOutlineBlank,
-		_ when _selectedBooks.Count == _filteredBooks.Count => Icons.Material.Filled.CheckBox,
+		_ when _selectedBooks.Count == BookManager.Books.Count => Icons.Material.Filled.CheckBox,
 		_ => Icons.Material.Filled.IndeterminateCheckBox
 	};
 	
 	private Action SelectIconAction => _selectedBooks.Count switch
 	{
 		0 => SelectAllBooks,
-		_ when _selectedBooks.Count == _filteredBooks.Count => DeselectAllBooks,
+		_ when _selectedBooks.Count == BookManager.Books.Count => DeselectAllBooks,
 		_ => SelectAllBooks
 	};
 	
@@ -168,28 +166,28 @@ else
 				NavigationManager.NavigateTo(Urls.Shelf);
 				return;
 			}
-			_currentCollection = getCollection.Value;
+			IsSelectMode = false;
+			BookManager.CurrentCollection = getCollection.Value;
 		}
 		else
 		{
-			_currentCollection = null;
+			BookManager.CurrentCollection = null;
 		}
 		await BookManager.GetBooksAsync(ProfileId);
-		FilterBooks();
+		DeselectAllBooks();
 		IsLoading = false;
 	}
 
 	private async Task OnBookAdded(BookAdded e)
 	{
 		await BookManager.AppendBookAsync(ProfileId, e.BookId);
-		FilterBooks();
 		await InvokeAsync(StateHasChanged);
 	}
 	
 	private async Task OnBookDeleted(BookDeleted e)
 	{
 		BookManager.RemoveBook(e.BookId);
-		FilterBooks();
+		DeselectBook(e.BookId);
 		await InvokeAsync(StateHasChanged);
 	}
 
@@ -205,31 +203,17 @@ else
 	private void SelectAllBooks()
 	{
 		_selectedBooks.Clear();
-		_selectedBooks.AddRange(_filteredBooks.Select(b => b.BookId));
+		_selectedBooks.AddRange(BookManager.Books.Select(b => b.BookId));
 	}
 	
 	private void DeselectAllBooks()
 	{
 		_selectedBooks.Clear();
 	}
-
-	private void FilterBooks()
+	
+	private void DeselectBook(Guid bookId)
 	{
-		IEnumerable<Book> books = BookManager.Books;
-		if (_currentCollection is not null)
-		{
-			books = books.ApplyCollectionFilter(_currentCollection);
-		}
-
-		_filteredBooks = books.ToList();
-
-		if (_selectedBooks.Count == 0)
-		{
-			return;
-		}
-
-		var ids = _filteredBooks.Select(b => b.BookId).ToHashSet();
-		_selectedBooks.RemoveAll(bookId => !ids.Contains(bookId));
+		_selectedBooks.Remove(bookId);
 	}
 	
 	private async Task OpenTagsDialog()
