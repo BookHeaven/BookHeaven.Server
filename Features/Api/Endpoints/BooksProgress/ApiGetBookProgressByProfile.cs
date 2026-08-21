@@ -9,12 +9,12 @@ public static class ApiGetBookProgressByProfile
     {
         public void MapEndpoint(IEndpointRouteBuilder app)
         {
-            app.MapGet("/profiles/{profileId:guid}/{bookId:guid}", ApiHandler)
+            app.MapGet("/progress/{profileId:guid}/{bookId:guid}", ApiHandler)
                 .WithName("GetBookProgressByProfile")
                 .WithTags("Book Progress")
                 .WithSummary("Get book progress by profile")
                 .WithDescription("Retrieves the reading progress of a specific book for a given profile.")
-                .Produces<Core.Entities.BookProgress>()
+                .Produces<BookProgress>()
                 .ProducesProblem(StatusCodes.Status500InternalServerError);
         }
         
