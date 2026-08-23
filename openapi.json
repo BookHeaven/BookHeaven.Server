@@ -262,7 +262,7 @@
         "tags": [
           "Book Progress"
         ],
-        "summary": "Get book progress by profile",
+        "summary": "Get book progress by profile (deprecated)",
         "description": "Retrieves the reading progress of a specific book for a given profile.",
         "operationId": "GetBookProgressByProfileDeprecated",
         "parameters": [
