@@ -3,7 +3,8 @@
 </p>
 <h1 align="center">BookHeaven Server</h1>
 <p align="center">
-  <img alt="GitHub Release" src="https://img.shields.io/github/v/release/bookheaven/bookheaven.server?style=for-the-badge&label=Version&color=green">
+  <img src="https://img.shields.io/github/v/release/bookheaven/bookheaven.server?style=for-the-badge&label=Version&color=green">
+  <img src="https://img.shields.io/docker/pulls/heasheartfire/bookheaven-server?style=for-the-badge&label=docker%20hub%20pulls">
 </p>
 
 
