@@ -572,6 +572,7 @@
               "integer",
               "string"
             ],
+            "description": "The current chapter number that the user is reading, 0 based.",
             "format": "int32"
           },
           "page": {
@@ -580,7 +581,8 @@
               "integer",
               "string"
             ],
-            "format": "int32"
+            "format": "int32",
+            "deprecated": true
           },
           "chapterProgress": {
             "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
@@ -588,6 +590,7 @@
               "number",
               "string"
             ],
+            "description": "A decimal value that represents the progress of the current chapter as a percentage, from 0 to 1.",
             "format": "double"
           },
           "pageCount": {
@@ -596,7 +599,8 @@
               "integer",
               "string"
             ],
-            "format": "int32"
+            "format": "int32",
+            "deprecated": true
           },
           "pageCountPrev": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
@@ -605,7 +609,8 @@
               "integer",
               "string"
             ],
-            "format": "int32"
+            "format": "int32",
+            "deprecated": true
           },
           "pageCountNext": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
@@ -614,7 +619,8 @@
               "integer",
               "string"
             ],
-            "format": "int32"
+            "format": "int32",
+            "deprecated": true
           },
           "bookWordCount": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
@@ -630,6 +636,7 @@
               "number",
               "string"
             ],
+            "description": "A decimal value that represents the overall progress of the book as a percentage, from 0 to 100.",
             "format": "double"
           },
           "startDate": {
@@ -655,7 +662,8 @@
           },
           "elapsedTime": {
             "pattern": "^-?(\\d+\\.)?\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,7})?$",
-            "type": "string"
+            "type": "string",
+            "description": "The total time spent reading the book, represented as a TimeSpan."
           }
         }
       },
