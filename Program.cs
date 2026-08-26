@@ -85,6 +85,7 @@ builder.Services.AddOpenApi(options =>
 {
 	options.AddEnumSchemaTransformer();
 	options.AddDeprecatedOperationTransformer();
+	options.AddDeprecatedPropertyTransformer();
 });
 
 var app = builder.Build();
