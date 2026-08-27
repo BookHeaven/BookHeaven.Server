@@ -55,7 +55,7 @@ jobs:
       GITHUB_USER: bookheaven
       DOCKERHUB_REGISTRY: docker.io
       DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USERNAME }}
-      GITHUB_NUGET_TOKEN: ${{ secrets.PAT_TOKEN }}
+      GITHUB_NUGET_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       VERSION: ${{ needs.check-version.outputs.version }}
       
     steps:
