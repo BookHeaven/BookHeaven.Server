@@ -7,7 +7,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "dotnetRunMessages": true,
-      "applicationUrl": "http://localhost:5260"
+      "applicationUrl": "http://0.0.0.0:5260"
     },
     "https": {
       "commandName": "Project",
@@ -16,7 +16,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "dotnetRunMessages": true,
-      "applicationUrl": "https://localhost:7121;http://localhost:5260"
+      "applicationUrl": "https://0.0.0.0:7121;http://0.0.0.0:5260"
     },
     "Blazor": {
       "commandName": "Executable",
