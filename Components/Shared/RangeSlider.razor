@@ -1,0 +1,35 @@
+﻿<span class="my-auto text-nowrap">@Label</span>
+<div class="my-auto flex items-center gap-2">
+	<MudSlider
+		Class="w-30 2xl:w-50" 
+		@bind-Value="Value"
+		@bind-Value:after="() => ValueChanged.InvokeAsync(Value)"
+		Min="@Min"
+		Max="@Max"
+		Variant="Variant.Filled"
+		TickMarks="true"
+		Step="@Increment"/>
+</div>
+
+@code {
+
+	[Parameter] public string Label { get; set; } = null!;
+	[Parameter] public decimal Min { get; set; }
+	[Parameter] public decimal Max { get; set; }
+	[Parameter] public decimal Increment { get; set; } = 1;
+	[Parameter] public decimal Value { get; set; }
+	[Parameter] public EventCallback<decimal> ValueChanged { get; set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+		if(Value < Min)
+		{
+			Value = Min;
+		}
+		else if(Value > Max)
+		{
+			Value = Max;
+		}
+		await ValueChanged.InvokeAsync(Value);
+	}
+}

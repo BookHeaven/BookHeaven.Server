@@ -1,0 +1,16 @@
+﻿@using BookHeaven.EbookManager.Entities
+<div class="text-center font-bold p-2">Index</div>
+<CascadingValue Value="CurrentChapterId">
+	<div class="overflow-y-auto p-5">
+		@foreach (var chapter in Chapters ?? [])
+		{
+			<TableOfContentsEntry Entry="@chapter" />
+		}
+	</div>
+</CascadingValue>
+
+
+@code {
+	[Parameter] public IReadOnlyList<TocEntry>? Chapters { get; set; }
+	[Parameter] public string? CurrentChapterId { get; set; }
+}

@@ -1,0 +1,48 @@
+﻿@using BookHeaven.Core.Features.Reader.Abstractions
+@using BookHeaven.EbookManager.Entities
+@if (Entry.Title != null)
+{
+	<span id="@Entry.Id" class="flex items-center scroll-mt-40 w-full">
+		@if (Entry.Entries.Count > 0)
+		{
+			<MudIconButton 
+				OnClick="() => _collapsed = !_collapsed"
+				Icon="@(_collapsed ? Icons.Material.Filled.ChevronRight : Icons.Material.Filled.KeyboardArrowDown)" 
+				Color="Color.Secondary"/>
+		}
+		<button class="py-2" @onclick="@(() => ReaderService.NavigateToChapter(Entry))">
+			<MudText Color="@(IsSelected ? Color.Primary : Color.Default)">@Entry.Title</MudText>
+		</button>
+	</span>
+}
+
+@if (Entry.Entries.Count > 0)
+{
+	if (!_collapsed || Entry.Title == null)
+	{
+		<ul class="ms-5 list-none">
+			@foreach (var chapter in Entry.Entries)
+			{
+				<li>
+					<TableOfContentsEntry Entry="chapter" />
+				</li>
+			}
+		</ul>
+	}
+}
+
+@code {
+	[Inject] IReaderService ReaderService { get; set; } = null!;
+	
+	[Parameter] public required TocEntry Entry { get; set; }
+	[CascadingParameter] public string? CurrentChapterId { get; set; }
+	
+	private bool IsSelected => Entry.Id == CurrentChapterId;
+	
+	private bool _collapsed = true;
+	
+	protected override void OnInitialized()
+	{
+		if (Entry.Entries.Count > 0) _collapsed = !Entry.ContainsEntry(CurrentChapterId!);
+	}
+}
