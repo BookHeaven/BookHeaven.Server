@@ -1,19 +1,19 @@
 ﻿@using BookHeaven.Core.Features.Profiles
-@using BookHeaven.Server.Features.Session.Abstractions
+@using BookHeaven.Server.Features.LocalStorage.Abstractions
 <div class="flex items-center justify-between px-5 mx-4 border text-white bg-slate-700 border-slate-500 rounded-lg">
 	<span>@ProfileName</span>
 	<MudIconButton Icon="@Icons.Material.Filled.Person" Edge="Edge.End" Href="@Urls.Profiles" Color="Color.Primary" />
 </div>
 
 @code {
-	[Inject] private ISessionService SessionService { get; set; } = null!;
+	[Inject] private ILocalStorageService LocalStorageService { get; set; } = null!;
 	[Inject] private ISender Sender { get; set; } = null!;
 	
 	private string ProfileName { get; set; } = string.Empty;
 
 	protected override async Task OnInitializedAsync()
 	{
-		var profileId = await SessionService.GetAsync<Guid>(SessionKey.SelectedProfileId);
+		var profileId = await LocalStorageService.GetAsync<Guid>(SessionKey.SelectedProfileId);
 		var getProfile = await Sender.Send(new GetProfileById.Query(profileId));
 		ProfileName = getProfile.Value.Name ?? "Unknown Profile";
 	}

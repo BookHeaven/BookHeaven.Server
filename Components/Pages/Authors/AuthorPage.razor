@@ -1,5 +1,5 @@
 ﻿@using BookHeaven.Core.Features.Authors
-@using BookHeaven.Server.Features.Session.Abstractions
+@using BookHeaven.Server.Features.LocalStorage.Abstractions
 @attribute [Route($"{Urls.Authors}/{{Id:guid}}")]
 @attribute [Route(Urls.CreateAuthor)]
 
@@ -79,7 +79,7 @@
 @code {
 	[Inject] private ISender Sender { get; set; } = null!;
 	[Inject] private NavigationManager NavigationManager { get; set; } = null!;
-	[Inject] private ISessionService SessionService { get; set; } = null!;
+	[Inject] private ILocalStorageService LocalStorageService { get; set; } = null!;
 	[Parameter] public Guid? Id { get; set; }
 	
 	private Author _author = new();
@@ -91,7 +91,7 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		_profileId = await SessionService.GetAsync<Guid>(SessionKey.SelectedProfileId);
+		_profileId = await LocalStorageService.GetAsync<Guid>(SessionKey.SelectedProfileId);
 	}
 
 	protected override async Task OnParametersSetAsync()

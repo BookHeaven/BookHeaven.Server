@@ -1,6 +1,6 @@
 ﻿@using BookHeaven.Core.Entities.Base
 @using BookHeaven.Core.Features.Collections
-@using BookHeaven.Server.Features.Session.Abstractions
+@using BookHeaven.Server.Features.LocalStorage.Abstractions
 @implements IDisposable
 <MudNavMenu Margin="Margin.Dense" Class="p-4 select-none" Color="Color.Primary" Rounded="true">
     <MudNavLink Href="@Urls.Shelf" Match="NavLinkMatch.All" Icon="@Icons.Material.Rounded.AutoStories">@Translations.SHELF</MudNavLink>
@@ -28,7 +28,7 @@
 
 @code {
     [Inject] private ISender Sender { get; set; } = null!;
-    [Inject] private ISessionService SessionService { get; set; } = null!;
+    [Inject] private ILocalStorageService LocalStorageService { get; set; } = null!;
     [Inject] private GlobalEventsService GlobalEventsService { get; set; } = null!;
     
     private Guid ProfileId { get; set; }
@@ -41,7 +41,7 @@
         GlobalEventsService.Subscribe<CollectionsPositionsUpdated>(OnPositionsUpdated);
         GlobalEventsService.Subscribe<CollectionDeleted>(OnCollectionRemoved);
         
-        ProfileId = await SessionService.GetAsync<Guid>(SessionKey.SelectedProfileId);
+        ProfileId = await LocalStorageService.GetAsync<Guid>(SessionKey.SelectedProfileId);
 
         await GetCollections();
     }

@@ -1,11 +1,11 @@
-﻿namespace BookHeaven.Server.Features.Session.Abstractions;
+﻿namespace BookHeaven.Server.Features.LocalStorage.Abstractions;
 
 public enum SessionKey
 {
     SelectedProfileId
 }
 
-public interface ISessionService
+public interface ILocalStorageService
 {
     Task SetAsync<T>(SessionKey key, T value);
     Task<T?> GetAsync<T>(SessionKey key);

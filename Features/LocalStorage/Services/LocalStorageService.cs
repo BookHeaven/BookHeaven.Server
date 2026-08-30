@@ -1,9 +1,9 @@
-﻿using BookHeaven.Server.Features.Session.Abstractions;
+﻿using BookHeaven.Server.Features.LocalStorage.Abstractions;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
-namespace BookHeaven.Server.Features.Session.Services;
+namespace BookHeaven.Server.Features.LocalStorage.Services;
 
-public class SessionService(ILogger<SessionService> logger, ProtectedLocalStorage storage) : ISessionService
+public class LocalStorageService(ILogger<LocalStorageService> logger, ProtectedLocalStorage storage) : ILocalStorageService
 {
     public async Task SetAsync<T>(SessionKey key, T value)
     {

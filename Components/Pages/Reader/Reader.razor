@@ -3,7 +3,7 @@
 @using BookHeaven.Server.Components.Pages.Reader.Components
 @using BookHeaven.Server.Components.Pages.Reader.Components.Settings
 @using BookHeaven.Server.Components.Pages.Reader.Components.TableOfContents
-@using BookHeaven.Server.Features.Session.Abstractions
+@using BookHeaven.Server.Features.LocalStorage.Abstractions
 @attribute [Route($"{Urls.Reader}/{{BookId:guid}}")]
 @layout EmptyLayout
 @implements IAsyncDisposable
@@ -234,7 +234,7 @@
 	</div>
 </div>
 @code {
-	[Inject] private ISessionService SessionService { get; set; } = null!;
+	[Inject] private ILocalStorageService LocalStorageService { get; set; } = null!;
 	[Inject] private IReaderService ReaderService { get; set; } = null!;
 	[Inject] private IReaderSettingsService ReaderSettingsService { get; set; } = null!;
 	[Inject] private IJSRuntime JsRuntime { get; set; } = null!;
@@ -257,7 +257,7 @@
 		//ReaderService.OnChapterSelected += OnChapterSelected;
 		ReaderSettingsService.OnSettingsChanged += OnSettingsChanged;
 		
-		var profileId = await SessionService.GetAsync<Guid>(SessionKey.SelectedProfileId);
+		var profileId = await LocalStorageService.GetAsync<Guid>(SessionKey.SelectedProfileId);
 		
 		await ReaderService.InitializeAsync(BookId, profileId);
 	}

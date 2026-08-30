@@ -5,7 +5,7 @@
 @using BookHeaven.Core.Entities.Base
 @using BookHeaven.Core.Features.Books
 @using BookHeaven.Core.Features.Collections
-@using BookHeaven.Server.Features.Session.Abstractions
+@using BookHeaven.Server.Features.LocalStorage.Abstractions
 @implements IDisposable
 
 <PageTitle>@Translations.SHELF</PageTitle>
@@ -117,7 +117,7 @@ else
 	[Inject] private NavigationManager NavigationManager { get; set; } = null!;
 	[Inject] private IJSRuntime JsRuntime { get; set; } = null!;
 	[Inject] private BookManager BookManager { get; set; } = null!;
-	[Inject] private ISessionService SessionService { get; set; } = null!;
+	[Inject] private ILocalStorageService LocalStorageService { get; set; } = null!;
 	[Inject] private GlobalEventsService GlobalEventsService { get; set; } = null!;
 	[Inject] private IAlertService AlertService { get; set; } = null!;
 	[Inject] private IDialogService DialogService { get; set; } = null!;
@@ -151,7 +151,7 @@ else
 		GlobalEventsService.Subscribe<BookAdded>(OnBookAdded);
 		GlobalEventsService.Subscribe<BookDeleted>(OnBookDeleted);
 
-		ProfileId = await SessionService.GetAsync<Guid>(SessionKey.SelectedProfileId);
+		ProfileId = await LocalStorageService.GetAsync<Guid>(SessionKey.SelectedProfileId);
 	}
 
 	protected override async Task OnParametersSetAsync()

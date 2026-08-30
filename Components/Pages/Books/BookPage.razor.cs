@@ -9,8 +9,8 @@ using BookHeaven.EbookManager.Entities;
 using BookHeaven.EbookManager.Enums;
 using BookHeaven.Server.Constants;
 using BookHeaven.Server.Components.Dialogs;
+using BookHeaven.Server.Features.LocalStorage.Abstractions;
 using BookHeaven.Server.Features.Metadata.DTOs;
-using BookHeaven.Server.Features.Session.Abstractions;
 using BookHeaven.Server.Features.Settings.Abstractions;
 using BookHeaven.Server.Features.Settings.DTOs;
 using Microsoft.AspNetCore.Components;
@@ -24,7 +24,7 @@ public partial class BookPage
 	[Inject] private EbookManagerProvider EbookManagerProvider { get; set; } = null!;
 	[Inject] private NavigationManager NavigationManager { get; set; } = null!;
 	[Inject] private ISettingsManagerService SettingsManager { get; set; } = null!;
-	[Inject] private ISessionService SessionService { get; set; } = null!;
+	[Inject] private ILocalStorageService LocalStorageService { get; set; } = null!;
 	[Inject] private IDialogService DialogService { get; set; } = null!;
 	[Inject] private IAlertService AlertService { get; set; } = null!;
 
@@ -60,7 +60,7 @@ public partial class BookPage
 	protected override async Task OnInitializedAsync()
 	{
 		_settings = await SettingsManager.LoadSettingsAsync();
-		_profileId = await SessionService.GetAsync<Guid>(SessionKey.SelectedProfileId);
+		_profileId = await LocalStorageService.GetAsync<Guid>(SessionKey.SelectedProfileId);
 	}
 
 	protected override async Task OnParametersSetAsync()
