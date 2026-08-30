@@ -1,5 +1,6 @@
 ﻿@using BookHeaven.Core.Features.Profiles
-@using BookHeaven.Server.Features.LocalStorage.Abstractions
+@using BookHeaven.Server.Features.Authentication.Abstractions
+@attribute [AllowAnonymous]
 @attribute [Route(Urls.Profiles)]
 @layout SimpleLayout
 
@@ -82,7 +83,7 @@
 </div>
 
 @code {
-	[Inject] private ILocalStorageService LocalStorageService { get; set; } = null!;
+	[Inject] private IAuthenticationService AuthenticationService { get; set; } = null!;
 	[Inject] private ISender Sender { get; set; } = null!;
 	[Inject] private NavigationManager NavigationManager { get; set; } = null!;
 	
@@ -110,7 +111,8 @@
 			// Handle error, e.g., show a message to the user
 			Console.WriteLine("Failed to load profiles: " + getProfiles.Error);
 		}
-		_selectedProfileId = await LocalStorageService.GetAsync<Guid>(SessionKey.SelectedProfileId);
+		var selectedProfile = await AuthenticationService.GetSelectedProfileAsync();
+		_selectedProfileId = selectedProfile is not null ? Guid.Parse(selectedProfile.ProfileId) : Guid.Empty;
 		_isLoaded = true;
 	}
 
@@ -119,7 +121,7 @@
 		switch (_layout)
 		{
 			case Layout.Select:
-				await LocalStorageService.SetAsync(SessionKey.SelectedProfileId, profile.ProfileId);
+				await AuthenticationService.LoginAsync(profile.Name);
 				NavigationManager.NavigateTo(Urls.Shelf);
 				break;
 			case Layout.Manage:

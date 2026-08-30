@@ -15,6 +15,7 @@
 @using BookHeaven.Server.Localization
 @using BookHeaven.Server.Services
 @using Mediator
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Routing;
 @using Microsoft.AspNetCore.Components.Sections
@@ -24,3 +25,4 @@
 @using MudBlazor
 @using Toolbelt.Blazor.ViewTransition
 @using static Microsoft.AspNetCore.Components.Web.RenderMode
+@attribute [Authorize]

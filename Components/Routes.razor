@@ -1,14 +1,32 @@
-﻿<ViewTransitionRouter AppAssembly="@typeof(Program).Assembly">
-    <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
-        <FocusOnNavigate RouteData="@routeData" Selector="[autofocus]" />
-    </Found>
-    <NotFound>
-        <LayoutView Layout="@typeof(MainLayout)">
-            <PageTitle>404 - Not found</PageTitle>
-            <div class="absolute inset-0 flex flex-col items-center justify-center">
-                <h1 class="text-5xl mb-5">Whatever you are looking for, it's gone</h1>
-            </div>
-        </LayoutView>
-    </NotFound>
-</ViewTransitionRouter>
+﻿@using BookHeaven.Server.Components.Pages.Profiles
+@using Microsoft.AspNetCore.Components.Authorization
+
+<AppShell>
+	<CascadingAuthenticationState>
+		<ViewTransitionRouter AppAssembly="@typeof(Program).Assembly">
+			<Found Context="routeData">
+				<AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(MainLayout)">
+					<NotAuthorized>
+						<LayoutView Layout="typeof(SimpleLayout)">
+							<ProfilesPage />
+						</LayoutView>
+					</NotAuthorized>
+					<Authorizing>
+						<LayoutView Layout="typeof(EmptyLayout)">
+							<LoadingScreen />
+						</LayoutView>
+					</Authorizing>
+				</AuthorizeRouteView>
+				<FocusOnNavigate RouteData="@routeData" Selector="[autofocus]"/>
+			</Found>
+			<NotFound>
+				<LayoutView Layout="@typeof(EmptyLayout)">
+					<PageTitle>404 - Not found</PageTitle>
+					<div class="absolute inset-0 flex flex-col items-center justify-center">
+						<h1 class="text-5xl mb-5">Whatever you are looking for, it's gone</h1>
+					</div>
+				</LayoutView>
+			</NotFound>
+		</ViewTransitionRouter>
+	</CascadingAuthenticationState>
+</AppShell>

@@ -1,14 +1,5 @@
 ﻿@inherits LayoutComponentBase
-<MudThemeProvider Theme="Theme.Main" IsDarkMode="true"/>
-<MudPopoverProvider />
-<MudSnackbarProvider />
-<MudDialogProvider />
 <PageTitle>BookHeaven</PageTitle>
-
-@if (_checkingProfile)
-{
-    return;
-}
 
 <div class="flex h-full overflow-hidden relative">
     <MudDrawer @bind-Open="_drawerOpen" Class="lg:static" Elevation="0">
@@ -51,3 +42,14 @@
         <SectionOutlet SectionName="BottomToolbar" />
     </main>
 </div>
+
+@code {
+
+    private bool _drawerOpen = true;
+
+    private void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+}

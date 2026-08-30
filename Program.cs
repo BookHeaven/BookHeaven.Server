@@ -1,5 +1,3 @@
-using System.Reflection;
-using System.Text.Json.Nodes;
 using BookHeaven.EbookManager;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.FileProviders;
@@ -11,6 +9,10 @@ using BookHeaven.Core;
 using BookHeaven.Core.Abstractions;
 using BookHeaven.Server.Features.Api.DependencyInjection;
 using BookHeaven.Server.Features.Api.Transformers;
+using BookHeaven.Server.Features.Authentication.Abstractions;
+using BookHeaven.Server.Features.Authentication.Handlers;
+using BookHeaven.Server.Features.Authentication.Services;
+using BookHeaven.Server.Features.Authorization.Services;
 using BookHeaven.Server.Features.Discovery.Services;
 using BookHeaven.Server.Features.Files.Abstractions;
 using BookHeaven.Server.Features.Files.Services;
@@ -21,6 +23,7 @@ using BookHeaven.Server.Features.Metadata.DependencyInjection;
 using BookHeaven.Server.Features.Metadata.Services;
 using BookHeaven.Server.Features.Settings.Abstractions;
 using BookHeaven.Server.Features.Settings.Services;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Scalar.AspNetCore;
 
@@ -87,6 +90,11 @@ builder.Services.AddOpenApi(options =>
 	options.AddDeprecatedOperationTransformer();
 	options.AddDeprecatedPropertyTransformer();
 });
+
+builder.Services.AddTransient<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<AuthenticationStateProvider, IdentityStateProvider>();
+builder.Services.AddAuthentication("BookHeaven")
+	.AddScheme<CustomAuthOptions, CustomAuthenticationHandler>("BookHeaven", options => { });
 
 var app = builder.Build();
 	
