@@ -13,7 +13,6 @@ public static class Urls
 	public const string Profiles = "/profiles";
 	public const string CreateProfile = $"{Profiles}/create";
 	public const string Reader = "/reader";
-	public const string ReaderBook = "/reader/{{bookId}}";
 
 	public static string GetBookUrl(Guid bookId)
 	{
