@@ -21,6 +21,9 @@
 	<MudSpacer />
 	@if (!IsEditing)
 	{
+		<MudTooltip Text="Read">
+			<MudIconButton Icon="@Icons.Material.Filled.MenuBook" Color="Color.Primary" Href="@Urls.GetReaderUrl(_book.BookId)"/>
+		</MudTooltip>
 		<MudTooltip Text="@Translations.DOWNLOAD">
 			<MudIconButton Icon="@Icons.Material.Filled.Download" Color="Color.Primary" Href="@_book.EbookUrl()" download="@_book.FormattedFileName()"/>
 		</MudTooltip>
