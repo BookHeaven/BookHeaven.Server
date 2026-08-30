@@ -18,7 +18,7 @@ public static class SelectedProfileExtensions
         return new ClaimsPrincipal(identity);
     }
     
-    public static SelectedProfile FromClaimsPrincipal(this ClaimsPrincipal claimsPrincipal)
+    public static SelectedProfile ToSelectedProfile(this ClaimsPrincipal claimsPrincipal)
     {
         var profileIdClaim = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier);
         var nameClaim = claimsPrincipal.FindFirst(ClaimTypes.Name);

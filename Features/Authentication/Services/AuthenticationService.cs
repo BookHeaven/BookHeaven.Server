@@ -16,13 +16,7 @@ public class AuthenticationService(
         try
         {
             var state = await stateProvider.GetAuthenticationStateAsync();
-            if(state.User.Identity?.IsAuthenticated == false)
-            {
-                return null;
-            }
-
-            var profile = state.User.FromClaimsPrincipal();
-            return profile;
+            return state.User.Identity?.IsAuthenticated == false ? null : state.User.ToSelectedProfile();
         }
         catch
         {
