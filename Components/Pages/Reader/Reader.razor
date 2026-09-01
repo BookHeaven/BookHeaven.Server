@@ -120,7 +120,7 @@
 			float: none !important;
 		}
 
-		@($":scope > .chapter p:not([class]){(!string.IsNullOrEmpty(ReaderService.State?.CurrentChapter?.ParagraphClassName) ? $",:scope > .chapter.current .{ReaderService.State.CurrentChapter.ParagraphClassName}" : "")}{(!string.IsNullOrEmpty(ReaderService.State?.PreviousChapter?.ParagraphClassName) ? $",:scope > .chapter.prev .{ReaderService.State.PreviousChapter.ParagraphClassName}" : "")}{(!string.IsNullOrEmpty(ReaderService.State?.NextChapter?.ParagraphClassName) ? $",:scope > .chapter.next .{ReaderService.State.NextChapter.ParagraphClassName}" : "")}") {
+		@($":scope > .chapter p:not([class]){(!string.IsNullOrEmpty(ReaderService.State?.CurrentChapter?.ParagraphClassName) ? $",:scope > .chapter.current .{ReaderService.State.CurrentChapter.ParagraphClassName}" : "")}") {
 			margin-block: calc(var(--paragraph-spacing) * 1pt) !important;
 		}
 
@@ -147,24 +147,6 @@
 		@if (ReaderService.State?.Styles.Count > 0)
 		{
 			foreach (var style in ReaderService.State.Styles.Where(style => ReaderService.State.CurrentChapter?.Stylesheets.Any(s => s.Contains(style.Identifier)) == true))
-			{
-				@style.Content
-			}
-		}
-	}
-	@@scope(#viewer .prev) {
-		@if (ReaderService.State?.Styles.Count > 0)
-		{
-			foreach (var style in ReaderService.State.Styles.Where(style => ReaderService.State.PreviousChapter?.Stylesheets.Any(s => s.Contains(style.Identifier)) == true))
-			{
-				@style.Content
-			}
-		}
-	}
-	@@scope(#viewer .next) {
-		@if (ReaderService.State?.Styles.Count > 0)
-		{
-			foreach (var style in ReaderService.State.Styles.Where(style => ReaderService.State.NextChapter?.Stylesheets.Any(s => s.Contains(style.Identifier)) == true))
 			{
 				@style.Content
 			}
@@ -199,24 +181,21 @@
 		<NavigationOverlay />
 		<div id="viewer" class="flex-1 overflow-hidden @(ReaderService.IsReady ? "" : "invisible")">
 			<span class="page-divider absolute inset-y-0 left-[50%] -translate-x-1/2 border border-neutral-200"></span>
-			<div class="chapter current">
-				@if (ReaderService.State?.CurrentChapter?.IsContentProcessed == true)
-				{
-					@((MarkupString)ReaderService.State.CurrentChapter.Content)
-				}
-			</div>
-			<div class="chapter prev invisible">
-				@if (ReaderService.State?.PreviousChapter?.IsContentProcessed == true)
-				{
-					@((MarkupString)ReaderService.State.PreviousChapter.Content)
-				}
-			</div>
-			<div class="chapter next invisible">
-				@if (ReaderService.State?.NextChapter?.IsContentProcessed == true)
-				{
-					@((MarkupString)ReaderService.State.NextChapter.Content)
-				}
-			</div>
+			@if (ReaderService.IsReady)
+			{
+				<div class="chapter current">
+					@((MarkupString)ReaderService.State!.CurrentChapter!.Content)
+				</div>
+			}
+			@foreach (var chapter in ReaderService.State?.Ebook?.Content.Chapters ?? [])
+			{
+				<div class="chapter invisible">
+					@if (chapter.IsContentProcessed)
+					{
+						@((MarkupString)chapter.Content)
+					}
+				</div>
+			}
 		</div>
 	</div>
 	<div class="2xl:absolute 2xl:inset-x-0 2xl:bottom-0 flex items-center 2xl:p-5 gap-2">
@@ -243,23 +222,23 @@
 	[Parameter] public Guid BookId { get; set; }
 	
 	private bool _shouldRefreshTotalPages;
-	
-	private DotNetObjectReference<Reader>? _dotNetReference;
-	private IJSObjectReference? _module;
+
+	private DotNetObjectReference<Reader> _dotNetReference = null!;
+	private IJSObjectReference _module = null!;
 
 	private bool _showIndex;
 
 	protected override async Task OnInitializedAsync()
 	{
 		ReaderService.OnPageChanged += RefreshUi;
-		ReaderService.OnChapterChanged += OnChapterChanged;
+		ReaderService.OnChapterChanged += RefreshUi;
 		ReaderService.OnTotalPagesChanged += RefreshUi;
-		//ReaderService.OnChapterSelected += OnChapterSelected;
 		ReaderSettingsService.OnSettingsChanged += OnSettingsChanged;
 		
 		var profileId = await LocalStorageService.GetAsync<Guid>(SessionKey.SelectedProfileId);
 		
 		await ReaderService.InitializeAsync(BookId, profileId);
+		_shouldRefreshTotalPages = true;
 	}
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -278,12 +257,11 @@
 	
 	private async Task UpdateTotalPages()
 	{
-		if(_module is null) return;
 		_shouldRefreshTotalPages = false;
 		var pagesArray = await _module.InvokeAsync<int[]>("GetPageCount");
-		ReaderService.SetTotalPages(pagesArray[1], pagesArray[0], pagesArray[2]);
+		ReaderService.SetTotalPages(pagesArray);
         
-		if(ReaderService is { IsReady: false, State.TotalPages: > 0 })
+		if(!ReaderService.IsReady)
 		{
 			ReaderService.NavigateToInitialPage();
 			await InvokeAsync(StateHasChanged);
@@ -299,21 +277,6 @@
 	{
 		_shouldRefreshTotalPages = true;
 		InvokeAsync(StateHasChanged);
-	}
-	
-	private async void OnChapterChanged()
-	{
-		await ReaderService.LoadCurrentContentAsync();
-        
-		_shouldRefreshTotalPages = true;
-		await InvokeAsync(StateHasChanged);
-	}
-	
-	private void OnChapterSelected(string itemId)
-	{
-		var chapter = ReaderService.State?.Ebook!.Content.Chapters.Index().FirstOrDefault(i => i.Item.Identifier == itemId);
-		if(chapter?.Item is null) return;
-		ReaderService.NavigateTo(1, chapter.Value.Index);
 	}
 	
 	[JSInvokable("OnKeyDown")]
@@ -333,6 +296,7 @@
 	[JSInvokable("OnViewportChanged")]
 	public async Task OnViewportChanged()
 	{
+		if(!ReaderService.IsReady) return;
 		_shouldRefreshTotalPages = true;
 		await InvokeAsync(StateHasChanged);
 	}
@@ -349,18 +313,16 @@
 	{
 		await ReaderService.SaveProgressAsync();
 		ReaderService.OnPageChanged -= RefreshUi;
-		ReaderService.OnChapterChanged -= OnChapterChanged;
+		ReaderService.OnChapterChanged -= RefreshUi;
 		ReaderService.OnTotalPagesChanged -= RefreshUi;
 		ReaderSettingsService.OnSettingsChanged -= OnSettingsChanged;
 		try
 		{
-			if (_module is not null)
-			{
-				await _module.InvokeVoidAsync("Dispose");
-				await _module.DisposeAsync();
-			}
-			_dotNetReference?.Dispose();
 			ReaderService.Dispose();
+			_dotNetReference.Dispose();
+			await _module.InvokeVoidAsync("Dispose");
+			await _module.DisposeAsync();
+			
 		}
 		catch {}
 		

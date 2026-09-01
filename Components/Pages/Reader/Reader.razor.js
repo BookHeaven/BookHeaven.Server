@@ -1,9 +1,40 @@
-let chapter, chapterPrev, chapterNext;
-
 let Reference = {};
 Reference.DotNet = null;
 let resizeObserver = null;
 let resizeTimeout = null;
+
+const waitForImagesToLoad = async () => {
+    const images = Array.from(document.querySelectorAll('.chapter img, .chapter svg'));
+    if (!images.length) {
+        await new Promise((resolve) => requestAnimationFrame(() => resolve()));
+        return;
+    }
+
+    await Promise.all(images.map(async (image) => {
+        if (image.tagName === 'IMG') {
+            if (image.complete) return;
+
+            await new Promise((resolve) => {
+                const cleanUp = () => {
+                    image.removeEventListener('load', onDone);
+                    image.removeEventListener('error', onDone);
+                    resolve();
+                };
+                const onDone = () => cleanUp();
+
+                image.addEventListener('load', onDone, { once: true });
+                image.addEventListener('error', onDone, { once: true });
+            });
+            return;
+        }
+
+        if (image.tagName === 'SVG') {
+            await new Promise((resolve) => requestAnimationFrame(() => resolve()));
+        }
+    }));
+
+    await new Promise((resolve) => requestAnimationFrame(() => resolve()));
+};
 
 const keyDownHandler = (e) => {
     if (e.repeat) return;
@@ -26,10 +57,6 @@ const notifyDebounced = (delay = 200) => {
 export function SetDotNetReference(dotnet) {
     Reference.DotNet = dotnet;
 
-    chapter = document.getElementsByClassName('chapter current')[0];
-    chapterPrev = document.getElementsByClassName('chapter prev')[0];
-    chapterNext = document.getElementsByClassName('chapter next')[0];
-
     window.addEventListener('keydown', keyDownHandler);
     window.addEventListener('resize', notifyDebounced);
     window.addEventListener('orientationchange', notifyDebounced);
@@ -42,14 +69,17 @@ export function SetDotNetReference(dotnet) {
 }
 
 export async function GetPageCount() {
-    const columnGap = parseFloat(getComputedStyle(chapter).getPropertyValue('column-gap')) || 0;
-    let pageWidth = chapter.offsetWidth + columnGap;
+    const chapters = Array.from(document.querySelectorAll('.chapter.invisible'));
+    if (!chapters.length) {
+        return [];
+    }
+    await waitForImagesToLoad();
+    
+    const firstChapter = chapters[0];
+    const pageGap = Number.parseFloat(getComputedStyle(firstChapter).columnGap) || 0;
+    const pageWidth = Math.max(firstChapter.offsetWidth + pageGap, 1);
 
-    const pagesPrev = chapterPrev && chapterPrev.childElementCount > 0 ? Math.ceil(parseFloat((chapterPrev.scrollWidth / pageWidth).toFixed(1))) : 0;
-    const pages = Math.ceil(parseFloat((chapter.scrollWidth / pageWidth).toFixed(1)));
-    const pagesNext = chapterNext && chapterNext.childElementCount > 0 ? Math.ceil(parseFloat((chapterNext.scrollWidth / pageWidth).toFixed(1))) : 0;
-
-    return [pagesPrev, pages, pagesNext];
+    return chapters.map((chapter) => Math.max(1, Math.ceil(chapter.scrollWidth / pageWidth)));
 }
 
 export function Dispose() {
