@@ -1,4 +1,5 @@
-﻿using BookHeaven.Core.Features.Books;
+using System.Text.RegularExpressions;
+using BookHeaven.Core.Features.Books;
 using BookHeaven.Core.Features.BooksProgress;
 using BookHeaven.Core.Features.KoreaderProgress;
 using BookHeaven.Core.Features.Profiles;
@@ -8,6 +9,8 @@ namespace BookHeaven.Server.Features.Api.Endpoints.Koreader;
 
 public static class ApiSaveKoreaderProgress
 {
+    private static readonly Regex DocFragmentRegex = new("DocFragment\\[(\\d+)\\]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
     private class KOReaderDocumentRequest
     {
         public string document { get; set; } = null!;
@@ -33,7 +36,7 @@ public static class ApiSaveKoreaderProgress
         {
             logger.LogInformation("Received KOReader progress sync request for document {Document}", request.document);
             var profileName = httpContextAccessor.HttpContext?.Request.Headers["x-auth-user"].ToString();
-            
+             
             var getProfile = await sender.Send(new GetProfileByName.Query(profileName ?? ""));
             if (getProfile.IsFailure)
             {
@@ -51,9 +54,16 @@ public static class ApiSaveKoreaderProgress
                 Percentage = request.percentage,
                 Timestamp = DateTime.UtcNow
             };
+
+            var chapterNumber = GetKoreaderChapterNumber(request.progress);
+            if (chapterNumber is null)
+            {
+                logger.LogError("Unable to parse KOReader chapter from progress '{Progress}' for document '{Document}'.", request.progress, request.document);
+            }
+                
             logger.LogInformation("Saving KOReader progress with hash '{Document}' for profile '{ProfileName}'.", request.document, profileName);
             await sender.Send(new SaveKoreaderProgress.Command(koProgress));
-            
+             
             var getBook = await sender.Send(new GetBook.Query { Hash = request.document });
             if (getBook.IsFailure)
             {
@@ -68,6 +78,11 @@ public static class ApiSaveKoreaderProgress
                 progress.StartDate ??= DateTimeOffset.Now;
                 progress.Progress = request.percentage * 100;
                 progress.LastRead = DateTimeOffset.Now;
+                if (chapterNumber is not null)
+                {
+                    progress.Chapter = chapterNumber.Value - 1;
+                    progress.ChapterProgress = 0;
+                }
                 if (progress.Progress >= 100)
                 {
                     progress.EndDate ??= DateTimeOffset.Now;
@@ -82,5 +97,23 @@ public static class ApiSaveKoreaderProgress
                 timestamp = koProgress.Timestamp,
             });
         }
+    }
+    
+    private static int? GetKoreaderChapterNumber(string? progress)
+    {
+        if (string.IsNullOrWhiteSpace(progress))
+        {
+            return null;
+        }
+
+        var match = DocFragmentRegex.Match(progress);
+        if (!match.Success)
+        {
+            return null;
+        }
+
+        return int.TryParse(match.Groups[1].Value, out var chapterNumber)
+            ? chapterNumber
+            : null;
     }
 }
