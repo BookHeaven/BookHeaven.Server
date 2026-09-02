@@ -152,7 +152,7 @@
 	}
 	@foreach (var stylesheet in ReaderService.State?.Styles ?? [])
 	{
-		@:scope(#viewer @(".stylesheet-" + stylesheet.Identifier)) {
+		@:@@scope(#viewer @(".stylesheet-" + stylesheet.Identifier)) {
 			@stylesheet.Content
 		}
 	}
