@@ -22,14 +22,10 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		if(Value < Min)
+		if(Value < Min || Value > Max)
 		{
-			Value = Min;
+			Value = Math.Clamp(Value, Min, Max);
+			await ValueChanged.InvokeAsync(Value);
 		}
-		else if(Value > Max)
-		{
-			Value = Max;
-		}
-		await ValueChanged.InvokeAsync(Value);
 	}
 }
