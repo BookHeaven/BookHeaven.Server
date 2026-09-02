@@ -1,5 +1,5 @@
-let Reference = {};
-Reference.DotNet = null;
+let Reference = { DotNet: null };
+let mainChapter = null;
 let resizeObserver = null;
 let resizeTimeout = null;
 
@@ -54,14 +54,16 @@ const notifyDebounced = (delay = 200) => {
     }, delay);
 }
 
-export function SetDotNetReference(dotnet) {
+export function Initialize(dotnet) {
     Reference.DotNet = dotnet;
+    
+    mainChapter = document.querySelector('.chapter.current');
 
     window.addEventListener('keydown', keyDownHandler);
     window.addEventListener('resize', notifyDebounced);
     window.addEventListener('orientationchange', notifyDebounced);
 
-    const viewer = document.getElementById('viewer');
+    const viewer = document.querySelector("#viewer");
     if (viewer && typeof ResizeObserver !== 'undefined') {
         resizeObserver = new ResizeObserver(() => notifyDebounced());
         resizeObserver.observe(viewer);
@@ -73,12 +75,14 @@ export async function GetPageCount() {
     if (!chapters.length) {
         return [];
     }
-    await waitForImagesToLoad();
-    
-    const firstChapter = chapters[0];
-    const pageGap = Number.parseFloat(getComputedStyle(firstChapter).columnGap) || 0;
-    const pageWidth = Math.max(firstChapter.offsetWidth + pageGap, 1);
 
+    let pageGap = Number.parseFloat(getComputedStyle(mainChapter).columnGap);
+    let pageWidth = Math.max(mainChapter.offsetWidth + pageGap, 1);
+    
+    await waitForImagesToLoad();
+    if (document.fonts && document.fonts.ready) {
+        await document.fonts.ready;
+    }
     return chapters.map((chapter) => Math.max(1, Math.ceil(chapter.scrollWidth / pageWidth)));
 }
 

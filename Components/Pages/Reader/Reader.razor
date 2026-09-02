@@ -31,7 +31,7 @@
 			--word-spacing: @ReaderService.Settings?.WordSpacing.ToString("0.00", CultureInfo.InvariantCulture);
 			--margin-vertical: @ReaderService.Settings?.VerticalMargin.ToString("0.00", CultureInfo.InvariantCulture);
 			--margin-horizontal: @ReaderService.Settings?.HorizontalMargin.ToString("0.00", CultureInfo.InvariantCulture);
-			--page-gap: 1;
+			--page-gap: var(--margin-horizontal);
 			--page-height: 100cqh;
 			--page-width: 100cqw;
 			
@@ -120,8 +120,15 @@
 			float: none !important;
 		}
 
-		@($":scope > .chapter p:not([class]){(!string.IsNullOrEmpty(ReaderService.State?.CurrentChapter?.ParagraphClassName) ? $",:scope > .chapter.current .{ReaderService.State.CurrentChapter.ParagraphClassName}" : "")}") {
+		:scope > .chapter p:not([class]) {
 			margin-block: calc(var(--paragraph-spacing) * 1pt) !important;
+		}
+
+		@foreach(var className in ReaderService.State?.Ebook?.Content.Chapters.DistinctBy(c => c.ParagraphClassName).Select(c => c.ParagraphClassName) ?? [])
+		{
+			@::scope > .chapter @("." + className) {
+				@:margin-block: calc(var(--paragraph-spacing) * 1pt) !important;
+			@:}
 		}
 
 		:scope sup {
@@ -143,13 +150,10 @@
 			}
 		}
 	}
-	@@scope(#viewer .current) {
-		@if (ReaderService.State?.Styles.Count > 0)
-		{
-			foreach (var style in ReaderService.State.Styles.Where(style => ReaderService.State.CurrentChapter?.Stylesheets.Any(s => s.Contains(style.Identifier)) == true))
-			{
-				@style.Content
-			}
+	@foreach (var stylesheet in ReaderService.State?.Styles ?? [])
+	{
+		@:scope(#viewer @(".stylesheet-" + stylesheet.Identifier)) {
+			@stylesheet.Content
 		}
 	}
 </style>
@@ -177,39 +181,36 @@
 			</div>
 		}
 	</div>
-	<div class="relative flex-1 flex bg-white text-black">
+	<div class="relative flex-1 flex bg-white dark:bg-neutral-900">
 		<NavigationOverlay />
 		<div id="viewer" class="flex-1 overflow-hidden @(ReaderService.IsReady ? "" : "invisible")">
-			<span class="page-divider absolute inset-y-0 left-[50%] -translate-x-1/2 border border-neutral-200"></span>
-			@if (ReaderService.IsReady)
+			<span class="page-divider absolute inset-y-0 left-[50%] -translate-x-1/2 border border-neutral-200 dark:border-neutral-600"></span>
+			<div class="chapter current @(string.Join(" ", ReaderService.State?.CurrentChapter?.Stylesheets.Select(s => "stylesheet-" + s) ?? []))">
+				@if (ReaderService.State?.CurrentChapter is not null)
+				{
+					@((MarkupString)ReaderService.State.CurrentChapter.Content)
+				}
+			</div>
+			@if (_shouldRefreshTotalPages)
 			{
-				<div class="chapter current">
-					@((MarkupString)ReaderService.State!.CurrentChapter!.Content)
-				</div>
-			}
-			@foreach (var chapter in ReaderService.State?.Ebook?.Content.Chapters ?? [])
-			{
-				<div class="chapter invisible">
-					@if (chapter.IsContentProcessed)
-					{
+				foreach (var chapter in ReaderService.State?.Ebook?.Content.Chapters ?? [])
+				{
+					<div class="chapter invisible @(string.Join(" ", chapter.Stylesheets.Select(s => "stylesheet-" + s)))">
 						@((MarkupString)chapter.Content)
-					}
-				</div>
+					</div>
+				}
 			}
 		</div>
 	</div>
 	<div class="2xl:absolute 2xl:inset-x-0 2xl:bottom-0 flex items-center 2xl:p-5 gap-2">
-		@if (ReaderService.IsReady)
-		{
-			<span>
-				<MudIconButton Icon="@Icons.Material.Filled.List" OnClick="() => _showIndex = !_showIndex"/>
-			</span>
-			<span class="mx-auto text-nowrap">
-				@ReaderService.State?.ChapterTitle
-				( @ReaderService.State?.PageNumber / @ReaderService.State?.TotalPages )
-			</span>
-			<span class="me-2">@ReaderService.State?.ProgressAsPercentage.ToString("0.00")%</span>
-		}
+		<span>
+			<MudIconButton Icon="@Icons.Material.Filled.List" OnClick="() => _showIndex = !_showIndex"/>
+		</span>
+		<span class="mx-auto text-nowrap">
+			@ReaderService.State?.ChapterTitle
+			( @ReaderService.State?.PageNumber / @ReaderService.State?.TotalPages )
+		</span>
+		<span class="me-2">@ReaderService.State?.ProgressAsPercentage.ToString("0.00")%</span>
 	</div>
 </div>
 @code {
@@ -247,7 +248,7 @@
 		{
 			_module = await JsRuntime.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Reader/Reader.razor.js");
 			_dotNetReference = DotNetObjectReference.Create(this);
-			await _module.InvokeVoidAsync("SetDotNetReference", _dotNetReference);
+			await _module.InvokeVoidAsync("Initialize", _dotNetReference);
 		}
 		if (_shouldRefreshTotalPages)
 		{
@@ -316,10 +317,10 @@
 		ReaderService.OnChapterChanged -= RefreshUi;
 		ReaderService.OnTotalPagesChanged -= RefreshUi;
 		ReaderSettingsService.OnSettingsChanged -= OnSettingsChanged;
+		ReaderService.Dispose();
+		_dotNetReference.Dispose();
 		try
 		{
-			ReaderService.Dispose();
-			_dotNetReference.Dispose();
 			await _module.InvokeVoidAsync("Dispose");
 			await _module.DisposeAsync();
 			
