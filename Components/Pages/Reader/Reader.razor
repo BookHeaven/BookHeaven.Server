@@ -164,7 +164,7 @@
 		<MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
 	</div>
 }
-<MudDrawer Width="300px" @bind-Open="_showIndex" Variant="DrawerVariant.Temporary" OverlayAutoClose="true">
+<MudDrawer Width="400px" @bind-Open="_showIndex" Variant="DrawerVariant.Temporary" OverlayAutoClose="true">
 	<TableOfContents 
 		Chapters="@ReaderService.State?.Ebook?.Content.TableOfContents"
 		CurrentChapterId="@ReaderService.State?.CurrentChapter?.Identifier"/>	
