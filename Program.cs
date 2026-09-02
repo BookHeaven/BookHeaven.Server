@@ -29,7 +29,7 @@ using Scalar.AspNetCore;
 using BookHeaven.Server.Middlewares;
 
 var appDataPath = Path.Combine(Directory.GetCurrentDirectory(), "data");
-var cachePath = Path.Combine(Path.GetTempPath(), "BookHeaven", "cache");
+var cachePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "BookHeaven", "cache");
 
 Environment.SetEnvironmentVariable("TOOLBELT_BLAZOR_VIEWTRANSITION_JSCACHEBUSTING", "0");
 		
