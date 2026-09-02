@@ -64,6 +64,7 @@ builder.Services.AddCore(options =>
 	options.CoversPath = Path.Combine(appDataPath, "covers");
 	options.FontsPath = Path.Combine(appDataPath, "fonts");
 	options.DatabasePath = Path.Combine(appDataPath, "database");
+	options.CachePath = cachePath;
 });
 builder.Services.AddEbookManager(options =>
 {
