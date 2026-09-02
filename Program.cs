@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using BookHeaven.EbookManager;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.FileProviders;
@@ -27,6 +26,7 @@ using BookHeaven.Server.Features.Settings.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Scalar.AspNetCore;
+using BookHeaven.Server.Middlewares;
 
 var appDataPath = Path.Combine(Directory.GetCurrentDirectory(), "data");
 var cachePath = Path.Combine(Path.GetTempPath(), "BookHeaven", "cache");
@@ -129,6 +129,9 @@ FileExtensionContentTypeProvider provider = new()
 };
 
 app.MapStaticAssets();
+
+// Books: no-cache headers but support ETag for conditional GETs
+app.UseMiddleware<ETagMiddleware>("/books", CoreGlobals.BooksPath);
 app.UseStaticFiles(new StaticFileOptions
 {
 	FileProvider = new PhysicalFileProvider(CoreGlobals.BooksPath),
@@ -141,6 +144,9 @@ app.UseStaticFiles(new StaticFileOptions
 		ctx.Context.Response.Headers.Expires = "0";
 	}
 });
+
+// Covers: long cache but support ETag
+app.UseMiddleware<ETagMiddleware>("/covers", CoreGlobals.CoversPath);
 app.UseStaticFiles(new StaticFileOptions
 {
 	FileProvider = new PhysicalFileProvider(CoreGlobals.CoversPath),
@@ -150,11 +156,17 @@ app.UseStaticFiles(new StaticFileOptions
 		ctx.Context.Response.Headers.CacheControl = "public,immutable,max-age=" + (int)TimeSpan.FromDays(30).TotalSeconds;
 	}
 });
+
+// Fonts: support ETag (no explicit cache headers here)
+app.UseMiddleware<ETagMiddleware>("/fonts", CoreGlobals.FontsPath);
 app.UseStaticFiles(new StaticFileOptions
 {
 	FileProvider = new PhysicalFileProvider(CoreGlobals.FontsPath),
 	RequestPath = "/fonts"
 });
+
+// Cache folder (ebook manager cache)
+app.UseMiddleware<ETagMiddleware>("/cache", EbookManagerGlobals.CachePath);
 app.UseStaticFiles(new StaticFileOptions
 {
 	FileProvider = new PhysicalFileProvider(EbookManagerGlobals.CachePath),
