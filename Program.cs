@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using BookHeaven.EbookManager;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.FileProviders;
@@ -28,6 +29,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Scalar.AspNetCore;
 
 var appDataPath = Path.Combine(Directory.GetCurrentDirectory(), "data");
+var cachePath = Path.Combine(Path.GetTempPath(), "BookHeaven", "cache");
 
 Environment.SetEnvironmentVariable("TOOLBELT_BLAZOR_VIEWTRANSITION_JSCACHEBUSTING", "0");
 		
@@ -63,7 +65,11 @@ builder.Services.AddCore(options =>
 	options.FontsPath = Path.Combine(appDataPath, "fonts");
 	options.DatabasePath = Path.Combine(appDataPath, "database");
 });
-builder.Services.AddEbookManager();
+builder.Services.AddEbookManager(options =>
+{
+	options.CachePath = cachePath;
+	options.UseCustomScheme = false;
+});
 
 builder.Services.AddTransient<IImageProvider, DuckDuckGoImageProvider>();
 builder.Services.AddTransient<IAlertService, AlertService>();
@@ -148,6 +154,11 @@ app.UseStaticFiles(new StaticFileOptions
 {
 	FileProvider = new PhysicalFileProvider(CoreGlobals.FontsPath),
 	RequestPath = "/fonts"
+});
+app.UseStaticFiles(new StaticFileOptions
+{
+	FileProvider = new PhysicalFileProvider(EbookManagerGlobals.CachePath),
+	RequestPath = "/cache"
 });
 	
 app.UseAntiforgery();
