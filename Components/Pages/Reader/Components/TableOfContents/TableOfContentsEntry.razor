@@ -41,7 +41,7 @@
 	
 	private bool _collapsed = true;
 	
-	protected override void OnInitialized()
+	protected override void OnParametersSet()
 	{
 		if (Entry.Entries.Count > 0) _collapsed = !Entry.ContainsEntry(CurrentChapterId!);
 	}
