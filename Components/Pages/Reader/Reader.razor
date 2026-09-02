@@ -239,7 +239,10 @@
 		var profileId = await LocalStorageService.GetAsync<Guid>(SessionKey.SelectedProfileId);
 		
 		await ReaderService.InitializeAsync(BookId, profileId);
-		_shouldRefreshTotalPages = true;
+		if (!ReaderService.IsReady)
+		{
+			_shouldRefreshTotalPages = true;
+		}
 	}
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
