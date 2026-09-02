@@ -7,10 +7,11 @@
 		{
 			<MudIconButton 
 				OnClick="() => _collapsed = !_collapsed"
-				Icon="@(_collapsed ? Icons.Material.Filled.ChevronRight : Icons.Material.Filled.KeyboardArrowDown)" 
-				Color="Color.Secondary"/>
+				Icon="@(_collapsed ? Icons.Material.Filled.ChevronRight : Icons.Material.Filled.KeyboardArrowDown)"
+				Color="Color.Secondary"
+				Edge="Edge.Start"/>
 		}
-		<button class="py-2" @onclick="@(() => ReaderService.NavigateToChapter(Entry))">
+		<button class="py-2 text-start" @onclick="@(() => ReaderService.NavigateToChapter(Entry))">
 			<MudText Color="@(IsSelected ? Color.Primary : Color.Default)">@Entry.Title</MudText>
 		</button>
 	</span>
@@ -20,7 +21,7 @@
 {
 	if (!_collapsed || Entry.Title == null)
 	{
-		<ul class="ms-5 list-none">
+		<ul class="@(Entry.Title != null ? "ms-5" : "") list-none">
 			@foreach (var chapter in Entry.Entries)
 			{
 				<li>
