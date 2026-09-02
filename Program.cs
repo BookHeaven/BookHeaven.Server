@@ -29,7 +29,6 @@ using Scalar.AspNetCore;
 using BookHeaven.Server.Middlewares;
 
 var appDataPath = Path.Combine(Directory.GetCurrentDirectory(), "data");
-var cachePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "BookHeaven", "cache");
 
 Environment.SetEnvironmentVariable("TOOLBELT_BLAZOR_VIEWTRANSITION_JSCACHEBUSTING", "0");
 		
@@ -64,11 +63,11 @@ builder.Services.AddCore(options =>
 	options.CoversPath = Path.Combine(appDataPath, "covers");
 	options.FontsPath = Path.Combine(appDataPath, "fonts");
 	options.DatabasePath = Path.Combine(appDataPath, "database");
-	options.CachePath = cachePath;
+	options.CachePath = Path.Combine(appDataPath, "cache");
 });
 builder.Services.AddEbookManager(options =>
 {
-	options.CachePath = cachePath;
+	options.CachePath = Path.Combine(appDataPath, "cache");
 	options.UseCustomScheme = false;
 });
 
