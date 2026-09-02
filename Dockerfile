@@ -18,7 +18,7 @@ USER app
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["BookHeaven.Server/BookHeaven.Server.csproj", "BookHeaven.Server/"]
+COPY ["BookHeaven.Server.csproj", "./"]
 
 RUN --mount=type=secret,id=NUGET_TOKEN \
     dotnet nuget add source "https://nuget.pkg.github.com/BookHeaven/index.json" \
@@ -28,7 +28,7 @@ RUN --mount=type=secret,id=NUGET_TOKEN \
         --store-password-in-clear-text
 
 COPY . .
-WORKDIR "/src/BookHeaven.Server"
+WORKDIR "/src"
 RUN dotnet build "./BookHeaven.Server.csproj" -c $BUILD_CONFIGURATION -o /app/build /p:OpenApiGenerateDocumentsOnBuild=${OPENAPI_GENERATE} /p:UseNuget=true
 
 # Esta fase se usa para publicar el proyecto de servicio que se copiará en la fase final.
