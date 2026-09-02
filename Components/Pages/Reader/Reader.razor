@@ -202,15 +202,18 @@
 			}
 		</div>
 	</div>
-	<div class="2xl:absolute 2xl:inset-x-0 2xl:bottom-0 flex items-center 2xl:p-5 gap-2">
-		<span>
-			<MudIconButton Icon="@Icons.Material.Filled.List" OnClick="() => _showIndex = !_showIndex"/>
-		</span>
-		<span class="mx-auto text-nowrap">
-			@ReaderService.State?.ChapterTitle
-			( @ReaderService.State?.PageNumber / @ReaderService.State?.TotalPages )
-		</span>
-		<span class="me-2">@ReaderService.State?.ProgressAsPercentage.ToString("0.00")%</span>
+	<div class="2xl:absolute 2xl:inset-x-0 2xl:bottom-0 grid grid-cols-[50px_1fr_50px] items-center px-2 2xl:p-5 gap-2">
+		@if (ReaderService.IsReady)
+		{
+			<span>
+				<MudIconButton Icon="@Icons.Material.Filled.List" OnClick="() => _showIndex = !_showIndex" Edge="Edge.Start"/>
+			</span>
+			<span class="mx-auto text-nowrap">
+				@ReaderService.State?.ChapterTitle
+				( @ReaderService.State?.PageNumber / @ReaderService.State?.TotalPages )
+			</span>
+			<span class="text-nowrap text-end">@ReaderService.State?.ProgressAsPercentage.ToString("0.00")%</span>
+		}
 	</div>
 </div>
 @code {
