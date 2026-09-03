@@ -3,9 +3,8 @@ using BookHeaven.Core.Features.Authors;
 using BookHeaven.Core.Features.Books;
 using BookHeaven.Core.Features.BookSeries;
 using BookHeaven.Core.Helpers;
-using BookHeaven.EbookManager;
+using BookHeaven.EbookManager.Abstractions;
 using BookHeaven.EbookManager.Enums;
-using BookHeaven.EbookManager.Formats;
 using BookHeaven.Server.Features.Files.Abstractions;
 using Microsoft.AspNetCore.Components.Forms;
 
