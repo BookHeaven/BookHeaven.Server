@@ -4,6 +4,7 @@ using BookHeaven.Core.Features.Books;
 using BookHeaven.Core.Features.BookSeries;
 using BookHeaven.Core.Features.BooksProgress;
 using BookHeaven.Core.Features.Tags;
+using BookHeaven.Core.Helpers;
 using BookHeaven.EbookManager;
 using BookHeaven.EbookManager.Entities;
 using BookHeaven.EbookManager.Enums;
@@ -203,6 +204,13 @@ public partial class BookPage
 		{
 			_book.SeriesId = null;
 			_book.Series = null;
+		}
+
+		
+		var fileHash = await FileHelpers.GetPartialMd5HashAsync(_book.EbookPath());
+		if (fileHash is not null)
+		{
+			_book.FileHash = fileHash;
 		}
 
 		var updateBook = await Sender.Send(new UpdateBook.Command(_book, _newCoverTempPath, _newEpubTempPath));
