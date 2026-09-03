@@ -228,7 +228,7 @@
 	private bool _shouldRefreshTotalPages;
 
 	private DotNetObjectReference<Reader> _dotNetReference = null!;
-	private IJSObjectReference _module = null!;
+	private IJSObjectReference? _module;
 
 	private bool _showIndex;
 
@@ -264,6 +264,7 @@
 	
 	private async Task UpdateTotalPages()
 	{
+		if(_module is null) return;
 		_shouldRefreshTotalPages = false;
 		var pagesArray = await _module.InvokeAsync<int[]>("GetPageCount");
 		ReaderService.SetTotalPages(pagesArray);
@@ -327,9 +328,11 @@
 		_dotNetReference.Dispose();
 		try
 		{
-			await _module.InvokeVoidAsync("Dispose");
-			await _module.DisposeAsync();
-			
+			if (_module is not null)
+			{
+				await _module.InvokeVoidAsync("Dispose");
+				await _module.DisposeAsync();
+			}
 		}
 		catch {}
 		
