@@ -5,13 +5,14 @@ using BookHeaven.Core.Features.BookSeries;
 using BookHeaven.Core.Helpers;
 using BookHeaven.EbookManager;
 using BookHeaven.EbookManager.Enums;
+using BookHeaven.EbookManager.Formats;
 using BookHeaven.Server.Features.Files.Abstractions;
 using Microsoft.AspNetCore.Components.Forms;
 
 namespace BookHeaven.Server.Features.Files.Services;
 
 public class EbookFileLoader(
-	EbookManagerProvider ebookManagerProvider,
+	IEbookManagerProvider ebookManagerProvider,
 	ISender sender, 
 	ILogger<EbookFileLoader> logger)
 	: IEbookFileLoader
