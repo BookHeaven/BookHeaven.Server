@@ -7,6 +7,7 @@ using BookHeaven.Core.Features.Tags;
 using BookHeaven.EbookManager;
 using BookHeaven.EbookManager.Entities;
 using BookHeaven.EbookManager.Enums;
+using BookHeaven.EbookManager.Formats;
 using BookHeaven.Server.Constants;
 using BookHeaven.Server.Components.Dialogs;
 using BookHeaven.Server.Features.LocalStorage.Abstractions;
@@ -21,7 +22,7 @@ namespace BookHeaven.Server.Components.Pages.Books;
 public partial class BookPage
 {
 	[Inject] private ISender Sender { get; set; } = null!;
-	[Inject] private EbookManagerProvider EbookManagerProvider { get; set; } = null!;
+	[Inject] private IEbookManagerProvider EbookManagerProvider { get; set; } = null!;
 	[Inject] private NavigationManager NavigationManager { get; set; } = null!;
 	[Inject] private ISettingsManagerService SettingsManager { get; set; } = null!;
 	[Inject] private ILocalStorageService LocalStorageService { get; set; } = null!;
