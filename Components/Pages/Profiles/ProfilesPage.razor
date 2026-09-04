@@ -1,5 +1,6 @@
 ﻿@using BookHeaven.Core.Features.Profiles
 @using BookHeaven.Server.Features.Authentication.Abstractions
+@using BookHeaven.Server.Features.Authentication.Models
 @attribute [AllowAnonymous]
 @attribute [Route(Urls.Profiles)]
 @layout SimpleLayout
@@ -94,7 +95,7 @@
 	}
 	
 	private bool _isLoaded;
-	private Guid _selectedProfileId;
+	private Guid? _selectedProfileId;
 	private List<Profile> _profiles = [];
 	private Layout _layout = Layout.Select;
 
@@ -111,8 +112,8 @@
 			// Handle error, e.g., show a message to the user
 			Console.WriteLine("Failed to load profiles: " + getProfiles.Error);
 		}
-		var selectedProfile = await AuthenticationService.GetSelectedProfileAsync();
-		_selectedProfileId = selectedProfile is not null ? Guid.Parse(selectedProfile.ProfileId) : Guid.Empty;
+		var getSelectedProfile = await AuthenticationService.GetSelectedProfileAsync();
+		_selectedProfileId = getSelectedProfile?.ProfileId;
 		_isLoaded = true;
 	}
 

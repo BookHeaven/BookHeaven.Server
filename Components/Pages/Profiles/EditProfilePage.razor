@@ -1,6 +1,6 @@
 ﻿@using BookHeaven.Core.Abstractions
 @using BookHeaven.Core.Features.Profiles
-@using BookHeaven.Server.Features.LocalStorage.Abstractions
+@using BookHeaven.Server.Features.Authentication.Abstractions
 @attribute [Route($"{Urls.Profiles}/{{Id:guid}}")]
 @attribute [Route(Urls.CreateProfile)]
 @attribute [AllowAnonymous]
@@ -56,7 +56,7 @@
 	[Inject] private ISender Sender { get; set; } = null!;
 	[Inject] private NavigationManager NavigationManager { get; set; } = null!;
 	[Inject] private IAlertService AlertService { get; set; } = null!;
-	[Inject] private ILocalStorageService LocalStorageService { get; set; } = null!;
+	[Inject] private IAuthenticationService AuthenticationService { get; set; } = null!;
 	
 	[Parameter] public Guid? Id { get; set; }
 
@@ -90,7 +90,6 @@
 			var createProfile = await Sender.Send(new CreateProfile.Command(_profile.Name));
 			if (createProfile.Value.TotalProfiles == 1)
 			{
-				await LocalStorageService.SetAsync(SessionKey.SelectedProfileId, createProfile.Value.ProfileId);
 				skipProfilesPage = true;
 			}
 		}
@@ -99,7 +98,9 @@
 			var updateProfile = await Sender.Send(new UpdateProfileName.Command(_profile.ProfileId, _profile.Name));
 		}
 
+		await AuthenticationService.LoginAsync(_profile.Name);
 		NavigationManager.NavigateTo(skipProfilesPage ? Urls.Shelf : Urls.Profiles);
+		
 	}
 	
 	private async Task Delete()
