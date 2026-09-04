@@ -1,10 +1,13 @@
 ﻿using BookHeaven.Core.Features.Reader.Abstractions;
-using BookHeaven.Server.Features.LocalStorage.Abstractions;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 namespace BookHeaven.Server.Services;
 
-public class LocalReaderSettingsService(ILocalStorageService localStorageService) : IReaderSettingsService
+public class LocalReaderSettingsService(ProtectedLocalStorage protectedLocalStorage) : IReaderSettingsService
 {
+    private const string KeyPrefix = "ReaderSettings";
+    private static string LocalStorageKey(Guid profileId) => $"{KeyPrefix}_{profileId}";
+    
     public ProfileSettings? ReaderSettings { get; private set; }
     public event Action? OnSettingsChanged;
     public void NotifySettingsChanged()
@@ -15,14 +18,14 @@ public class LocalReaderSettingsService(ILocalStorageService localStorageService
 
     public async Task LoadSettings(Guid profileId)
     {
-        var settings = await localStorageService.GetAsync<ProfileSettings>(LocalStorageKey.ReaderSettings);
-        ReaderSettings = settings ?? new() { ProfileId = profileId };
+        var getSettings = await protectedLocalStorage.GetAsync<ProfileSettings>(LocalStorageKey(profileId));
+        ReaderSettings = getSettings.Value ?? new() { ProfileId = profileId };
     }
 
     public async Task SaveSettings()
     {
         if(ReaderSettings is null) return;
-        await localStorageService.SetAsync(LocalStorageKey.ReaderSettings, ReaderSettings);
+        await protectedLocalStorage.SetAsync(LocalStorageKey(ReaderSettings.ProfileId), ReaderSettings);
     }
     
     public void Dispose()
