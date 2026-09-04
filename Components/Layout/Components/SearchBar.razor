@@ -27,6 +27,7 @@
 	[Inject] private NavigationManager NavigationManager { get; set; } = null!;
 	[Inject] private ISender Sender { get; set; } = null!;
 	[Inject] private ILocalStorageService LocalStorageService { get; set; } = null!;
+	[Inject] private IUrlBuilder UrlBuilder { get; set; } = null!;
 	private SearchItem? _searchItem;
 	private MudAutocomplete<SearchItem> _autocomplete = null!;
 	private Guid _profileId;
@@ -55,7 +56,7 @@
 		searchItems.AddRange(getBooks.Value.Select(
 			b => new SearchItem
 			{
-				Image = b.CoverUrl(), 
+				Image = UrlBuilder.CoverUrl(b.BookId), 
 				Title = b.Title!, 
 				Url = Urls.GetBookUrl(b.BookId),
 				Author = b.Author?.Name,

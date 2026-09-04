@@ -14,7 +14,7 @@
 		</span>
 	}
 	<div class="h-[200px] sm:h-[250px] overflow-hidden">
-		<MudCardMedia Image="@Book.CoverUrl(true)" Class="transition-transform h-full duration-150 group-hover:scale-105" style="@Transitions.GetTransitionName("img", Book.BookId)"/>
+		<MudCardMedia Image="@UrlBuilder.CoverUrl(Book.BookId)" Class="transition-transform h-full duration-150 group-hover:scale-105" style="@Transitions.GetTransitionName("img", Book.BookId)"/>
 	</div>
 	<MudCardContent
 		Class="flex-1 relative flex flex-col gap-1 transition-colors group-hover:bg-slate-700">
@@ -35,6 +35,8 @@
 </MudCard>
 
 @code {
+	[Inject] private IUrlBuilder UrlBuilder { get; set; } = null!;
+	
 	[Parameter] public required Book Book { get; set; }
 	[Parameter] public bool IsInteractive { get; set; } = true;
 	[Parameter] public bool IsSelectMode { get; set; } = false;

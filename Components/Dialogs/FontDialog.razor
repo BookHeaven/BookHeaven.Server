@@ -60,7 +60,7 @@
 				<style>
 					@foreach (var variant in _variants)
 					{
-						@variant.GetFontFace();
+						@variant.GetFontFace(UrlBuilder.FontUrl(variant.Family, variant.FileName));
 					}
 
 					#font-@_variants.First().Family p {
@@ -103,6 +103,7 @@
 	[Inject] IDialogService DialogService { get; set; } = null!;
 	[Inject] IAlertService AlertService { get; set; } = null!;
 	[Inject] ISender Sender { get; set; } = null!;
+	[Inject] IUrlBuilder UrlBuilder { get; set; } = null!;
 	
 	[CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = null!;
 	[Parameter] public string? Family { get; set; }
@@ -177,7 +178,7 @@
 				await AlertService.ShowToastAsync(deleteFont.Error.Description, AlertSeverity.Error);
 				return;
 			}
-			var folder = Path.Combine(CoreGlobals.FontsPath, Family!);
+			var folder = UrlBuilder.FontFilePath(Family!);
 			if (Directory.Exists(folder))
 			{
 				Directory.Delete(folder, true);
@@ -216,7 +217,7 @@
 			}
 
 			var file = _files.First(f => f.Name == variant.FileName);
-			var filePath = variant.FilePath();
+			var filePath = UrlBuilder.FontFilePath(variant.Family, variant.FileName);
 			var folderPath = Path.GetDirectoryName(filePath);
 
 			if (!Directory.Exists(folderPath))

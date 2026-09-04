@@ -130,10 +130,10 @@ FileExtensionContentTypeProvider provider = new()
 app.MapStaticAssets();
 
 // Books: no-cache headers but support ETag for conditional GETs
-app.UseMiddleware<ETagMiddleware>("/books", CoreGlobals.BooksPath);
+app.UseMiddleware<ETagMiddleware>("/books", Path.Combine(appDataPath, "books"));
 app.UseStaticFiles(new StaticFileOptions
 {
-	FileProvider = new PhysicalFileProvider(CoreGlobals.BooksPath),
+	FileProvider = new PhysicalFileProvider(Path.Combine(appDataPath, "books")),
 	ContentTypeProvider = provider,
 	RequestPath = "/books",
 	OnPrepareResponse = ctx =>
@@ -145,10 +145,10 @@ app.UseStaticFiles(new StaticFileOptions
 });
 
 // Covers: long cache but support ETag
-app.UseMiddleware<ETagMiddleware>("/covers", CoreGlobals.CoversPath);
+app.UseMiddleware<ETagMiddleware>("/covers", Path.Combine(appDataPath, "covers"));
 app.UseStaticFiles(new StaticFileOptions
 {
-	FileProvider = new PhysicalFileProvider(CoreGlobals.CoversPath),
+	FileProvider = new PhysicalFileProvider(Path.Combine(appDataPath, "covers")),
 	RequestPath = "/covers",
 	OnPrepareResponse = ctx =>
 	{
@@ -157,18 +157,18 @@ app.UseStaticFiles(new StaticFileOptions
 });
 
 // Fonts: support ETag (no explicit cache headers here)
-app.UseMiddleware<ETagMiddleware>("/fonts", CoreGlobals.FontsPath);
+app.UseMiddleware<ETagMiddleware>("/fonts", Path.Combine(appDataPath, "fonts"));
 app.UseStaticFiles(new StaticFileOptions
 {
-	FileProvider = new PhysicalFileProvider(CoreGlobals.FontsPath),
+	FileProvider = new PhysicalFileProvider(Path.Combine(appDataPath, "fonts")),
 	RequestPath = "/fonts"
 });
 
 // Cache folder (ebook manager cache)
-app.UseMiddleware<ETagMiddleware>("/cache", EbookManagerGlobals.CachePath);
+app.UseMiddleware<ETagMiddleware>("/cache", Path.Combine(appDataPath, "cache"));
 app.UseStaticFiles(new StaticFileOptions
 {
-	FileProvider = new PhysicalFileProvider(EbookManagerGlobals.CachePath),
+	FileProvider = new PhysicalFileProvider(Path.Combine(appDataPath, "cache")),
 	RequestPath = "/cache"
 });
 	

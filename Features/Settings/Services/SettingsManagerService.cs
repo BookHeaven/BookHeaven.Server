@@ -2,10 +2,11 @@
 using BookHeaven.Core;
 using BookHeaven.Server.Features.Settings.Abstractions;
 using BookHeaven.Server.Features.Settings.DTOs;
+using Microsoft.Extensions.Options;
 
 namespace BookHeaven.Server.Features.Settings.Services;
 
-public class SettingsManagerService : ISettingsManagerService
+public class SettingsManagerService(IOptions<CoreOptions> options) : ISettingsManagerService
 {
     private const string SettingsFileName = "settings.json";
     
@@ -13,7 +14,7 @@ public class SettingsManagerService : ISettingsManagerService
     {
         try
         {
-            var file = await File.ReadAllTextAsync(Path.Combine(CoreGlobals.DatabasePath, SettingsFileName));
+            var file = await File.ReadAllTextAsync(Path.Combine(options.Value.DatabasePath, SettingsFileName));
             return JsonSerializer.Deserialize<ServerSettings>(file) ?? new();
         }
         catch (Exception)
@@ -25,6 +26,6 @@ public class SettingsManagerService : ISettingsManagerService
     public async Task SaveSettingsAsync(ServerSettings serverSettings)
     {
         var json = JsonSerializer.Serialize(serverSettings);
-        await File.WriteAllTextAsync(Path.Combine(CoreGlobals.DatabasePath, SettingsFileName), json);
+        await File.WriteAllTextAsync(Path.Combine(options.Value.DatabasePath, SettingsFileName), json);
     }
 }

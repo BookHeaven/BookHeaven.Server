@@ -1,4 +1,5 @@
 ﻿using System.Xml.Linq;
+using BookHeaven.Core.Abstractions.Services;
 using BookHeaven.Core.Features.Books;
 using BookHeaven.Server.Features.Api.Abstractions;
 
@@ -19,7 +20,8 @@ public static class OpdsV1
 
         private static async Task<IResult> Handler(
             ISender sender,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IUrlBuilder urlBuilder)
         {
             var getBooks = await sender.Send(new GetAllBooks.Query());
             if (getBooks.IsFailure)
@@ -52,11 +54,11 @@ public static class OpdsV1
                             new XElement(atom+"author", new XElement(atom+"name", book.Author?.Name ?? "Unknown")),
                             !string.IsNullOrEmpty(book.Description) ? new XElement(atom+"content", new XAttribute("type", "text"), book.Description) : null,
                             new XElement(atom+"link",
-                                new XAttribute("href", baseUrl + book.EbookUrl()),
+                                new XAttribute("href", baseUrl + urlBuilder.EbookUrl(book.BookId, book.Format)),
                                 new XAttribute("type", book.Format.GetMimeType()),
                                 new XAttribute("rel", "http://opds-spec.org/acquisition")),
                             new XElement(atom+"link",
-                                new XAttribute("href", baseUrl + book.CoverUrl()),
+                                new XAttribute("href", baseUrl + urlBuilder.CoverUrl(book.BookId)),
                                 new XAttribute("type", "image/jpeg"),
                                 new XAttribute("rel", "http://opds-spec.org/image")),
                             book.Series != null ? new XElement(dc + "series", book.Series.Name) : null,

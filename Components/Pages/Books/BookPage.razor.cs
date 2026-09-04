@@ -1,4 +1,5 @@
 using BookHeaven.Core.Abstractions;
+using BookHeaven.Core.Abstractions.Services;
 using BookHeaven.Core.Features.Authors;
 using BookHeaven.Core.Features.Books;
 using BookHeaven.Core.Features.BookSeries;
@@ -28,6 +29,7 @@ public partial class BookPage
 	[Inject] private ILocalStorageService LocalStorageService { get; set; } = null!;
 	[Inject] private IDialogService DialogService { get; set; } = null!;
 	[Inject] private IAlertService AlertService { get; set; } = null!;
+	[Inject] private IUrlBuilder UrlBuilder { get; set; } = null!;
 
 	[Parameter] public Guid Id { get; set; }
 
@@ -39,7 +41,7 @@ public partial class BookPage
 
 	private bool IsEditing { get; set; }
 
-	private bool CoverExists => File.Exists(_book.CoverPath());
+	private bool CoverExists => File.Exists(UrlBuilder.CoverFilePath(Id));
 
 	private Book _book = new();
 	private List<Author> _authors = [];
@@ -206,7 +208,7 @@ public partial class BookPage
 		}
 
 		
-		var fileHash = await FileHelpers.GetPartialMd5HashAsync(_book.EbookPath());
+		var fileHash = await FileHelpers.GetPartialMd5HashAsync(UrlBuilder.EbookFilePath(_book.BookId, _book.Format));
 		if (fileHash is not null)
 		{
 			_book.FileHash = fileHash;
@@ -247,10 +249,10 @@ public partial class BookPage
 			SeriesIndex = _book.SeriesIndex
 		};
 
-		await writer.ReplaceMetadataAsync(_book.EbookPath(), ebook);
+		await writer.ReplaceMetadataAsync(UrlBuilder.EbookFilePath(_book.BookId, _book.Format), ebook);
 		if(_newCoverTempPath != null)
 		{
-			await writer.ReplaceCoverAsync(_book.EbookPath(), _book.CoverPath());
+			await writer.ReplaceCoverAsync(UrlBuilder.EbookFilePath(_book.BookId, _book.Format), UrlBuilder.CoverFilePath(_book.BookId));
 		}
 	}
 

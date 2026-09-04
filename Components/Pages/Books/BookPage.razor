@@ -11,7 +11,7 @@
 @if(!IsEditing)
 {
 	<div class="fixed left-0 top-0 right-0 bottom-0 -z-10 blur-3xl opacity-10">
-		<img class="h-full w-full" src="@(_book.CoverUrl(true))" alt="" />
+		<img class="h-full w-full" src="@UrlBuilder.CoverUrl(_book.BookId)" alt="" />
 	</div>
 }
 
@@ -25,7 +25,7 @@
 			<MudIconButton Icon="@Icons.Material.Filled.MenuBook" Color="Color.Primary" Href="@Urls.GetReaderUrl(_book.BookId)"/>
 		</MudTooltip>
 		<MudTooltip Text="@Translations.DOWNLOAD">
-			<MudIconButton Icon="@Icons.Material.Filled.Download" Color="Color.Primary" Href="@_book.EbookUrl()" download="@_book.FormattedFileName()"/>
+			<MudIconButton Icon="@Icons.Material.Filled.Download" Color="Color.Primary" Href="@UrlBuilder.EbookUrl(_book.BookId, _book.Format)" download="@_book.FormattedFileName()"/>
 		</MudTooltip>
 		<MudTooltip Text="@Translations.EDIT">
 			<MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" OnClick="@EnableEditing"/>
@@ -46,7 +46,7 @@
 </Topbar>
 <Container Class="mt-10 flex flex-wrap gap-10">
 	<div class="w-[200px] mx-auto">
-		<img src="@(_newCoverTempPath ?? _book.CoverUrl(true))" style="@Transitions.GetTransitionName("img", _book.BookId)" alt="" />
+		<img src="@(_newCoverTempPath ?? UrlBuilder.CoverUrl(_book.BookId))" style="@Transitions.GetTransitionName("img", _book.BookId)" alt="" />
 		@if (IsEditing && _newCoverTempPath != null)
 		{
 			<MudAlert Class="mt-4" Severity="Severity.Warning">The new cover won't be applied until the changes are saved.</MudAlert>
