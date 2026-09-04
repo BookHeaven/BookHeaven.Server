@@ -1,4 +1,3 @@
-using BookHeaven.EbookManager;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.FileProviders;
 using MudBlazor.Services;
@@ -143,6 +142,7 @@ app.UseStaticFiles(new StaticFileOptions
 });
 
 // Covers: long cache but support ETag
+app.UseMiddleware<CoverNotFoundMiddleware>();
 app.UseMiddleware<ETagMiddleware>("/covers", Path.Combine(appDataPath, "covers"));
 app.UseStaticFiles(new StaticFileOptions
 {
