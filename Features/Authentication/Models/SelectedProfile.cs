@@ -2,15 +2,16 @@
 
 namespace BookHeaven.Server.Features.Authentication.Models;
 
-public record SelectedProfile(string ProfileId, string Name);
+public record SelectedProfile(Guid ProfileId, string Name);
 
 public static class SelectedProfileExtensions
 {
+    
     public static ClaimsPrincipal ToClaimsPrincipal(this SelectedProfile profile)
     {
         var claims = new List<Claim>
         {
-            new(ClaimTypes.NameIdentifier, profile.ProfileId),
+            new(ClaimTypes.NameIdentifier, profile.ProfileId.ToString()),
             new(ClaimTypes.Name, profile.Name)
         };
 
@@ -28,6 +29,6 @@ public static class SelectedProfileExtensions
             throw new InvalidOperationException("Invalid ClaimsPrincipal: Missing required claims.");
         }
 
-        return new SelectedProfile(profileIdClaim.Value, nameClaim.Value);
+        return new SelectedProfile(Guid.Parse(profileIdClaim.Value), nameClaim.Value);
     }
 }
