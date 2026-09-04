@@ -7,6 +7,7 @@ using BookHeaven.Server.Services;
 using System.Text.Json.Serialization;
 using BookHeaven.Core;
 using BookHeaven.Core.Abstractions;
+using BookHeaven.Core.Features.Reader.Abstractions;
 using BookHeaven.Server.Features.Api.DependencyInjection;
 using BookHeaven.Server.Features.Api.Transformers;
 using BookHeaven.Server.Features.Authentication.Abstractions;
@@ -75,6 +76,7 @@ builder.Services.AddTransient<IAlertService, AlertService>();
 builder.Services.AddTransient<IEbookFileLoader, EbookFileLoader>();
 builder.Services.AddScoped<ISettingsManagerService, SettingsManagerService>();
 builder.Services.AddScoped<ILocalStorageService, LocalStorageService>();
+builder.Services.AddScoped<IReaderSettingsService, LocalReaderSettingsService>();
 builder.Services.AddSingleton<IEbookLoadNotifier, EbookLoadNotifier>();
 
 builder.Services.AddMetadataProviders();
