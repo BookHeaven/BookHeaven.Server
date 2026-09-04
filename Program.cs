@@ -16,8 +16,6 @@ using BookHeaven.Server.Features.Authorization.Services;
 using BookHeaven.Server.Features.Discovery.Services;
 using BookHeaven.Server.Features.Files.Abstractions;
 using BookHeaven.Server.Features.Files.Services;
-using BookHeaven.Server.Features.LocalStorage.Abstractions;
-using BookHeaven.Server.Features.LocalStorage.Services;
 using BookHeaven.Server.Features.Metadata.Abstractions;
 using BookHeaven.Server.Features.Metadata.DependencyInjection;
 using BookHeaven.Server.Features.Metadata.Services;
@@ -70,7 +68,6 @@ builder.Services.AddTransient<IImageProvider, DuckDuckGoImageProvider>();
 builder.Services.AddTransient<IAlertService, AlertService>();
 builder.Services.AddTransient<IEbookFileLoader, EbookFileLoader>();
 builder.Services.AddScoped<ISettingsManagerService, SettingsManagerService>();
-builder.Services.AddScoped<ILocalStorageService, LocalStorageService>();
 builder.Services.AddScoped<IReaderSettingsService, LocalReaderSettingsService>();
 builder.Services.AddSingleton<IEbookLoadNotifier, EbookLoadNotifier>();
 
