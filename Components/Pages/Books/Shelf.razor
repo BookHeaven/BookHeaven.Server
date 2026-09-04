@@ -2,10 +2,9 @@
 @attribute [Route($"{Urls.Collection}/{{CollectionId:guid}}")]
 
 @using BookHeaven.Core.Abstractions
-@using BookHeaven.Core.Entities.Base
 @using BookHeaven.Core.Features.Books
 @using BookHeaven.Core.Features.Collections
-@using BookHeaven.Server.Features.LocalStorage.Abstractions
+@using BookHeaven.Server.Features.Authentication.Models
 @implements IDisposable
 
 <PageTitle>@Translations.SHELF</PageTitle>
@@ -117,17 +116,16 @@ else
 	[Inject] private NavigationManager NavigationManager { get; set; } = null!;
 	[Inject] private IJSRuntime JsRuntime { get; set; } = null!;
 	[Inject] private BookManager BookManager { get; set; } = null!;
-	[Inject] private ILocalStorageService LocalStorageService { get; set; } = null!;
 	[Inject] private GlobalEventsService GlobalEventsService { get; set; } = null!;
 	[Inject] private IAlertService AlertService { get; set; } = null!;
 	[Inject] private IDialogService DialogService { get; set; } = null!;
 	[Inject] private ISnackbar Snackbar { get; set; } = null!;
 	[Inject] private ISender Sender { get; set; } = null!;
 	
+	[CascadingParameter] public SelectedProfile SelectedProfile { get; set; } = null!;
 	[Parameter] public Guid CollectionId { get; set; } = Guid.Empty;
 	
 	private bool IsLoading { get; set; } = true;
-	private Guid ProfileId { get; set; }
 	
 	private bool IsSelectMode { get; set; }
 	private List<Guid> _selectedBooks = [];
@@ -146,12 +144,10 @@ else
 	};
 	
 
-	protected override async Task OnInitializedAsync()
+	protected override void OnInitialized()
 	{
 		GlobalEventsService.Subscribe<BookAdded>(OnBookAdded);
 		GlobalEventsService.Subscribe<BookDeleted>(OnBookDeleted);
-
-		ProfileId = await LocalStorageService.GetAsync<Guid>(SessionKey.SelectedProfileId);
 	}
 
 	protected override async Task OnParametersSetAsync()
@@ -173,14 +169,14 @@ else
 		{
 			BookManager.CurrentCollection = null;
 		}
-		await BookManager.GetBooksAsync(ProfileId);
+		await BookManager.GetBooksAsync(SelectedProfile.ProfileId);
 		DeselectAllBooks();
 		IsLoading = false;
 	}
 
 	private async Task OnBookAdded(BookAdded e)
 	{
-		await BookManager.AppendBookAsync(ProfileId, e.BookId);
+		await BookManager.AppendBookAsync(SelectedProfile.ProfileId, e.BookId);
 		await InvokeAsync(StateHasChanged);
 	}
 	

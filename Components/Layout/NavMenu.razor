@@ -1,6 +1,6 @@
 ﻿@using BookHeaven.Core.Entities.Base
 @using BookHeaven.Core.Features.Collections
-@using BookHeaven.Server.Features.LocalStorage.Abstractions
+@using BookHeaven.Server.Features.Authentication.Models
 @implements IDisposable
 <MudNavMenu Margin="Margin.Dense" Class="p-4 select-none" Color="Color.Primary" Rounded="true">
     <MudNavLink Href="@Urls.Shelf" Match="NavLinkMatch.All" Icon="@Icons.Material.Rounded.AutoStories">@Translations.SHELF</MudNavLink>
@@ -28,10 +28,9 @@
 
 @code {
     [Inject] private ISender Sender { get; set; } = null!;
-    [Inject] private ILocalStorageService LocalStorageService { get; set; } = null!;
     [Inject] private GlobalEventsService GlobalEventsService { get; set; } = null!;
     
-    private Guid ProfileId { get; set; }
+    [CascadingParameter] public SelectedProfile SelectedProfile { get; set; } = null!;
     private List<Collection> _collections = [];
 
     protected override async Task OnInitializedAsync()
@@ -40,15 +39,13 @@
         GlobalEventsService.Subscribe<CollectionUpdated>(OnCollectionUpdated);
         GlobalEventsService.Subscribe<CollectionsPositionsUpdated>(OnPositionsUpdated);
         GlobalEventsService.Subscribe<CollectionDeleted>(OnCollectionRemoved);
-        
-        ProfileId = await LocalStorageService.GetAsync<Guid>(SessionKey.SelectedProfileId);
 
         await GetCollections();
     }
 
     private async Task GetCollections()
     {
-        var getCollections = await Sender.Send(new GetPinnedCollectionsByProfile.Query(ProfileId));
+        var getCollections = await Sender.Send(new GetPinnedCollectionsByProfile.Query(SelectedProfile.ProfileId));
         if (getCollections.IsSuccess)
         {
             _collections = getCollections.Value;
@@ -59,7 +56,7 @@
     private async Task OnCollectionAdded(CollectionCreated ev)
     {
         var getCollection = await Sender.Send(new GetCollectionById.Query(ev.CollectionId));
-        if (getCollection is { IsSuccess: true, Value.Pinned: true } && (getCollection.Value.ProfileId is null || getCollection.Value.ProfileId == ProfileId))
+        if (getCollection is { IsSuccess: true, Value.Pinned: true } && (getCollection.Value.ProfileId is null || getCollection.Value.ProfileId == SelectedProfile.ProfileId))  
         {
             _collections.Add(getCollection.Value);
             await InvokeAsync(StateHasChanged);
@@ -75,7 +72,7 @@
             var existing = _collections.FirstOrDefault(c => c.CollectionId == ev.CollectionId);
             if (existing is not null)
             {
-                if (getCollection.Value.Pinned && (getCollection.Value.ProfileId is null || getCollection.Value.ProfileId == ProfileId))
+                if (getCollection.Value.Pinned && (getCollection.Value.ProfileId is null || getCollection.Value.ProfileId == SelectedProfile.ProfileId))
                 {
                     var index = _collections.IndexOf(existing);
                     _collections[index] = getCollection.Value;
@@ -87,7 +84,7 @@
             }
             else
             {
-                if (getCollection.Value.Pinned && (getCollection.Value.ProfileId is null || getCollection.Value.ProfileId == ProfileId))
+                if (getCollection.Value.Pinned && (getCollection.Value.ProfileId is null || getCollection.Value.ProfileId == SelectedProfile.ProfileId))
                 {
                     _collections.Add(getCollection.Value);
                 }

@@ -7,7 +7,8 @@
 @using BookHeaven.Core.Features.Tags
 @using BookHeaven.Core.Shared
 @using BookHeaven.Server.Components.Pages.Collections.Components
-@using BookHeaven.Server.Features.LocalStorage.Abstractions
+@using BookHeaven.Server.Features.Authentication.Abstractions
+@using BookHeaven.Server.Features.Authentication.Models
 @attribute [Route(Urls.NewCollection)]
 @attribute [Route(Urls.Collections + "/{CollectionId:guid}")]
 
@@ -105,8 +106,8 @@
 @code {
 	[Inject] private NavigationManager NavigationManager { get; set; } = null!;
 	[Inject] private ISender Sender { get; set; } = null!;
-	[Inject] private ILocalStorageService LocalStorageService { get; set; } = null!;
 	
+	[CascadingParameter] public SelectedProfile SelectedProfile { get; set; } = null!;
 	[Parameter] public Guid? CollectionId { get; set; }
 	
 	private string PageTitle => CollectionId is null ? "Create collection" : "Edit collection";
@@ -173,7 +174,7 @@
 			_tags = getTags.Value;
 		}
 
-		var getBooks = await Sender.Send(new GetAllBooks.Query(await LocalStorageService.GetAsync<Guid>(SessionKey.SelectedProfileId)));
+		var getBooks = await Sender.Send(new GetAllBooks.Query(SelectedProfile.ProfileId));
 		if (getBooks.IsSuccess)
 		{
 			_books = getBooks.Value;

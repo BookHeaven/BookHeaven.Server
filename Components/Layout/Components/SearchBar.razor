@@ -1,5 +1,5 @@
 ﻿@using BookHeaven.Core.Features.Books
-@using BookHeaven.Server.Features.LocalStorage.Abstractions
+@using BookHeaven.Server.Features.Authentication.Models
 <MudAutocomplete
 	@ref="_autocomplete"
 	Class="!mx-2"
@@ -26,17 +26,13 @@
 @code {
 	[Inject] private NavigationManager NavigationManager { get; set; } = null!;
 	[Inject] private ISender Sender { get; set; } = null!;
-	[Inject] private ILocalStorageService LocalStorageService { get; set; } = null!;
 	[Inject] private IUrlBuilder UrlBuilder { get; set; } = null!;
+	
+	[CascadingParameter] public SelectedProfile SelectedProfile { get; set; } = null!;
+	
 	private SearchItem? _searchItem;
 	private MudAutocomplete<SearchItem> _autocomplete = null!;
-	private Guid _profileId;
-
-
-	protected override async Task OnInitializedAsync()
-	{
-		_profileId = await LocalStorageService.GetAsync<Guid>(SessionKey.SelectedProfileId);
-	}
+	
 
 	private async Task<IEnumerable<SearchItem?>> Search(string? value, CancellationToken token)
 	{
@@ -44,7 +40,7 @@
 		if (string.IsNullOrEmpty(value)) return [];
 		
 		var getBooks = await Sender.Send(
-			new GetAllBooks.Query(_profileId,value)
+			new GetAllBooks.Query(SelectedProfile.ProfileId,value)
 			,token);
 
 		if (getBooks.IsFailure)
