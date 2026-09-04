@@ -1,55 +1,72 @@
-﻿@inherits LayoutComponentBase
+﻿@using System.Diagnostics
+@using BookHeaven.Server.Features.Authentication.Abstractions
+@using BookHeaven.Server.Features.Authentication.Models
+@inherits LayoutComponentBase
 <PageTitle>BookHeaven</PageTitle>
 
-<div class="flex h-full overflow-hidden relative">
-    <MudDrawer @bind-Open="_drawerOpen" Class="lg:static" Elevation="0">
-        <Logo />
-        <ProfileButton />
-        <NavMenu/>
-        <div class="mt-auto grid gap-5 p-5">
-            <EbookLoadInfo />
-            <div class="flex items-center justify-between gap-2">
-                <MudIconButton 
-                    Href="https://github.com/bookheaven/bookheaven.server"
-                    Target="_blank"
-                    Icon="@Icons.Custom.Brands.GitHub" 
-                    Color="Color.Secondary" />
-                <VersionInfo/>
+@if (!_isInitialized)
+{
+    <LoadingScreen />
+    return;
+}
+
+<CascadingValue Value="SelectedProfile">
+    <div class="flex h-full overflow-hidden relative">
+        <MudDrawer @bind-Open="_drawerOpen" Class="lg:static" Elevation="0">
+            <Logo />
+            <ProfileButton />
+            <NavMenu/>
+            <div class="mt-auto grid gap-5 p-5">
+                <EbookLoadInfo />
+                <div class="flex items-center justify-between gap-2">
+                    <MudIconButton 
+                        Href="https://github.com/bookheaven/bookheaven.server"
+                        Target="_blank"
+                        Icon="@Icons.Custom.Brands.GitHub" 
+                        Color="Color.Secondary" />
+                    <VersionInfo/>
+                </div>
             </div>
-        </div>
-    </MudDrawer>
-    <main class="flex flex-col w-full overflow-y-auto">
-        <div class="flex flex-col-reverse lg:flex-row gap-2 sticky top-0 px-2 2xl:px-3 backdrop-blur py-2 lg:py-3 z-20 bg-(--mud-palette-appbar-background)" style="view-transition-name:appbar;">
-            <div class="flex items-center gap-3 flex-1">
-                <SectionOutlet SectionName="TopBar" />
-            </div>
-            <div class="flex items-center">
-                <MudHidden Breakpoint="Breakpoint.MdAndUp">
-                    <MudIconButton Icon="@Icons.Material.Filled.Menu" Edge="Edge.False" OnClick="@((e) => DrawerToggle())"/>
-                </MudHidden>
-                <MudHidden Breakpoint="Breakpoint.MdAndDown">
-                    <MudSpacer />
-                </MudHidden>
-                <SearchBar/>
+        </MudDrawer>
+        <main class="flex flex-col w-full overflow-y-auto">
+            <div class="flex flex-col-reverse lg:flex-row gap-2 sticky top-0 px-2 2xl:px-3 backdrop-blur py-2 lg:py-3 z-20 bg-(--mud-palette-appbar-background)" style="view-transition-name:appbar;">
+                <div class="flex items-center gap-3 flex-1">
+                    <SectionOutlet SectionName="TopBar" />
+                </div>
+                <div class="flex items-center">
+                    <MudHidden Breakpoint="Breakpoint.MdAndUp">
+                        <MudIconButton Icon="@Icons.Material.Filled.Menu" Edge="Edge.False" OnClick="@((e) => _drawerOpen = !_drawerOpen)"/>
+                    </MudHidden>
+                    <MudHidden Breakpoint="Breakpoint.MdAndDown">
+                        <MudSpacer />
+                    </MudHidden>
+                    <SearchBar/>
                 
-                <EbookUploadButton />
+                    <EbookUploadButton />
+                </div>
             </div>
-        </div>
-        <div class="py-2 lg:py-5 md:px-7 relative flex-1">
-            <SectionOutlet SectionName="Toolbar" />
-            @Body
-        </div>
-        <SectionOutlet SectionName="BottomToolbar" />
-    </main>
-</div>
+            <div class="py-2 lg:py-5 md:px-7 relative flex-1">
+                <SectionOutlet SectionName="Toolbar" />
+                @Body
+            </div>
+            <SectionOutlet SectionName="BottomToolbar" />
+        </main>
+    </div>
+</CascadingValue>
 
 @code {
+    [Inject] private IAuthenticationService AuthenticationService { get; set; } = null!;
 
+    private SelectedProfile? SelectedProfile { get; set; }
+    
     private bool _drawerOpen = true;
+    
+    private bool _isInitialized;
 
-    private void DrawerToggle()
+    protected override async Task OnInitializedAsync()
     {
-        _drawerOpen = !_drawerOpen;
+        SelectedProfile = await AuthenticationService.GetSelectedProfileAsync();
+        _isInitialized = true;
     }
 
 }
