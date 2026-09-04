@@ -66,10 +66,6 @@ builder.Services.AddCore(options =>
 	options.DatabasePath = Path.Combine(appDataPath, "database");
 	options.CachePath = Path.Combine(appDataPath, "cache");
 });
-builder.Services.AddEbookManager(options =>
-{
-	options.CachePath = Path.Combine(appDataPath, "cache");
-});
 
 builder.Services.AddTransient<IImageProvider, DuckDuckGoImageProvider>();
 builder.Services.AddTransient<IAlertService, AlertService>();
