@@ -3,7 +3,7 @@
 @using BookHeaven.Server.Components.Pages.Reader.Components
 @using BookHeaven.Server.Components.Pages.Reader.Components.Settings
 @using BookHeaven.Server.Components.Pages.Reader.Components.TableOfContents
-@using BookHeaven.Server.Features.LocalStorage.Abstractions
+@using BookHeaven.Server.Features.Authentication.Abstractions
 @attribute [Route($"{Urls.Reader}/{{BookId:guid}}")]
 @layout EmptyLayout
 @implements IAsyncDisposable
@@ -217,7 +217,7 @@
 	</div>
 </div>
 @code {
-	[Inject] private ILocalStorageService LocalStorageService { get; set; } = null!;
+	[Inject] private IAuthenticationService AuthenticationService { get; set; } = null!;
 	[Inject] private IReaderService ReaderService { get; set; } = null!;
 	[Inject] private IReaderSettingsService ReaderSettingsService { get; set; } = null!;
 	[Inject] private IJSRuntime JsRuntime { get; set; } = null!;
@@ -239,9 +239,9 @@
 		ReaderService.OnTotalPagesChanged += RefreshUi;
 		ReaderSettingsService.OnSettingsChanged += OnSettingsChanged;
 		
-		var profileId = await LocalStorageService.GetAsync<Guid>(SessionKey.SelectedProfileId);
+		var selectedProfile = await AuthenticationService.GetSelectedProfileAsync();
 		
-		await ReaderService.InitializeAsync(BookId, profileId);
+		await ReaderService.InitializeAsync(BookId, selectedProfile!.ProfileId);
 		if (!ReaderService.IsReady)
 		{
 			_shouldRefreshTotalPages = true;
