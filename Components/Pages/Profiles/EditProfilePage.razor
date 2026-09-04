@@ -3,6 +3,7 @@
 @using BookHeaven.Server.Features.LocalStorage.Abstractions
 @attribute [Route($"{Urls.Profiles}/{{Id:guid}}")]
 @attribute [Route(Urls.CreateProfile)]
+@attribute [AllowAnonymous]
 @layout SimpleLayout
 
 @if (_profile is null)
