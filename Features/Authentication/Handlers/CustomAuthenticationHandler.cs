@@ -10,7 +10,7 @@ public class CustomAuthenticationHandler(IOptionsMonitor<CustomAuthOptions> opti
 {
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        var profile = new SelectedProfile("", "");
+        var profile = new SelectedProfile(Guid.Empty, "");
         return Task.FromResult(AuthenticateResult.Success(new AuthenticationTicket(profile.ToClaimsPrincipal(), "BookHeaven")));
     }
 }
