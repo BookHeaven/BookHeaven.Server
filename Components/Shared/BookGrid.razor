@@ -25,7 +25,7 @@
 @code {
 	[Inject] private NavigationManager NavigationManager { get; set; } = null!;
 
-	[Parameter] public List<Book> Books { get; set; } = [];
+	[Parameter] public IReadOnlyList<Book> Books { get; set; } = [];
 	[Parameter] public bool IsLoading { get; set; }
 	[Parameter] public bool Center { get; set; }
 	[Parameter] public bool SingleRow { get; set; }
