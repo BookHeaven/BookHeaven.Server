@@ -29,17 +29,17 @@
 				Margin="Margin.Dense" 
 				@bind-Value="_collection!.Name" 
 				Variant="Variant.Outlined" 
-				Label="Collection name" 
+				Label="@Translations.COLLECTION_NAME" 
 				MaxLength="100"
 				Required/>
-			<MudSwitch Label="Pinned" @bind-Value="@_collection!.Pinned" Color="Color.Primary" />
+			<MudSwitch Label="@Translations.PINNED_F" @bind-Value="@_collection!.Pinned" Color="Color.Primary" />
 		</div>
 		@if (_collection is SmartCollection)
 		{
 			<MudButton
 				OnClick="() => SetCollectionType(CollectionType.Simple)"
 				Variant="Variant.Filled">
-				Convert to Simple Collection
+				@Translations.COLLECTION_CONVERT_TO_SIMPLE
 			</MudButton>
 		}
 		else
@@ -49,7 +49,7 @@
 				Variant="Variant.Filled"
 				IconColor="Color.Warning"
 				EndIcon="@Icons.Material.Filled.Star">
-				Convert to Smart Collection
+				@Translations.COLLECTION_CONVERT_TO_SMART
 			</MudButton>
 		}
 		<MudButton

@@ -309,4 +309,25 @@
   <data name="PINNED_F" xml:space="preserve">
     <value>Anclada</value>
   </data>
+  <data name="COLLECTION_NAME" xml:space="preserve">
+    <value>Nombre de la colección</value>
+  </data>
+  <data name="TAGS" xml:space="preserve">
+    <value>Etiquetas</value>
+  </data>
+  <data name="STATUS" xml:space="preserve">
+    <value>Estado</value>
+  </data>
+  <data name="INCLUDE" xml:space="preserve">
+    <value>Incluir</value>
+  </data>
+  <data name="EXCLUDE" xml:space="preserve">
+    <value>Excluir</value>
+  </data>
+  <data name="COLLECTION_CONVERT_TO_SIMPLE" xml:space="preserve">
+    <value>Convertir a colección simple</value>
+  </data>
+  <data name="COLLECTION_CONVERT_TO_SMART" xml:space="preserve">
+    <value>Convertir a colección inteligente</value>
+  </data>
 </root>

@@ -1,12 +1,12 @@
 ﻿<section>
-	<MudText Class="text-2xl 2xl:text-4xl" Color="CurrentColor">@(IsInclude ? "Include" : "Exclude")</MudText>
+	<MudText Class="text-2xl 2xl:text-4xl" Color="CurrentColor">@(IsInclude ? Translations.INCLUDE : Translations.EXCLUDE)</MudText>
 	<MudDivider Class="my-2"/>
 	<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 mt-5 gap-5">
 		<SmartCollectionCheckboxList 
 			TItem="Author" 
 			TFilterId="Guid"
 			Items="Authors.OrderBy(a => a.Name)"
-			Label="Authors" 
+			Label="@Translations.AUTHORS" 
 			GetId="a => a.AuthorId" 
 			GetName="a => a.Name!" 
 			@bind-FilterSet="SmartCollection.Authors"
@@ -17,7 +17,7 @@
 			TItem="Series"
 			TFilterId="Guid"
 			Items="Series.OrderBy(s => s.Name)"
-			Label="Series"
+			Label="@Translations.SERIES"
 			GetId="s => s.SeriesId"
 			GetName="s => s.Name!"
 			@bind-FilterSet="SmartCollection.Series"
@@ -28,7 +28,7 @@
 			TItem="Tag"
 			TFilterId="Guid"
 			Items="Tags"
-			Label="Tags"
+			Label="@Translations.TAGS"
 			GetId="t => t.TagId"
 			GetName="t => t.Name"
 			@bind-FilterSet="SmartCollection.Tags"
@@ -39,7 +39,7 @@
 			TItem="BookStatus"
 			TFilterId="BookStatus"
 			Items="[BookStatus.New, BookStatus.Reading, BookStatus.Finished]"
-			Label="Status"
+			Label="@Translations.STATUS"
 			GetId="x => x"
 			GetName="x => x.StringValue()"
 			@bind-FilterSet="SmartCollection.Statuses"

@@ -309,4 +309,25 @@
   <data name="PINNED_F" xml:space="preserve">
     <value>Pinned</value>
   </data>
+  <data name="COLLECTION_NAME" xml:space="preserve">
+    <value>Collection name</value>
+  </data>
+  <data name="TAGS" xml:space="preserve">
+    <value>Tags</value>
+  </data>
+  <data name="STATUS" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="INCLUDE" xml:space="preserve">
+    <value>Include</value>
+  </data>
+  <data name="EXCLUDE" xml:space="preserve">
+    <value>Exclude</value>
+  </data>
+  <data name="COLLECTION_CONVERT_TO_SIMPLE" xml:space="preserve">
+    <value>Convert to simple collection</value>
+  </data>
+  <data name="COLLECTION_CONVERT_TO_SMART" xml:space="preserve">
+    <value>Convert to smart collection</value>
+  </data>
 </root>

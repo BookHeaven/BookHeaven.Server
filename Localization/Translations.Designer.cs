@@ -159,6 +159,33 @@ namespace BookHeaven.Server.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Convert to simple collection.
+        /// </summary>
+        public static string COLLECTION_CONVERT_TO_SIMPLE {
+            get {
+                return ResourceManager.GetString("COLLECTION_CONVERT_TO_SIMPLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Convert to smart collection.
+        /// </summary>
+        public static string COLLECTION_CONVERT_TO_SMART {
+            get {
+                return ResourceManager.GetString("COLLECTION_CONVERT_TO_SMART", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collection name.
+        /// </summary>
+        public static string COLLECTION_NAME {
+            get {
+                return ResourceManager.GetString("COLLECTION_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Collections.
         /// </summary>
         public static string COLLECTIONS {
@@ -258,11 +285,29 @@ namespace BookHeaven.Server.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Exclude.
+        /// </summary>
+        public static string EXCLUDE {
+            get {
+                return ResourceManager.GetString("EXCLUDE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Go back.
         /// </summary>
         public static string GO_BACK {
             get {
                 return ResourceManager.GetString("GO_BACK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Include.
+        /// </summary>
+        public static string INCLUDE {
+            get {
+                return ResourceManager.GetString("INCLUDE", resourceCulture);
             }
         }
         
@@ -587,6 +632,24 @@ namespace BookHeaven.Server.Localization {
         public static string START_DATE {
             get {
                 return ResourceManager.GetString("START_DATE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Status.
+        /// </summary>
+        public static string STATUS {
+            get {
+                return ResourceManager.GetString("STATUS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tags.
+        /// </summary>
+        public static string TAGS {
+            get {
+                return ResourceManager.GetString("TAGS", resourceCulture);
             }
         }
         
