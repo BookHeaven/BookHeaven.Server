@@ -159,6 +159,15 @@ namespace BookHeaven.Server.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Colecciones.
+        /// </summary>
+        public static string COLLECTIONS {
+            get {
+                return ResourceManager.GetString("COLLECTIONS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Formato de fecha.
         /// </summary>
         public static string DATE_FORMAT {

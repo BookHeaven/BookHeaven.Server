@@ -13,16 +13,18 @@
     
     <MudNavLink Href="@Urls.Collections">
         <div class="flex items-center justify-between -ms-3">
-            <span class="font-bold">Collections</span>
+            <span class="font-bold">@Translations.COLLECTIONS</span>
             <MudIcon Icon="@Icons.Material.Filled.Settings" Size="Size.Small" />
         </div>
     </MudNavLink>
-    @foreach (var collection in _collections.OrderBy(c => c.SortOrder))
-    {
-        <MudNavLink
-            Icon="@(collection.CollectionType == CollectionType.Smart ? Icons.Material.Rounded.FolderSpecial : Icons.Material.Rounded.Folder)"
-            Href="@Urls.GetCollectionUrl(collection.CollectionId)">@collection.Name</MudNavLink>
-    }
+    <div class="overflow-y-auto">
+        @foreach (var collection in _collections.OrderBy(c => c.SortOrder))
+        {
+            <MudNavLink
+                Icon="@(collection.CollectionType == CollectionType.Smart ? Icons.Material.Rounded.FolderSpecial : Icons.Material.Rounded.Folder)"
+                Href="@Urls.GetCollectionUrl(collection.CollectionId)">@collection.Name</MudNavLink>
+        }
+    </div>
 </MudNavMenu>
 
 

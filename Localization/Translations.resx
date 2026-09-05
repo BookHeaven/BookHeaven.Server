@@ -297,4 +297,7 @@
   <data name="DELETE_SERIES_CONFIRM_MESSAGE" xml:space="preserve">
     <value>Are you sure you want to delete this Series?</value>
   </data>
+  <data name="COLLECTIONS" xml:space="preserve">
+    <value>Collections</value>
+  </data>
 </root>
