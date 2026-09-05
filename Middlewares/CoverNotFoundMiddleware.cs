@@ -6,7 +6,7 @@ namespace BookHeaven.Server.Middlewares;
 public class CoverNotFoundMiddleware(RequestDelegate next)
 {
 
-    public async Task InvokeAsync(HttpContext context, IOptions<CoreOptions> options, IWebHostEnvironment env)
+    public async Task InvokeAsync(HttpContext context, IOptions<CoreOptions> options)
     {
         var request = context.Request;
         if (!request.Path.StartsWithSegments("/covers", out var remaining))
@@ -31,15 +31,9 @@ public class CoverNotFoundMiddleware(RequestDelegate next)
             return;
         }
         
-        // If the file does not exist, return wwwroot/img/no-cover.jpg
-        var noCoverPath = Path.Combine(env.WebRootPath, "img", "no-cover.jpg");
-        if (!File.Exists(noCoverPath))
-        {
-            context.Response.StatusCode = StatusCodes.Status404NotFound;
-            return;
-        }
-        
-        context.Response.ContentType = "image/jpeg";
-        await context.Response.SendFileAsync(noCoverPath);
+        // If the cover does not exist, return /img/no-cover.jpg
+        context.Response.Headers["X-Fallback-Reason"] = "Cover not found";
+        context.Response.Headers["X-Requested-Path"] = request.Path.ToString();
+        context.Response.Redirect("/img/no-cover.jpg", permanent: false);
     }
 }
