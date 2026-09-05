@@ -2,7 +2,7 @@
 @using BookHeaven.Core.Entities.Base
 @using BookHeaven.Core.Features.Collections
 @attribute [Route(Urls.Collections)]
-<PageTitle>Manage Collections</PageTitle>
+<PageTitle>@Translations.COLLECTIONS</PageTitle>
 <ScrollToTop />
 <Container>
 	<MudTable
@@ -12,15 +12,15 @@
 		Items="_collections.OrderBy(c => c.SortOrder)">
 		<HeaderContent>
 			<MudTh></MudTh>
-			<MudTh>Name</MudTh>
-			<MudTh>Type</MudTh>
-			<MudTh>Pinned</MudTh>
-			<MudTh>Actions</MudTh>
+			<MudTh>@Translations.NAME</MudTh>
+			<MudTh>@Translations.TYPE</MudTh>
+			<MudTh>@Translations.PINNED_F</MudTh>
+			<MudTh>@Translations.ACTIONS</MudTh>
 		</HeaderContent>
 		<ToolBarContent>
 			<div class="flex items-center w-full">
-				<span class="text-xl">Collections</span>
-				<MudButton Class="ms-auto" Href="@Urls.NewCollection" StartIcon="@Icons.Material.Filled.Add" Variant="Variant.Filled" Color="Color.Tertiary">New</MudButton>
+				<span class="text-xl">@Translations.COLLECTIONS</span>
+				<MudButton Class="ms-auto" Href="@Urls.NewCollection" StartIcon="@Icons.Material.Filled.Add" Variant="Variant.Filled" Color="Color.Tertiary">@Translations.NEW_F</MudButton>
 			</div>
 		</ToolBarContent>
 		<ColGroup>

@@ -303,11 +303,29 @@ namespace BookHeaven.Server.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Nueva.
+        /// </summary>
+        public static string NEW_F {
+            get {
+                return ResourceManager.GetString("NEW_F", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Nueva serie.
         /// </summary>
         public static string NEW_SERIES {
             get {
                 return ResourceManager.GetString("NEW_SERIES", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anclada.
+        /// </summary>
+        public static string PINNED_F {
+            get {
+                return ResourceManager.GetString("PINNED_F", resourceCulture);
             }
         }
         
@@ -578,6 +596,15 @@ namespace BookHeaven.Server.Localization {
         public static string TITLE {
             get {
                 return ResourceManager.GetString("TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tipo.
+        /// </summary>
+        public static string TYPE {
+            get {
+                return ResourceManager.GetString("TYPE", resourceCulture);
             }
         }
         

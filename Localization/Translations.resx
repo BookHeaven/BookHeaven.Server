@@ -300,4 +300,13 @@
   <data name="COLLECTIONS" xml:space="preserve">
     <value>Collections</value>
   </data>
+  <data name="NEW_F" xml:space="preserve">
+    <value>New</value>
+  </data>
+  <data name="TYPE" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="PINNED_F" xml:space="preserve">
+    <value>Pinned</value>
+  </data>
 </root>
