@@ -4,9 +4,9 @@
 		<h3>Page Settings</h3>
 	</TitleContent>
 	<DialogContent>
-		<div class="grid grid-cols-[min-content_1fr] gap-5 mb-4" @onclick:stopPropagation="true">
-			<RangeSlider Label="Vertical Margin" Min="0" Max="10" Increment="0.5m" @bind-Value="@ReaderSettingsService.ReaderSettings!.VerticalMargin" @bind-Value:after="() => ReaderSettingsService.NotifySettingsChanged()" />
-			<RangeSlider Label="Horizontal Margin" Min="0" Max="10" Increment="0.5m" @bind-Value="ReaderSettingsService.ReaderSettings!.HorizontalMargin" @bind-Value:after="() => ReaderSettingsService.NotifySettingsChanged()"  />
+		<div class="mb-4 grid grid-cols-[min-content_1fr] gap-5" @onclick:stopPropagation="true">
+			<RangeSlider Label="Vertical Margin" Min="0" Max="10" Increment="0.5m" @bind-Value="@ReaderSettingsService.ReaderSettings!.VerticalMargin" @bind-Value:after="() => ReaderSettingsService.NotifySettingChanged()" />
+			<RangeSlider Label="Horizontal Margin" Min="0" Max="10" Increment="0.5m" @bind-Value="ReaderSettingsService.ReaderSettings!.HorizontalMargin" @bind-Value:after="() => ReaderSettingsService.NotifySettingChanged()"  />
 			@* <RangeSlider Label="Page Gap" Min="0" Max="500" Increment="10" @bind-Value="ReaderSettingsService.ReaderSettings!.PageGap" @bind-Value:after="() => ReaderSettingsService.NotifySettingsChanged()"/> *@
 		</div>
 	</DialogContent>
