@@ -5,12 +5,12 @@
 		<h3>Text Settings</h3>
 	</TitleContent>
 	<DialogContent>
-		<div class="grid grid-cols-[min-content_1fr] gap-5 mb-4" @onclick:stopPropagation="true">
+		<div class="mb-4 grid grid-cols-[min-content_1fr] gap-5" @onclick:stopPropagation="true">
 			<MudSelect
 				OuterClass="col-span-2"
 				Label="Font"
 				@bind-Value="ReaderSettingsService.ReaderSettings!.SelectedFont" 
-				@bind-Value:after="() => ReaderSettingsService.NotifySettingsChanged()"
+				@bind-Value:after="() => ReaderSettingsService.NotifySettingChanged()"
 				Variant="Variant.Outlined">
 				<MudSelectItem Value="@(string.Empty)">Default</MudSelectItem>
 				@foreach (var font in _fonts)
@@ -18,12 +18,12 @@
 					<MudSelectItem Value="@font.Family">@font.Family</MudSelectItem>
 				}
 			</MudSelect>
-			<RangeSlider Label="Font Size" Min="10" Max="32" @bind-Value="@ReaderSettingsService.ReaderSettings!.FontSize" @bind-Value:after="() => ReaderSettingsService.NotifySettingsChanged()"/>
-			<RangeSlider Label="Letter Spacing" Min="0" Max="2" Increment="0.1m" @bind-Value="@ReaderSettingsService.ReaderSettings.LetterSpacing" @bind-Value:after="() => ReaderSettingsService.NotifySettingsChanged()" />
+			<RangeSlider Label="Font Size" Min="10" Max="32" @bind-Value="@ReaderSettingsService.ReaderSettings!.FontSize" @bind-Value:after="() => ReaderSettingsService.NotifySettingChanged()"/>
+			<RangeSlider Label="Letter Spacing" Min="0" Max="2" Increment="0.1m" @bind-Value="@ReaderSettingsService.ReaderSettings.LetterSpacing" @bind-Value:after="() => ReaderSettingsService.NotifySettingChanged()" />
 			@* <TextSetting Label="Word Spacing" Min="0" Max="5" Increment="0.25" @bind-Value="ReaderService.ProfileSettings.WordSpacing" /> *@
-			<RangeSlider Label="Line Height" Min="1.2m" Max="2.5m" Increment="0.05m" @bind-Value="@ReaderSettingsService.ReaderSettings.LineHeight" @bind-Value:after="() => ReaderSettingsService.NotifySettingsChanged()"/>
-			<RangeSlider Label="Text Indent" Min="0" Max="3" Increment="0.5m" @bind-Value="@ReaderSettingsService.ReaderSettings.TextIndent" @bind-Value:after="() => ReaderSettingsService.NotifySettingsChanged()"/>
-			<RangeSlider Label="Paragraph Spacing" Min="0" Max="20" Increment="2" @bind-Value="@ReaderSettingsService.ReaderSettings.ParagraphSpacing" @bind-Value:after="() => ReaderSettingsService.NotifySettingsChanged()"/>
+			<RangeSlider Label="Line Height" Min="1.2m" Max="2.5m" Increment="0.05m" @bind-Value="@ReaderSettingsService.ReaderSettings.LineHeight" @bind-Value:after="() => ReaderSettingsService.NotifySettingChanged()"/>
+			<RangeSlider Label="Text Indent" Min="0" Max="3" Increment="0.5m" @bind-Value="@ReaderSettingsService.ReaderSettings.TextIndent" @bind-Value:after="() => ReaderSettingsService.NotifySettingChanged()"/>
+			<RangeSlider Label="Paragraph Spacing" Min="0" Max="20" Increment="2" @bind-Value="@ReaderSettingsService.ReaderSettings.ParagraphSpacing" @bind-Value:after="() => ReaderSettingsService.NotifySettingChanged()"/>
 		</div>
 	</DialogContent>
 </MudDialog>
