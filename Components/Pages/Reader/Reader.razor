@@ -160,7 +160,7 @@
 
 @if (!ReaderService.IsReady)
 {
-	<div class="fixed inset-0 flex items-center justify-center z-10000">
+	<div class="fixed inset-0 z-10000 flex items-center justify-center">
 		<MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
 	</div>
 }
@@ -169,8 +169,8 @@
 		Chapters="@ReaderService.State?.Ebook?.Content.TableOfContents"
 		CurrentChapterId="@ReaderService.State?.CurrentChapter?.Identifier"/>	
 </MudDrawer>
-<div class="2xl:relative h-dvh w-dvw flex flex-col 2xl:py-20 2xl:px-50">
-	<div class="2xl:absolute 2xl:inset-x-0 2xl:top-0 flex items-center 2xl:p-5 gap-2">
+<div class="flex h-dvh w-dvw flex-col 2xl:relative 2xl:px-50 2xl:py-20">
+	<div class="flex items-center gap-2 2xl:absolute 2xl:inset-x-0 2xl:top-0 2xl:p-5">
 		<GoBackButton/>
 		@if (ReaderService.IsReady)
 		{
@@ -181,7 +181,7 @@
 			</div>
 		}
 	</div>
-	<div class="relative flex-1 flex bg-white dark:bg-neutral-900">
+	<div class="relative flex flex-1 bg-white dark:bg-neutral-900">
 		<NavigationOverlay />
 		<div id="viewer" class="flex-1 overflow-hidden @(ReaderService.IsReady ? "" : "invisible")">
 			<span class="page-divider absolute inset-y-0 left-[50%] -translate-x-1/2 border border-neutral-200 dark:border-neutral-600"></span>
@@ -202,7 +202,7 @@
 			}
 		</div>
 	</div>
-	<div class="2xl:absolute 2xl:inset-x-0 2xl:bottom-0 grid grid-cols-[50px_1fr_50px] items-center px-2 2xl:p-5 gap-2">
+	<div class="grid grid-cols-[50px_1fr_50px] items-center gap-2 px-2 2xl:absolute 2xl:inset-x-0 2xl:bottom-0 2xl:p-5">
 		@if (ReaderService.IsReady)
 		{
 			<span>
@@ -212,7 +212,7 @@
 				@ReaderService.State?.ChapterTitle
 				( @ReaderService.State?.PageNumber / @ReaderService.State?.TotalPages )
 			</span>
-			<span class="text-nowrap text-end">@ReaderService.State?.ProgressAsPercentage.ToString("0.00")%</span>
+			<span class="text-end text-nowrap">@ReaderService.State?.ProgressAsPercentage.ToString("0.00")%</span>
 		}
 	</div>
 </div>
@@ -237,7 +237,7 @@
 		ReaderService.OnPageChanged += RefreshUi;
 		ReaderService.OnChapterChanged += RefreshUi;
 		ReaderService.OnTotalPagesChanged += RefreshUi;
-		ReaderSettingsService.OnSettingsChanged += OnSettingsChanged;
+		ReaderSettingsService.OnSettingChanged += OnSettingChanged;
 		
 		var selectedProfile = await AuthenticationService.GetSelectedProfileAsync();
 		
@@ -281,7 +281,7 @@
 		InvokeAsync(StateHasChanged);
 	}
 	
-	private void OnSettingsChanged()
+	private void OnSettingChanged(string? settingName)
 	{
 		_shouldRefreshTotalPages = true;
 		InvokeAsync(StateHasChanged);
@@ -323,7 +323,7 @@
 		ReaderService.OnPageChanged -= RefreshUi;
 		ReaderService.OnChapterChanged -= RefreshUi;
 		ReaderService.OnTotalPagesChanged -= RefreshUi;
-		ReaderSettingsService.OnSettingsChanged -= OnSettingsChanged;
+		ReaderSettingsService.OnSettingChanged -= OnSettingChanged;
 		ReaderService.Dispose();
 		_dotNetReference.Dispose();
 		try
