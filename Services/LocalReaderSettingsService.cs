@@ -9,10 +9,10 @@ public class LocalReaderSettingsService(ProtectedLocalStorage protectedLocalStor
     private static string LocalStorageKey(Guid profileId) => $"{KeyPrefix}_{profileId}";
     
     public ProfileSettings? ReaderSettings { get; private set; }
-    public event Action? OnSettingsChanged;
-    public void NotifySettingsChanged()
+    public event Action<string?>? OnSettingChanged;
+    public void NotifySettingChanged(string? settingName = null)
     {
-        OnSettingsChanged?.Invoke();
+        OnSettingChanged?.Invoke(settingName);
         _ = SaveSettings();
     }
 
