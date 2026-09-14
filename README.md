@@ -101,6 +101,10 @@ podman run -d --name bookheaven --userns=keep-id \
   ghcr.io/bookheaven/bookheaven-server:latest
 ```
 
+### Easypanel
+
+[Easypanel](https://easypanel.io/) can deploy BookHeaven with one click using its [official template](https://easypanel.io/templates/bookheaven), which runs the Docker image above with a persistent data volume for you.
+
 ## :memo: API reference
 The API reference can be found [here](https://bookheaven.ggarrido.dev/api-reference).
 
