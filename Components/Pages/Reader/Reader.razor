@@ -9,10 +9,10 @@
 @implements IAsyncDisposable
 <!--suppress CssUnresolvedCustomProperty -->
 <style>
-	:root {
-		--info-bar-height: 1px;
+	html {
+		font-size: 16px;
 	}
-	
+
 	body {
 		margin: 0 !important;
 		overflow: hidden;
@@ -34,23 +34,23 @@
 			--page-gap: var(--margin-horizontal);
 			--page-height: 100cqh;
 			--page-width: 100cqw;
-			
+
 			& .page-divider {
 				display: none;
 			}
-			
+
 			@@media (min-width: 800px) and (orientation: landscape) {
 				--column-count: 2;
 				--page-gap: calc(var(--margin-horizontal) * 2);
 				--page-width: calc((100cqw - (var(--page-gap) * 1rem)) / 2);
-				
+
 				& .page-divider {
 					display: block;
 				}
 			}
-			
+
 			margin: calc(var(--margin-vertical) * 1rem) calc(var(--margin-horizontal) * 1rem);
-			
+
 
 			& > .chapter {
 				height: var(--page-height);
@@ -67,7 +67,7 @@
 				&.current {
 					transform: translateX(
 						calc(
-							(var(--page-width) + (var(--page-gap) * 1rem)) 
+							(var(--page-width) + (var(--page-gap) * 1rem))
 							* (var(--chapter-page) - 1)
 							* var(--column-count)
 							* -1
@@ -105,7 +105,7 @@
 		h6 {
 			@@apply text-base;
 		}
-		
+
 		/**:has(> img) {
 			text-align: center;
 			height: var(--page-height) !important;
@@ -123,10 +123,10 @@
 		:scope > .chapter p:not([class]) {
 			margin-block: calc(var(--paragraph-spacing) * 1pt) !important;
 		}
-
-		@foreach(var className in ReaderService.State?.Ebook?.Content.Chapters.DistinctBy(c => c.ParagraphClassName).Select(c => c.ParagraphClassName) ?? [])
+		
+		@if (!string.IsNullOrEmpty(ReaderService.State?.CurrentChapter?.ParagraphClassName))
 		{
-			@::scope > .chapter @("." + className) {
+			@::scope > .chapter p@("." + ReaderService.State?.CurrentChapter?.ParagraphClassName) {
 				@:margin-block: calc(var(--paragraph-spacing) * 1pt) !important;
 			@:}
 		}
@@ -137,24 +137,30 @@
 			font-weight: bold;
 		}
 
-		:scope .drop-cap {
-			orphans: 2;
-			display: flow-root;
-			&::first-letter {
-				initial-letter: 2;
-				margin-inline-end: 0.3em;
-			}
+		@@supports (initial-letter: 2) {
+			:scope .drop-cap {
+				orphans: 2;
+				display: flow-root;
+				&::first-letter {
+					initial-letter: 2;
+					margin-inline-end: 0.3em;
+				}
 
-			& + p {
-				clear: both;
+				& + p {
+					clear: both;
+				}
 			}
 		}
+		
 	}
 	@foreach (var stylesheet in ReaderService.State?.Styles ?? [])
 	{
-		@:@@scope(#viewer @(".stylesheet-" + stylesheet.Identifier)) {
-			@stylesheet.Content
-		@:}
+		<text>
+			@@scope(#viewer @(".stylesheet-" + stylesheet.Identifier)) {
+				@stylesheet.Content
+		    }
+		</text>
+		
 	}
 </style>
 
@@ -164,10 +170,13 @@
 		<MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
 	</div>
 }
+@if (ReaderService.IsReady) {
+    <FontProvider />
+}
 <MudDrawer Width="400px" @bind-Open="_showIndex" Variant="DrawerVariant.Temporary" OverlayAutoClose="true">
-	<TableOfContents 
+	<TableOfContents
 		Chapters="@ReaderService.State?.Ebook?.Content.TableOfContents"
-		CurrentChapterId="@ReaderService.State?.CurrentChapter?.Identifier"/>	
+		CurrentChapterId="@ReaderService.State?.CurrentChapter?.Identifier"/>
 </MudDrawer>
 <div class="flex h-dvh w-dvw flex-col 2xl:relative 2xl:px-50 2xl:py-20">
 	<div class="flex items-center gap-2 2xl:absolute 2xl:inset-x-0 2xl:top-0 2xl:p-5">
@@ -222,9 +231,9 @@
 	[Inject] private IReaderSettingsService ReaderSettingsService { get; set; } = null!;
 	[Inject] private IJSRuntime JsRuntime { get; set; } = null!;
 	[Inject] private IDialogService DialogService { get; set; } = null!;
-	
+
 	[Parameter] public Guid BookId { get; set; }
-	
+
 	private bool _shouldRefreshTotalPages;
 
 	private DotNetObjectReference<Reader> _dotNetReference = null!;
@@ -238,14 +247,11 @@
 		ReaderService.OnChapterChanged += RefreshUi;
 		ReaderService.OnTotalPagesChanged += RefreshUi;
 		ReaderSettingsService.OnSettingChanged += OnSettingChanged;
-		
+
 		var selectedProfile = await AuthenticationService.GetSelectedProfileAsync();
-		
+
 		await ReaderService.InitializeAsync(BookId, selectedProfile!.ProfileId);
-		if (!ReaderService.IsReady)
-		{
-			_shouldRefreshTotalPages = true;
-		}
+		_shouldRefreshTotalPages = true;
 	}
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -261,14 +267,14 @@
 			await UpdateTotalPages();
 		}
 	}
-	
+
 	private async Task UpdateTotalPages()
 	{
 		if(_module is null) return;
 		_shouldRefreshTotalPages = false;
 		var pagesArray = await _module.InvokeAsync<int[]>("GetPageCount");
 		ReaderService.SetTotalPages(pagesArray);
-        
+
 		if(!ReaderService.IsReady)
 		{
 			ReaderService.NavigateToInitialPage();
@@ -280,13 +286,13 @@
 	{
 		InvokeAsync(StateHasChanged);
 	}
-	
+
 	private void OnSettingChanged(string? settingName)
 	{
 		_shouldRefreshTotalPages = true;
 		InvokeAsync(StateHasChanged);
 	}
-	
+
 	[JSInvokable("OnKeyDown")]
 	public void OnKeyDown(string key)
 	{
@@ -335,6 +341,6 @@
 			}
 		}
 		catch {}
-		
+
 	}
 }
