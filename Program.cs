@@ -62,6 +62,7 @@ builder.Services.AddCore(options =>
 	options.FontsPath = Path.Combine(appDataPath, "fonts");
 	options.DatabasePath = Path.Combine(appDataPath, "database");
 	options.CachePath = Path.Combine(appDataPath, "cache");
+	options.DefaultFontDirectory = Path.Combine(Path.GetFullPath("wwwroot"), "fonts", "Montserrat");
 });
 
 builder.Services.AddTransient<IImageProvider, DuckDuckGoImageProvider>();
