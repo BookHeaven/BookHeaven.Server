@@ -10,7 +10,7 @@
 				OuterClass="col-span-2"
 				Label="Font"
 				@bind-Value="ReaderSettingsService.ReaderSettings!.SelectedFont" 
-				@bind-Value:after="() => ReaderSettingsService.NotifySettingChanged()"
+				@bind-Value:after="() => ReaderSettingsService.NotifySettingChanged(nameof(ReaderSettingsService.ReaderSettings.SelectedFont))"
 				Variant="Variant.Outlined">
 				<MudSelectItem Value="@(string.Empty)">Default</MudSelectItem>
 				@foreach (var font in _fonts)
