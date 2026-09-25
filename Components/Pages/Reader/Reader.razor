@@ -1,4 +1,5 @@
 ﻿@using System.Globalization
+@using BookHeaven.Core.DOM.Text.Abstractions
 @using BookHeaven.Core.Features.Reader.Abstractions
 @using BookHeaven.Server.Components.Pages.Reader.Components
 @using BookHeaven.Server.Components.Pages.Reader.Components.Settings
@@ -56,6 +57,7 @@
 				height: var(--page-height);
 				column-width: var(--page-width);
 				font-size: calc(var(--font-size) * 1px) !important;
+				line-height: @ITextMeasurer.NormalLineHeightMultiplier.ToString("0.00", CultureInfo.InvariantCulture);
 				letter-spacing: calc(var(--letter-spacing) * 1px);
 				column-fill: auto;
 				column-gap: calc(var(--page-gap) * 1rem);
