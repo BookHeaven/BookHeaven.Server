@@ -1,0 +1,94 @@
+﻿@using BookHeaven.Core.Features.Fonts
+@using BookHeaven.Core.Features.Reader.Abstractions
+@implements IDisposable
+
+<style>
+	@if (_fonts.Count == 0)
+	{
+		<text>
+			@@font-face {
+				font-family: 'Montserrat';
+				src: url('/fonts/Montserrat/Montserrat-Regular.ttf');
+			}
+
+			@@font-face {
+				font-family: 'Montserrat';
+				src: url('/fonts/Montserrat/Montserrat-Bold.ttf');
+				font-weight: bold;
+			}
+
+			@@font-face {
+				font-family: 'Montserrat';
+				src: url('/fonts/Montserrat/Montserrat-Italic.ttf');
+				font-style: italic;
+			}
+
+			@@font-face {
+				font-family: 'Montserrat';
+				src: url('/fonts/Montserrat/Montserrat-BoldItalic.ttf');
+				font-weight: bold;
+				font-style: italic;
+			}
+			
+			@@scope (#viewer) {
+				:scope {
+					font-family: 'Montserrat';
+				}
+			}
+		</text>
+	}
+	else
+	{
+		foreach (var font in _fonts)
+		{
+			@font.GetFontFace(UrlBuilder.FontUrl(font.Family, font.FileName));
+		}
+		<text>
+			@@scope (#viewer) {
+				:scope {
+					font-family: '@ReaderSettingsService.ReaderSettings?.SelectedFont', serif;
+				}
+			}
+		</text>
+	}
+</style>
+@code {
+	[Inject] private IReaderSettingsService ReaderSettingsService { get; set; } = null!;
+	[Inject] private ISender Sender { get; set; } = null!;
+	[Inject] private IUrlBuilder UrlBuilder { get; set; } = null!;
+	
+	List<Font> _fonts = [];
+	string? _fontFamily = string.Empty;
+
+	protected override async Task OnInitializedAsync()
+	{
+		ReaderSettingsService.OnSettingChanged += OnSelectedFontChanged;
+		await GetFonts();
+	}
+	
+	private async Task GetFonts()
+	{
+		_fontFamily = ReaderSettingsService.ReaderSettings?.SelectedFont;
+		var getFonts = await Sender.Send(new GetAllFonts.Query(_fontFamily));
+		if (getFonts.IsFailure)
+		{
+			return;
+		}
+
+		_fonts = getFonts.Value;
+	}
+	
+	private async void OnSelectedFontChanged(string? settingName)
+	{
+		if(settingName != nameof(ReaderSettingsService.ReaderSettings.SelectedFont)) return;
+
+		await GetFonts();
+		await InvokeAsync(StateHasChanged);
+	}
+
+	public void Dispose()
+	{
+		ReaderSettingsService.OnSettingChanged -= OnSelectedFontChanged;
+	}
+
+}
