@@ -56,7 +56,7 @@ const notifyDebounced = (delay = 200) => {
 
 export function Initialize(dotnet) {
     Reference.DotNet = dotnet;
-    
+
     mainChapter = document.querySelector('.chapter.current');
 
     window.addEventListener('keydown', keyDownHandler);
@@ -76,13 +76,14 @@ export async function GetPageCount() {
         return [];
     }
 
-    let pageGap = Number.parseFloat(getComputedStyle(mainChapter).columnGap);
-    let pageWidth = Math.max(mainChapter.offsetWidth + pageGap, 1);
-    
     await waitForImagesToLoad();
     if (document.fonts && document.fonts.ready) {
         await document.fonts.ready;
     }
+
+    let pageGap = Number.parseFloat(getComputedStyle(mainChapter).columnGap);
+    let pageWidth = Math.max(mainChapter.offsetWidth + pageGap, 1);
+
     return chapters.map((chapter) => Math.max(1, Math.ceil(chapter.scrollWidth / pageWidth)));
 }
 
