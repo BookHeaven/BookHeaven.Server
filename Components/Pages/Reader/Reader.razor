@@ -182,7 +182,7 @@
 		Chapters="@ReaderService.State?.Ebook?.Content.TableOfContents"
 		CurrentChapterId="@ReaderService.State?.CurrentChapter?.Identifier"/>
 </MudDrawer>
-<div class="flex h-dvh w-dvw flex-col 2xl:relative 2xl:px-50 2xl:py-20">
+<div class="flex h-dvh w-dvw flex-col 2xl:relative 2xl:px-50 2xl:py-20 @(ReaderService.IsReady ? "" : "opacity-0")">
 	<div class="flex items-center gap-2 2xl:absolute 2xl:inset-x-0 2xl:top-0 2xl:p-5">
 		<GoBackButton/>
 		@if (ReaderService.IsReady)
@@ -299,6 +299,10 @@
 		if(_module is null) return;
 		var context = await GetReaderContextAsync();
 		await ReaderService.CalculatePagesAsync(context);
+		if (!ReaderService.IsReady)
+		{
+			ReaderService.NavigateToInitialPage();
+		}
 	}
 
 	private void RefreshUi()
@@ -315,15 +319,14 @@
 	private async Task<ReaderContext> GetReaderContextAsync()
 	{
 		if(_module is null) throw new InvalidOperationException("JS module is not initialized.");
-		var size = await _module.InvokeAsync<int[]>("GetViewportInfo");
-		var engine = await _module.InvokeAsync<string>("DetectEngine");
-		var mode = engine == "gecko" ? LineBreakingMode.Firefox : LineBreakingMode.Chrome;
+		var info = await _module.InvokeAsync<ReaderContextInfo>("GetReaderContext");
+		var mode = info.Engine == "gecko" ? LineBreakingMode.Firefox : LineBreakingMode.Chrome;
 		return new ReaderContext
 		{
-			ViewportWidth = size[0],
-			ViewportHeight = size[1],
-			PageWidth = size[2],
-			PageHeight = size[3],
+			ViewportWidth = info.ViewportWidth,
+			ViewportHeight = info.ViewportHeight,
+			PageWidth = (int)info.PageWidth,
+			PageHeight = (int)info.PageHeight,
 			LineBreakingMode = mode
 		};
 	}
@@ -345,7 +348,7 @@
 	[JSInvokable("OnViewportChanged")]
 	public async Task OnViewportChanged()
 	{
-		if(!ReaderService.IsReady) return;
+		if(!ReaderService.IsReady || _readerState != ReaderState.Ready) return;
 		_recountPagesOnNextRender = true;
 		await InvokeAsync(StateHasChanged);
 	}
@@ -379,7 +382,9 @@
 
 	}
 	
-	enum ReaderState
+	private record ReaderContextInfo(int ViewportWidth, int ViewportHeight, double PageWidth, double PageHeight, string Engine);
+	
+	private enum ReaderState
 	{
 		Uninitialized,
 		Initialized,

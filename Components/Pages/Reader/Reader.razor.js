@@ -77,7 +77,11 @@ export function Initialize(dotnet) {
     }
 }
 
-export function GetViewportInfo() {
+// The engine must emulate the line-breaking algorithm of the browser that renders the
+// page, so pagination matches. Gecko and Blink are the only two algorithms the engine
+// knows. Detection uses engine-specific API signals instead of the UA string, which
+// forks can alter (e.g. Zen Browser doesn't include "Firefox" in its UA).
+export function GetReaderContext() {
     let viewportWidth = document.documentElement.clientWidth;
     let viewportHeight = document.documentElement.clientHeight;
     let mainChapter = document.querySelector('.chapter.current');
@@ -85,22 +89,18 @@ export function GetViewportInfo() {
     let computedChapter = getComputedStyle(mainChapter);
     let pageWidth = parseFloat(computedChapter.getPropertyValue("column-width"));
 
-    return [
+    let engine;
+    if (navigator.userAgentData) engine = "blink"; // Chromium-only API (Chrome 85+)
+    else if (navigator.vendor === "Apple Computer, Inc.") engine = "blink"; // WebKit ≈ Blink
+    else engine = "gecko"; // Firefox, Zen, Waterfox, LibreWolf, Tor, ...
+
+    return {
         viewportWidth,
         viewportHeight,
         pageWidth,
         pageHeight,
-    ];
-}
-
-// The engine must emulate the line-breaking algorithm of the browser that renders the
-// page, so pagination matches. Gecko and Blink are the only two algorithms the engine
-// knows. Detection uses engine-specific API signals instead of the UA string, which
-// forks can alter (e.g. Zen Browser doesn't include "Firefox" in its UA).
-export function DetectEngine() {
-    if (navigator.userAgentData) return "blink"; // Chromium-only API (Chrome 85+)
-    if (navigator.vendor === "Apple Computer, Inc.") return "blink"; // WebKit ≈ Blink
-    return "gecko"; // Firefox, Zen, Waterfox, LibreWolf, Tor, ...
+        engine,
+    };
 }
 
 export async function WaitForAssetsToLoad() {
