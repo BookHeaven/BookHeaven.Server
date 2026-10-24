@@ -1,6 +1,8 @@
 ﻿@using System.Globalization
 @using BookHeaven.Core.DOM.Text.Abstractions
+@using BookHeaven.Core.DOM.Text.Enums
 @using BookHeaven.Core.Features.Reader.Abstractions
+@using BookHeaven.Core.Features.Reader.Models
 @using BookHeaven.Server.Components.Pages.Reader.Components
 @using BookHeaven.Server.Components.Pages.Reader.Components.Settings
 @using BookHeaven.Server.Components.Pages.Reader.Components.TableOfContents
@@ -194,7 +196,7 @@
 	</div>
 	<div class="relative flex flex-1 bg-white dark:bg-neutral-900">
 		<NavigationOverlay />
-		<div id="viewer" class="flex-1 overflow-hidden @(ReaderService.IsReady ? "" : "invisible")">
+		<div id="viewer" class="flex-1 overflow-hidden @(_readerState == ReaderState.Ready ? "" : "opacity-0")">
 			<span class="page-divider absolute inset-y-0 left-[50%] -translate-x-1/2 border border-neutral-200 dark:border-neutral-600"></span>
 			<div class="chapter current @(string.Join(" ", ReaderService.State?.CurrentChapter?.Stylesheets.Select(s => "stylesheet-" + s) ?? []))">
 				@if (ReaderService.State?.CurrentChapter is not null)
@@ -202,29 +204,24 @@
 					@((MarkupString)ReaderService.State.CurrentChapter.Content)
 				}
 			</div>
-			@if (_shouldRefreshTotalPages)
-			{
-				foreach (var chapter in ReaderService.State?.Ebook?.Content.Chapters ?? [])
-				{
-					<div class="chapter invisible @(string.Join(" ", chapter.Stylesheets.Select(s => "stylesheet-" + s)))">
-						@((MarkupString)chapter.Content)
-					</div>
-				}
-			}
 		</div>
 	</div>
 	<div class="grid grid-cols-[50px_1fr_50px] items-center gap-2 px-2 2xl:absolute 2xl:inset-x-0 2xl:bottom-0 2xl:p-5">
-		@if (ReaderService.IsReady)
+		<span>
+			<MudIconButton Icon="@Icons.Material.Filled.List" OnClick="() => _showIndex = !_showIndex" Edge="Edge.Start"/>
+		</span>
+		@if (_readerState == ReaderState.Ready)
 		{
-			<span>
-				<MudIconButton Icon="@Icons.Material.Filled.List" OnClick="() => _showIndex = !_showIndex" Edge="Edge.Start"/>
-			</span>
 			<span class="mx-auto text-nowrap">
 				@ReaderService.State?.ChapterTitle
 				( @ReaderService.State?.PageNumber / @ReaderService.State?.TotalPages )
 			</span>
-			<span class="text-end text-nowrap">@ReaderService.State?.ProgressAsPercentage.ToString("0.00")%</span>
 		}
+		else
+		{
+			<span></span>
+		}
+		<span class="text-end text-nowrap">@ReaderService.State?.ProgressAsPercentage.ToString("0.00")%</span>
 	</div>
 </div>
 @code {
@@ -235,12 +232,13 @@
 	[Inject] private IDialogService DialogService { get; set; } = null!;
 
 	[Parameter] public Guid BookId { get; set; }
-
-	private bool _shouldRefreshTotalPages;
-
+	
 	private DotNetObjectReference<Reader> _dotNetReference = null!;
 	private IJSObjectReference? _module;
-
+	
+	private ReaderState _readerState = ReaderState.Uninitialized;
+	private bool _recountPagesOnNextRender;
+	
 	private bool _showIndex;
 
 	protected override async Task OnInitializedAsync()
@@ -251,9 +249,8 @@
 		ReaderSettingsService.OnSettingChanged += OnSettingChanged;
 
 		var selectedProfile = await AuthenticationService.GetSelectedProfileAsync();
-
 		await ReaderService.InitializeAsync(BookId, selectedProfile!.ProfileId);
-		_shouldRefreshTotalPages = true;
+		_readerState = ReaderState.Initialized;
 	}
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -264,24 +261,44 @@
 			_dotNetReference = DotNetObjectReference.Create(this);
 			await _module.InvokeVoidAsync("Initialize", _dotNetReference);
 		}
-		if (_shouldRefreshTotalPages)
+		
+		if(_module is null) return;
+
+		switch (_readerState)
 		{
-			await UpdateTotalPages();
+			case ReaderState.Initialized:
+				var readerContext = await GetReaderContextAsync();
+				await ReaderService.LoadCachedPagesAsync(readerContext);
+				if (ReaderService.State?.PagesPerChapter.Length > 0)
+				{
+					ReaderService.NavigateToInitialPage();
+				}
+				else
+				{
+					await UpdateTotalPages();
+				}
+				_readerState = ReaderState.WaitingForAssets;
+				StateHasChanged();
+				break;
+			case ReaderState.WaitingForAssets:
+				await _module!.InvokeVoidAsync("WaitForAssetsToLoad");
+				_readerState = ReaderState.Ready;
+				StateHasChanged();
+				break;
+		}
+		
+		if (_recountPagesOnNextRender)
+		{
+			_recountPagesOnNextRender = false;
+			_ = UpdateTotalPages();
 		}
 	}
-
+	
 	private async Task UpdateTotalPages()
 	{
 		if(_module is null) return;
-		_shouldRefreshTotalPages = false;
-		var pagesArray = await _module.InvokeAsync<int[]>("GetPageCount");
-		ReaderService.SetTotalPages(pagesArray);
-
-		if(!ReaderService.IsReady)
-		{
-			ReaderService.NavigateToInitialPage();
-			await InvokeAsync(StateHasChanged);
-		}
+		var context = await GetReaderContextAsync();
+		await ReaderService.CalculatePagesAsync(context);
 	}
 
 	private void RefreshUi()
@@ -291,8 +308,24 @@
 
 	private void OnSettingChanged(string? settingName)
 	{
-		_shouldRefreshTotalPages = true;
-		InvokeAsync(StateHasChanged);
+		_recountPagesOnNextRender = true;
+		RefreshUi();
+	}
+	
+	private async Task<ReaderContext> GetReaderContextAsync()
+	{
+		if(_module is null) throw new InvalidOperationException("JS module is not initialized.");
+		var size = await _module.InvokeAsync<int[]>("GetViewportInfo");
+		var engine = await _module.InvokeAsync<string>("DetectEngine");
+		var mode = engine == "gecko" ? LineBreakingMode.Firefox : LineBreakingMode.Chrome;
+		return new ReaderContext
+		{
+			ViewportWidth = size[0],
+			ViewportHeight = size[1],
+			PageWidth = size[2],
+			PageHeight = size[3],
+			LineBreakingMode = mode
+		};
 	}
 
 	[JSInvokable("OnKeyDown")]
@@ -313,7 +346,7 @@
 	public async Task OnViewportChanged()
 	{
 		if(!ReaderService.IsReady) return;
-		_shouldRefreshTotalPages = true;
+		_recountPagesOnNextRender = true;
 		await InvokeAsync(StateHasChanged);
 	}
 	private async Task OpenTextSettingsDialog()
@@ -344,5 +377,13 @@
 		}
 		catch {}
 
+	}
+	
+	enum ReaderState
+	{
+		Uninitialized,
+		Initialized,
+		WaitingForAssets,
+		Ready
 	}
 }

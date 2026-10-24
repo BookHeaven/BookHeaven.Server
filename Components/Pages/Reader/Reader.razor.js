@@ -1,36 +1,45 @@
 let Reference = { DotNet: null };
-let mainChapter = null;
 let resizeObserver = null;
 let resizeTimeout = null;
 
-const waitForImagesToLoad = async () => {
-    const images = Array.from(document.querySelectorAll('.chapter img, .chapter svg'));
+const waitForImagesToLoad = async (element = document.querySelector(".viewer"), prefetched = null) => {
+    const images = Array.from(element.querySelectorAll('img, svg image'))
+        .filter((image) => !image.hasAttribute('width') && !image.hasAttribute('height'));
     if (!images.length) {
         await new Promise((resolve) => requestAnimationFrame(() => resolve()));
         return;
     }
 
     await Promise.all(images.map(async (image) => {
-        if (image.tagName === 'IMG') {
-            if (image.complete) return;
+        if (image.tagName.toLowerCase() === 'image') {
+            // <image> dentro de SVG no dispara eventos load/error, se espera a través de una Image temporal
+            const src = image.getAttribute('href') || image.getAttributeNS('http://www.w3.org/1999/xlink', 'href');
+            if (!src) return;
 
+            const temp = new Image();
             await new Promise((resolve) => {
-                const cleanUp = () => {
-                    image.removeEventListener('load', onDone);
-                    image.removeEventListener('error', onDone);
-                    resolve();
-                };
-                const onDone = () => cleanUp();
-
-                image.addEventListener('load', onDone, { once: true });
-                image.addEventListener('error', onDone, { once: true });
+                temp.onload = temp.onerror = () => resolve();
+                temp.src = src;
             });
             return;
         }
 
-        if (image.tagName === 'SVG') {
-            await new Promise((resolve) => requestAnimationFrame(() => resolve()));
-        }
+        if (image.complete) return;
+
+        // Si no la hemos pre-cargado, el navegador ya la está cargando solo por estar en el DOM
+        const src = image.currentSrc || image.src;
+        if (prefetched && src && !prefetched.has(src)) return;
+
+        await new Promise((resolve) => {
+            const onDone = () => {
+                image.removeEventListener('load', onDone);
+                image.removeEventListener('error', onDone);
+                resolve();
+            };
+
+            image.addEventListener('load', onDone, { once: true });
+            image.addEventListener('error', onDone, { once: true });
+        });
     }));
 
     await new Promise((resolve) => requestAnimationFrame(() => resolve()));
@@ -57,8 +66,6 @@ const notifyDebounced = (delay = 200) => {
 export function Initialize(dotnet) {
     Reference.DotNet = dotnet;
 
-    mainChapter = document.querySelector('.chapter.current');
-
     window.addEventListener('keydown', keyDownHandler);
     window.addEventListener('resize', notifyDebounced);
     window.addEventListener('orientationchange', notifyDebounced);
@@ -70,21 +77,38 @@ export function Initialize(dotnet) {
     }
 }
 
-export async function GetPageCount() {
-    const chapters = Array.from(document.querySelectorAll('.chapter.invisible'));
-    if (!chapters.length) {
-        return [];
-    }
+export function GetViewportInfo() {
+    let viewportWidth = document.documentElement.clientWidth;
+    let viewportHeight = document.documentElement.clientHeight;
+    let mainChapter = document.querySelector('.chapter.current');
+    let pageHeight = mainChapter.offsetHeight;
+    let computedChapter = getComputedStyle(mainChapter);
+    let pageWidth = parseFloat(computedChapter.getPropertyValue("column-width"));
 
-    await waitForImagesToLoad();
+    return [
+        viewportWidth,
+        viewportHeight,
+        pageWidth,
+        pageHeight,
+    ];
+}
+
+// The engine must emulate the line-breaking algorithm of the browser that renders the
+// page, so pagination matches. Gecko and Blink are the only two algorithms the engine
+// knows. Detection uses engine-specific API signals instead of the UA string, which
+// forks can alter (e.g. Zen Browser doesn't include "Firefox" in its UA).
+export function DetectEngine() {
+    if (navigator.userAgentData) return "blink"; // Chromium-only API (Chrome 85+)
+    if (navigator.vendor === "Apple Computer, Inc.") return "blink"; // WebKit ≈ Blink
+    return "gecko"; // Firefox, Zen, Waterfox, LibreWolf, Tor, ...
+}
+
+export async function WaitForAssetsToLoad() {
     if (document.fonts && document.fonts.ready) {
         await document.fonts.ready;
     }
-
-    let pageGap = Number.parseFloat(getComputedStyle(mainChapter).columnGap);
-    let pageWidth = Math.max(mainChapter.offsetWidth + pageGap, 1);
-
-    return chapters.map((chapter) => Math.max(1, Math.ceil(chapter.scrollWidth / pageWidth)));
+    let mainChapter = document.querySelector('.chapter.current');
+    await waitForImagesToLoad(mainChapter);
 }
 
 export function Dispose() {
