@@ -77,10 +77,6 @@ export function Initialize(dotnet) {
     }
 }
 
-// The engine must emulate the line-breaking algorithm of the browser that renders the
-// page, so pagination matches. Gecko and Blink are the only two algorithms the engine
-// knows. Detection uses engine-specific API signals instead of the UA string, which
-// forks can alter (e.g. Zen Browser doesn't include "Firefox" in its UA).
 export function GetReaderContext() {
     let viewportWidth = document.documentElement.clientWidth;
     let viewportHeight = document.documentElement.clientHeight;
@@ -94,12 +90,15 @@ export function GetReaderContext() {
     else if (navigator.vendor === "Apple Computer, Inc.") engine = "blink"; // WebKit ≈ Blink
     else engine = "gecko"; // Firefox, Zen, Waterfox, LibreWolf, Tor, ...
 
+    let columnCount = parseInt(computedChapter.getPropertyValue("--column-count"), 10) || 1;
+
     return {
         viewportWidth,
         viewportHeight,
         pageWidth,
         pageHeight,
         engine,
+        columnCount,
     };
 }
 
