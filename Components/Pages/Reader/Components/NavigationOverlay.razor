@@ -1,7 +1,7 @@
 ﻿@using BookHeaven.Core.Features.Reader.Abstractions
-<div class="absolute inset-0 grid grid-cols-2 z-1000">
-	<button @onclick="ReaderService.PreviousPage"></button>
-	<button @onclick="ReaderService.NextPage"></button>
+<div class="absolute inset-0 z-1000 grid grid-cols-2">
+	<button @onmousedown="ReaderService.PreviousPage"></button>
+	<button @onmousedown="ReaderService.NextPage"></button>
 </div>
 
 @code {
