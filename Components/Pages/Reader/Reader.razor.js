@@ -2,6 +2,12 @@ let Reference = { DotNet: null };
 let resizeObserver = null;
 let resizeTimeout = null;
 
+const fullscreenChangeHandler = () => {
+    if (!Reference.DotNet) return;
+    const isFullscreen = document.fullscreenElement !== null;
+    Reference.DotNet.invokeMethodAsync('OnFullscreenChanged', isFullscreen);
+};
+
 const waitForImagesToLoad = async (element = document.querySelector(".viewer"), prefetched = null) => {
     const images = Array.from(element.querySelectorAll('img, svg image'))
         .filter((image) => !image.hasAttribute('width') && !image.hasAttribute('height'));
@@ -69,11 +75,30 @@ export function Initialize(dotnet) {
     window.addEventListener('keydown', keyDownHandler);
     window.addEventListener('resize', notifyDebounced);
     window.addEventListener('orientationchange', notifyDebounced);
+    document.addEventListener('fullscreenchange', fullscreenChangeHandler);
 
     const viewer = document.querySelector("#viewer");
     if (viewer && typeof ResizeObserver !== 'undefined') {
         resizeObserver = new ResizeObserver(() => notifyDebounced());
         resizeObserver.observe(viewer);
+    }
+}
+
+export async function EnterFullscreen() {
+    if (document.fullscreenElement) return;
+    try {
+        await document.documentElement.requestFullscreen();
+    } catch (err) {
+        // Fullscreen may be rejected (e.g. no user gesture); ignore
+    }
+}
+
+export async function ExitFullscreen() {
+    if (!document.fullscreenElement) return;
+    try {
+        await document.exitFullscreen();
+    } catch (err) {
+        // ignore
     }
 }
 
@@ -114,6 +139,7 @@ export function Dispose() {
     window.removeEventListener('keydown', keyDownHandler);
     window.removeEventListener('resize', notifyDebounced);
     window.removeEventListener('orientationchange', notifyDebounced);
+    document.removeEventListener('fullscreenchange', fullscreenChangeHandler);
     if (resizeObserver) {
         resizeObserver.disconnect();
         resizeObserver = null;

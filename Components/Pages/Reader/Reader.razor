@@ -191,6 +191,7 @@ else {
 			<div class="ms-auto flex items-center 2xl:gap-2">
 				<MudIconButton Icon="@Icons.Material.Filled.TextFields" OnClick="OpenTextSettingsDialog"/>
 				<MudIconButton Icon="@Icons.Material.Filled.Settings" OnClick="OpenPageSettingsDialog"/>
+				<MudIconButton Icon="@(_isFullscreen ? Icons.Material.Filled.FullscreenExit : Icons.Material.Filled.Fullscreen)" OnClick="ToggleFullscreen"/>
 			</div>
 		}
 	</div>
@@ -247,6 +248,7 @@ else {
 	private ReaderState _readerState = ReaderState.Uninitialized;
 	private bool _recountPagesOnNextRender;
 	
+	private bool _isFullscreen;
 	private bool _showIndex;
 
 	protected override async Task OnInitializedAsync()
@@ -368,6 +370,26 @@ else {
 	private async Task OpenPageSettingsDialog()
 	{
 		await DialogService.ShowAsync<PageSettingsDialog>();
+	}
+	
+	private async Task ToggleFullscreen()
+	{
+		if(_module is null) return;
+		if (_isFullscreen)
+		{
+			await _module.InvokeVoidAsync("ExitFullscreen");
+		}
+		else
+		{
+			await _module.InvokeVoidAsync("EnterFullscreen");
+		}
+	}
+	
+	[JSInvokable("OnFullscreenChanged")]
+	public async Task OnFullscreenChanged(bool isFullscreen)
+	{
+		_isFullscreen = isFullscreen;
+		await InvokeAsync(StateHasChanged);
 	}
 
 	public async ValueTask DisposeAsync()
