@@ -174,7 +174,7 @@
 		<MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
 	</div>
 }
-@if (ReaderService.IsReady) {
+else {
     <FontProvider />
 }
 <MudDrawer Width="400px" @bind-Open="_showIndex" Variant="DrawerVariant.Temporary" OverlayAutoClose="true">
