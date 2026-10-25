@@ -136,6 +136,9 @@ export async function WaitForAssetsToLoad() {
 }
 
 export function Dispose() {
+    if (document.fullscreenElement) {
+        document.exitFullscreen().catch(() => {});
+    }
     window.removeEventListener('keydown', keyDownHandler);
     window.removeEventListener('resize', notifyDebounced);
     window.removeEventListener('orientationchange', notifyDebounced);
