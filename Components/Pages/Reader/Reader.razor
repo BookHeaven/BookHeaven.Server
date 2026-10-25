@@ -212,16 +212,24 @@ else {
 		</span>
 		@if (_readerState == ReaderState.Ready)
 		{
-			<span class="mx-auto text-nowrap">
-				@ReaderService.State?.ChapterTitle
-				( @ReaderService.State?.PageNumber / @ReaderService.State?.TotalPages )
-			</span>
+			<div class="flex items-center">
+				<span class="mx-auto text-nowrap">
+					@ReaderService.State?.ChapterTitle
+					( @ReaderService.State?.PageNumber / @ReaderService.State?.TotalPages )
+				</span>
+				<MudIconButton Icon="@Icons.Material.Filled.ChevronLeft" OnClick="() => ReaderService.PreviousPage()"/>
+				<MudIconButton Icon="@Icons.Material.Filled.KeyboardDoubleArrowLeft" OnClick="() => ReaderService.PreviousChapter()"/>
+				<MudIconButton Icon="@Icons.Material.Filled.KeyboardDoubleArrowRight" OnClick="() => ReaderService.NextChapter()"/>
+				<MudIconButton Icon="@Icons.Material.Filled.ChevronRight" OnClick="() => ReaderService.NextPage()"/>
+			</div>
 		}
 		else
 		{
 			<span></span>
 		}
-		<span class="text-end text-nowrap">@ReaderService.State?.ProgressAsPercentage.ToString("0.00")%</span>
+		<span class="text-end">
+			@ReaderService.State?.ProgressAsPercentage.ToString("0.00")%
+		</span>
 	</div>
 </div>
 @code {
