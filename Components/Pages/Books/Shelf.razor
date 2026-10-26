@@ -87,8 +87,9 @@
 					Tags
 				</MudButton>
 				<MudButton
+					OnClick="OpenMetadataDialog"
 					Color="Color.Primary"
-					Disabled="true">
+					Disabled="_selectedBooks.Count == 0">
 					Edit
 				</MudButton>
 				<MudButton
@@ -227,7 +228,7 @@ else
 		}
 	}
 	
-	/*private async Task OpenMetadataDialog()
+	private async Task OpenMetadataDialog()
 	{
 		var parameters = new DialogParameters
 		{
@@ -236,7 +237,7 @@ else
 		
 		var dialog = await DialogService.ShowAsync<BulkMetadataEditDialog>(null, parameters);
 		var result = await dialog.Result;
-	}*/
+	}
 
 	private async Task DeleteBooks()
 	{

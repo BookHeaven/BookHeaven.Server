@@ -1,0 +1,321 @@
+@using System.Globalization
+@using BookHeaven.Core.Features.Authors
+@using BookHeaven.Core.Features.BookSeries
+@using BookHeaven.Core.Features.Books
+<MudDialog>
+	<TitleContent>
+		Edit metadata
+	</TitleContent>
+	<DialogContent>
+		<MudTextField
+			@bind-Value="_author"
+			list="authors"
+			Label="Author"
+			Immediate="true"
+			Variant="Variant.Outlined"/>
+		<div class="mt-3 flex flex-wrap items-center">
+			<MudTextField
+				@bind-Value="_series"
+				@bind-Value:after="OnSeriesChanged"
+				list="series"
+				Label="Series"
+				Immediate="true"
+				Variant="Variant.Outlined"/>
+			<MudCheckBox @bind-Value="_removeSeriesIfEmpty" Label="Remove if empty" Disabled="@HasSeries"/>
+		</div>
+		<datalist id="authors">
+			@foreach (var author in _authors)
+			{
+				<option value="@author.Name">@author.Name</option>
+			}
+		</datalist>
+
+		<datalist id="series">
+			@foreach (var serie in _seriesList)
+			{
+				<option value="@serie.Name">@serie.Name</option>
+			}
+		</datalist>
+		<MudDivider Class="my-5" />
+		<span class="text-xl">Preview</span>
+		@if (HasIndexConflict)
+		{
+			<MudAlert Severity="Severity.Error" Class="my-3">Two books can't share the same series index.</MudAlert>
+		}
+		@if (HasMissingIndex)
+		{
+			<MudAlert Severity="Severity.Error" Class="my-3">Every book in a series needs an index.</MudAlert>
+		}
+		<MudTable
+			Class="flex-1"
+			T="BookRow"
+			Items="_rows"
+			Elevation="0"
+			Bordered="true"
+			Dense="true">
+			<HeaderContent>
+				<MudTh>Title</MudTh>
+				<MudTh>Author</MudTh>
+				<MudTh>Series</MudTh>
+				<MudTh>Index</MudTh>
+			</HeaderContent>
+			<RowTemplate>
+				@{
+					var preview = Preview.First(p => p.BookId == context.Book.BookId);
+					var authorUnchanged = context.Book.Author?.AuthorId == preview.Author?.AuthorId;
+					var seriesUnchanged = context.Book.Series?.SeriesId == preview.Series?.SeriesId;
+				}
+				<MudTd Class="font-bold">@context.Book.Title</MudTd>
+				<MudTd>
+					<div class="flex flex-col text-end text-nowrap">
+						@if (authorUnchanged)
+						{
+							@if (preview.Author is null)
+							{
+								<span class="text-sm text-gray-500 italic">No author</span>
+							}
+							else
+							{
+								@preview.Author.Name
+							}
+						}
+						else
+						{
+							<p>
+								Before:
+								@if (context.Book.Author is null)
+								{
+									<span class="text-sm text-gray-500 italic">No author</span>
+								}
+								else
+								{
+									@context.Book.Author.Name
+								}
+							</p>
+							<p>
+								After:
+								@if (preview.Author is null)
+								{
+									<span class="text-sm text-gray-500 italic">No author</span>
+								}
+								else
+								{
+									@preview.Author.Name
+								}
+							</p>
+						}
+					</div>
+				</MudTd>
+				<MudTd>
+					<div class="flex flex-col text-end text-nowrap">
+						@if (seriesUnchanged)
+						{
+							@if (preview.Series is null)
+							{
+								<span class="text-sm text-gray-500 italic">No series</span>
+							}
+							else
+							{
+								@preview.Series.Name
+							}
+						}
+						else
+						{
+							<p>
+								Before:
+								@if (context.Book.Series is null)
+								{
+									<span class="text-sm text-gray-500 italic">No series</span>
+								}
+								else
+								{
+									@context.Book.Series.Name
+								}
+							</p>
+							<p>
+								After:
+								@if (preview.Series is null)
+								{
+									<span class="text-sm text-gray-500 italic">No series</span>
+								}
+								else
+								{
+									@preview.Series.Name
+								}
+							</p>
+						}
+					</div>
+				</MudTd>
+				<MudTd>
+					@if (preview.Series is not null)
+					{
+						<MudNumericField
+							T="decimal?"
+							@bind-Value="context.Index"
+							Culture="CultureInfo.InvariantCulture"
+							Error="preview.IndexConflict || preview.IndexMissing"
+							Margin="Margin.Dense"
+							Variant="Variant.Outlined"
+							Class="w-24 my-1"/>
+					}
+					else
+					{
+						<span class="text-sm text-gray-500 italic">—</span>
+					}
+				</MudTd>
+			</RowTemplate>
+		</MudTable>
+	</DialogContent>
+	<DialogActions>
+		<MudButton OnClick="Apply" Color="Color.Primary" Variant="Variant.Filled" Disabled="HasIndexConflict || HasMissingIndex">Apply</MudButton>
+	</DialogActions>
+</MudDialog>
+
+@code {
+	[Inject] private BookManager BookManager { get; set; } = null!;
+	[Inject] private ISender Sender { get; set; } = null!;
+	[Inject] private ISnackbar Snackbar { get; set; } = null!;
+	
+	[CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = null!;
+	[Parameter] public List<Guid> BookIds { get; set; } = [];
+	
+	private readonly DialogOptions _options = new() { FullWidth = true, MaxWidth = MaxWidth.Medium, CloseButton = true};
+	
+	private sealed class BookRow
+	{
+		public required Book Book { get; init; }
+		public decimal? Index { get; set; }
+	}
+	
+	private List<BookRow> _rows = [];
+	private List<Author> _authors = [];
+	private List<Series> _seriesList = [];
+	
+	private string _author = string.Empty;
+	private string _series = string.Empty;
+	private bool _removeSeriesIfEmpty;
+	
+	private bool HasSeries => !string.IsNullOrWhiteSpace(_series);
+	
+	private sealed record PreviewRow(Guid BookId, Author? Author, Series? Series, decimal? SeriesIndex, bool IndexConflict, bool IndexMissing);
+	
+	private List<PreviewRow> Preview
+	{
+		get
+		{
+			var author = string.IsNullOrWhiteSpace(_author) ? null : ResolveAuthor(_author);
+			var series = HasSeries ? ResolveSeries(_series) : null;
+			var removeSeries = !HasSeries && _removeSeriesIfEmpty;
+			var usedByOthers = GetUsedIndicesByOtherBooks();
+			var usedBySelection = new Dictionary<Guid, HashSet<decimal>>();
+			
+			return _rows.Select(row =>
+			{
+				var book = row.Book;
+				var effectiveSeries = series ?? (removeSeries ? null : book.Series);
+				var index = effectiveSeries is null ? null : row.Index;
+				var conflict = false;
+				if (index is not null && effectiveSeries is not null)
+				{
+					if (!usedBySelection.TryGetValue(effectiveSeries.SeriesId, out var used))
+					{
+						used = [];
+						usedBySelection[effectiveSeries.SeriesId] = used;
+					}
+					conflict = usedByOthers.TryGetValue(effectiveSeries.SeriesId, out var others) && others.Contains(index.Value) ||
+						!used.Add(index.Value);
+				}
+				var missing = effectiveSeries is not null && index is null;
+				return new PreviewRow(book.BookId, author ?? book.Author, effectiveSeries, index, conflict, missing);
+			}).ToList();
+		}
+	}
+	
+	private bool HasIndexConflict => Preview.Any(p => p.IndexConflict);
+	private bool HasMissingIndex => Preview.Any(p => p.IndexMissing);
+	
+	protected override async Task OnInitializedAsync()
+	{
+		await MudDialog.SetOptionsAsync(_options);
+		_rows = BookManager.Books.Where(b => BookIds.Contains(b.BookId)).Select(b => new BookRow { Book = b, Index = b.SeriesIndex }).ToList();
+		
+		var getAuthors = await Sender.Send(new GetAllAuthors.Query());
+		_authors = getAuthors.Value;
+		
+		var getSeries = await Sender.Send(new GetAllSeries.Query(IncludeBooks: true));
+		_seriesList = getSeries.Value;
+	}
+	
+	private void OnSeriesChanged()
+	{
+		var series = HasSeries ? ResolveSeries(_series) : null;
+		foreach (var row in _rows)
+		{
+			row.Index = series is null || row.Book.SeriesId == series.SeriesId ? row.Book.SeriesIndex : null;
+		}
+	}
+	
+	private Dictionary<Guid, HashSet<decimal>> GetUsedIndicesByOtherBooks() =>
+		_seriesList
+			.Select(s => (SeriesId: s.SeriesId, Indices: s.Books
+				.Where(b => !BookIds.Contains(b.BookId))
+				.Select(b => b.SeriesIndex)
+				.Where(i => i is not null)
+				.Select(i => i!.Value)
+				.ToHashSet()))
+			.Where(x => x.Indices.Count > 0)
+			.ToDictionary(x => x.SeriesId, x => x.Indices);
+	
+	private Author ResolveAuthor(string name) =>
+		_authors.FirstOrDefault(a => string.Equals(a.Name, name, StringComparison.OrdinalIgnoreCase)) ?? new Author { Name = name };
+	
+	private Series ResolveSeries(string name) =>
+		_seriesList.FirstOrDefault(s => string.Equals(s.Name, name, StringComparison.OrdinalIgnoreCase)) ?? new Series { Name = name };
+	
+	private async Task Apply()
+	{
+		var author = string.IsNullOrWhiteSpace(_author) ? null : ResolveAuthor(_author);
+		var series = HasSeries ? ResolveSeries(_series) : null;
+		var removeSeries = !HasSeries && _removeSeriesIfEmpty;
+		
+		if (HasIndexConflict || HasMissingIndex) return;
+		
+		var previews = Preview;
+		var hasChanges = author is not null || series is not null || removeSeries ||
+			previews.Zip(_rows, (p, r) => p.SeriesIndex != r.Book.SeriesIndex).Any();
+		if (!hasChanges) return;
+		
+		for (var i = 0; i < _rows.Count; i++)
+		{
+			var book = _rows[i].Book;
+			var preview = previews[i];
+			
+			if (author is not null)
+			{
+				book.AuthorId = author.AuthorId;
+				book.Author = author;
+			}
+			if (series is not null)
+			{
+				book.SeriesId = series.SeriesId;
+				book.Series = series;
+			}
+			else if (removeSeries)
+			{
+				book.SeriesId = null;
+				book.Series = null;
+			}
+			book.SeriesIndex = preview.Series is null ? null : preview.SeriesIndex;
+			
+			var result = await Sender.Send(new UpdateBook.Command(book, null, null));
+			if (result.IsFailure)
+			{
+				Snackbar.Add(result.Error.Description, Severity.Error);
+				return;
+			}
+		}
+		
+		Snackbar.Add("Metadata updated successfully", Severity.Success);
+		MudDialog.Close();
+	}
+}
