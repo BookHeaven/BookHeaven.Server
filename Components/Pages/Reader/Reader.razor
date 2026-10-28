@@ -248,6 +248,7 @@ else {
 	
 	private ReaderState _readerState = ReaderState.Uninitialized;
 	private bool _recountPagesOnNextRender;
+	private Guid _assetLoadToken = Guid.NewGuid();
 	
 	private bool _isFullscreen;
 	private bool _showIndex;
@@ -255,7 +256,7 @@ else {
 	protected override async Task OnInitializedAsync()
 	{
 		ReaderService.OnPageChanged += RefreshUi;
-		ReaderService.OnChapterChanged += RefreshUi;
+		ReaderService.OnChapterChanged += OnChapterChanged;
 		ReaderService.OnTotalPagesChanged += RefreshUi;
 		ReaderSettingsService.OnSettingChanged += OnSettingChanged;
 
@@ -288,11 +289,18 @@ else {
 				{
 					await UpdateTotalPages();
 				}
+				_assetLoadToken = Guid.NewGuid();
 				_readerState = ReaderState.WaitingForAssets;
 				StateHasChanged();
 				break;
 			case ReaderState.WaitingForAssets:
+				var assetLoadToken = _assetLoadToken;
 				await _module!.InvokeVoidAsync("WaitForAssetsToLoad");
+				if (assetLoadToken != _assetLoadToken || _readerState != ReaderState.WaitingForAssets)
+				{
+					break;
+				}
+
 				_readerState = ReaderState.Ready;
 				StateHasChanged();
 				break;
@@ -319,6 +327,13 @@ else {
 	private void RefreshUi()
 	{
 		InvokeAsync(StateHasChanged);
+	}
+
+	private void OnChapterChanged()
+	{
+		_assetLoadToken = Guid.NewGuid();
+		_readerState = ReaderState.WaitingForAssets;
+		RefreshUi();
 	}
 
 	private void OnSettingChanged(string? settingName)
@@ -397,7 +412,7 @@ else {
 	{
 		await ReaderService.SaveProgressAsync();
 		ReaderService.OnPageChanged -= RefreshUi;
-		ReaderService.OnChapterChanged -= RefreshUi;
+		ReaderService.OnChapterChanged -= OnChapterChanged;
 		ReaderService.OnTotalPagesChanged -= RefreshUi;
 		ReaderSettingsService.OnSettingChanged -= OnSettingChanged;
 		ReaderService.Dispose();

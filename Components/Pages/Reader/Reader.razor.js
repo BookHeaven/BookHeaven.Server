@@ -8,9 +8,8 @@ const fullscreenChangeHandler = () => {
     Reference.DotNet.invokeMethodAsync('OnFullscreenChanged', isFullscreen);
 };
 
-const waitForImagesToLoad = async (element = document.querySelector(".viewer"), prefetched = null) => {
-    const images = Array.from(element.querySelectorAll('img, svg image'))
-        .filter((image) => !image.hasAttribute('width') && !image.hasAttribute('height'));
+const waitForImagesToLoad = async (element = document.querySelector(".viewer")) => {
+    const images = Array.from(element.querySelectorAll('img, svg image'));
     if (!images.length) {
         await new Promise((resolve) => requestAnimationFrame(() => resolve()));
         return;
@@ -30,11 +29,23 @@ const waitForImagesToLoad = async (element = document.querySelector(".viewer"), 
             return;
         }
 
-        if (image.complete) return;
+        if ('loading' in image && image.loading === 'lazy') {
+            image.loading = 'eager';
+        }
 
-        // Si no la hemos pre-cargado, el navegador ya la está cargando solo por estar en el DOM
         const src = image.currentSrc || image.src;
-        if (prefetched && src && !prefetched.has(src)) return;
+        if (!src) return;
+
+        if (image.complete) {
+            if (image.naturalWidth > 0 || typeof image.decode !== 'function') return;
+            await image.decode().catch(() => {});
+            return;
+        }
+
+        if (typeof image.decode === 'function') {
+            await image.decode().catch(() => {});
+            return;
+        }
 
         await new Promise((resolve) => {
             const onDone = () => {
@@ -132,6 +143,10 @@ export async function WaitForAssetsToLoad() {
         await document.fonts.ready;
     }
     let mainChapter = document.querySelector('.chapter.current');
+    if (!mainChapter) {
+        throw new Error('The current chapter element was not found.');
+    }
+
     await waitForImagesToLoad(mainChapter);
 }
 
