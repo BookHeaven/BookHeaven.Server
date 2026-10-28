@@ -205,6 +205,42 @@
         }
       }
     },
+    "/api/progress/{profileId}": {
+      "get": {
+        "tags": [
+          "Book Progress"
+        ],
+        "summary": "Get all books progress by profile",
+        "description": "Retrieves the reading progress of every book for a given profile.",
+        "operationId": "GetAllBooksProgressByProfile",
+        "parameters": [
+          {
+            "name": "profileId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BookProgress"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/progress/{profileId}/{bookId}": {
       "get": {
         "tags": [
