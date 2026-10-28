@@ -110,10 +110,9 @@
 			@@apply text-base;
 		}
 
-		/**:has(> img) {
-			text-align: center;
-			height: var(--page-height) !important;
-		}*/
+		table {
+			table-layout: fixed !important;
+		}
 
 		img, svg, figure {
 			box-sizing: border-box;
@@ -126,13 +125,6 @@
 
 		:scope > .chapter p:not([class]) {
 			margin-block: calc(var(--paragraph-spacing) * 1pt) !important;
-		}
-		
-		@if (!string.IsNullOrEmpty(ReaderService.State?.CurrentChapter?.ParagraphClassName))
-		{
-			@::scope > .chapter p@("." + ReaderService.State?.CurrentChapter?.ParagraphClassName) {
-				@:margin-block: calc(var(--paragraph-spacing) * 1pt) !important;
-			@:}
 		}
 
 		:scope sup {
@@ -155,15 +147,24 @@
 				}
 			}
 		}
-		
-	}
-	@foreach (var stylesheet in ReaderService.State?.Styles ?? [])
-	{
-		<text>
-			@@scope(#viewer @(".stylesheet-" + stylesheet.Identifier)) {
+
+		@if (!string.IsNullOrEmpty(ReaderService.State?.CurrentChapter?.ParagraphClassName))
+		{
+			<text>
+			:scope > .chapter p@("." + ReaderService.State?.CurrentChapter?.ParagraphClassName) {
+				margin-block: calc(var(--paragraph-spacing) * 1pt) !important;
+			}
+			</text>
+		}
+
+		@foreach (var stylesheet in ReaderService.State?.Styles ?? [])
+		{
+			<text>
+			:scope @(".stylesheet-" + stylesheet.Identifier) {
 				@stylesheet.Content
-		    }
-		</text>
+			}
+			</text>
+		}
 		
 	}
 </style>
