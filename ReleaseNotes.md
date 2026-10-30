@@ -1,8 +1,10 @@
-﻿## Improvements
-- Reader: Avoid content shift by waiting for images to load before rendering the chapter.
+﻿## Features
+- Reading history tracking for finished books.
 
-## Features
-- New api endpoint for retrieving the progress of all books for a given profile.
+## Improvements
+- The import folder watcher will now log a simple information message when it stops due to natural causes (like application shutdown) instead of logging an error message.
+- Book page: Adjusted progress details layout on smaller screens.
+- Reader: Added page title.
 
 ## Fixes
-- Reader: Force tables to have a fixed layout to prevent them from overflowing the page.
+- Reader: The bottom bar should no longer overflow the page on smaller screens.
