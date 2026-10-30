@@ -57,6 +57,11 @@ public class ImportFolderWatcher(
             {
                 (fileId, filePath) = _filesToProcess.Take(stoppingToken);
             }
+            catch (OperationCanceledException)
+            {
+                logger.LogInformation("Import service is stopping.");
+                return;
+            }
             catch (Exception ex)
             {
                 logger.LogError(ex, "Error taking file from processing queue. Exiting import service.");
