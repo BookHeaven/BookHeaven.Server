@@ -330,4 +330,7 @@
   <data name="COLLECTION_CONVERT_TO_SMART" xml:space="preserve">
     <value>Convert to smart collection</value>
   </data>
+  <data name="READING" xml:space="preserve">
+    <value>Reading</value>
+  </data>
 </root>

@@ -474,6 +474,15 @@ namespace BookHeaven.Server.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Leyendo.
+        /// </summary>
+        public static string READING {
+            get {
+                return ResourceManager.GetString("READING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Recargar página.
         /// </summary>
         public static string RECONNECT_MODAL_BUTTON_RECONNECT {
