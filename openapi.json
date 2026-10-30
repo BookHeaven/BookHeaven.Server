@@ -5,6 +5,44 @@
     "version": "1.0.0"
   },
   "paths": {
+    "/api/history/sync": {
+      "put": {
+        "tags": [
+          "Reading History"
+        ],
+        "summary": "Merges reading history entries sent by a reader.",
+        "description": "Adds the entries that don't exist yet on the server. Entries are identified by profile, book, start date and finish date. Existing entries are never modified or removed.",
+        "operationId": "SyncReadingHistory",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ReadingHistoryEntry"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/profiles": {
       "get": {
         "tags": [
@@ -935,6 +973,35 @@
           }
         }
       },
+      "ReadingHistoryEntry": {
+        "type": "object",
+        "properties": {
+          "readingHistoryEntryId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "profileId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "bookId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "dateStarted": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "dateFinished": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "elapsedTime": {
+            "pattern": "^-?(\\d+\\.)?\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,7})?$",
+            "type": "string"
+          }
+        }
+      },
       "Series": {
         "type": "object",
         "properties": {
@@ -965,6 +1032,9 @@
     }
   },
   "tags": [
+    {
+      "name": "Reading History"
+    },
     {
       "name": "Profiles"
     },
