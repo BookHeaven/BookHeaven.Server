@@ -1,4 +1,5 @@
 ﻿@using System.Globalization
+@using BookHeaven.Server.Components.Pages.Books.Components
 @using BookHeaven.Server.Helpers
 @attribute [Route($"{Urls.Shelf}/{{Id:guid}}")]
 <ScrollToTop />
@@ -10,7 +11,7 @@
 
 @if(!IsEditing)
 {
-	<div class="fixed left-0 top-0 right-0 bottom-0 -z-10 blur-3xl opacity-10">
+	<div class="fixed top-0 right-0 bottom-0 left-0 -z-10 opacity-10 blur-3xl">
 		<img class="h-full w-full" src="@UrlBuilder.CoverUrl(_book.BookId)" alt="" />
 	</div>
 }
@@ -45,7 +46,7 @@
 	}
 </Topbar>
 <Container Class="mt-10 flex flex-wrap gap-10">
-	<div class="w-[200px] mx-auto">
+	<div class="mx-auto w-[200px]">
 		<img src="@(_newCoverTempPath ?? UrlBuilder.CoverUrl(_book.BookId))" style="@Transitions.GetTransitionName("img", _book.BookId)" alt="" />
 		@if (IsEditing && _newCoverTempPath != null)
 		{
@@ -63,7 +64,7 @@
 					<MudText Typo="Typo.h6" Color="Color.Primary" Class="inline-block" style="@Transitions.GetTransitionName("series", _book.BookId)">@_book.Series.Name - @Translations.BOOK @_book.SeriesIndex?.ToString("0.##")</MudText>
 				}
 			</div>
-			<div class="flex items-center gap-2 mb-6">
+			<div class="mb-6 flex items-center gap-2">
 				@foreach (var tag in _book.Tags.OrderBy(t => t.Name))
 				{
 					<MudChip T="string" Class="m-0" Size="Size.Small" Tag="tag" Text="@tag.Name" Variant="Variant.Outlined" Color="Color.Primary" OnClose="RemoveTagFromBook" />
@@ -94,12 +95,12 @@
 				<MudPaper 
 					Class="mb-5 flex p-5 md:min-w-[350px] w-full lg:w-fit flex-col gap-5" 
 					Elevation="0">
-					<div class="flex flex-col md:flex-row gap-2 md:gap-5 justify-between">
-						<dl class="flex flex-row md:flex-col justify-between">
+					<div class="flex flex-col justify-between gap-2 md:flex-row md:gap-5">
+						<dl class="flex flex-row justify-between md:flex-col">
 							<dt>@Translations.START_DATE</dt>
 							<dd>@_book.Progress().StartDate?.ToString(_settings.DateFormat)</dd>
 						</dl>
-						<dl class="flex flex-row md:flex-col justify-between">
+						<dl class="flex flex-row justify-between md:flex-col">
 							@switch (_book.ReadingStatus())
 							{
 								case BookStatus.Reading:
@@ -112,13 +113,21 @@
 									break;
 							}
 						</dl>
-						<dl class="flex flex-row md:flex-col justify-between">
+						<dl class="flex flex-row justify-between md:flex-col">
 							<dt>@Translations.READ_TIME</dt>
 							<dd class="whitespace-nowrap">@_book.Progress().ElapsedTimeFormatted()</dd>
 						</dl>
 					</div>
 
-					<div class="flex gap-3 items-center">
+					<div class="flex items-center gap-3">
+						<MudTooltip 
+							Text="Show reading history">
+							<MudIconButton 
+								Icon="@Icons.Material.Filled.History"
+								Edge="Edge.Start"
+								Size="Size.Small"
+								OnClick="() => _showReadingHistory = !_showReadingHistory"/>
+						</MudTooltip>
 						<span class="w-full">
 							<MudProgressLinear
 								Color="Color.Primary"
@@ -127,13 +136,12 @@
 								Value="@((double)_book.Progress().Progress)"
 								style="@Transitions.GetTransitionName("progress-bar", _book.BookId)"/>
 						</span>
-						
 						<span class="text-nowrap">@_book.Progress().Progress.ToString("0.##") %</span>
 					</div>
 
 				</MudPaper>
 			}
-			<div class="flex gap-5 mb-5">
+			<div class="mb-5 flex gap-5">
 				@if (_book.ISBN10 != null)
 				{
 					<dl id="isbn10">
@@ -149,7 +157,7 @@
 					</dl>
 				}
 			</div>
-			<dl class="grid gap-3 grid-cols-[150px_1fr] items-center text-xl">
+			<dl class="grid grid-cols-[150px_1fr] items-center gap-3 text-xl">
 				@if (_book.Publisher != null)
 				{
 					<dt>@Translations.PUBLISHER</dt>
@@ -163,14 +171,14 @@
 				@if (_book.Description != null)
 				{
 					<dt class="col-span-2">@Translations.DESCRIPTION</dt>
-					<dd class="max-w-[800px] md:min-w-[450px] leading-8 col-span-2">@((MarkupString)_book.Description)</dd>
+					<dd class="col-span-2 max-w-[800px] leading-8 md:min-w-[450px]">@((MarkupString)_book.Description)</dd>
 				}
 			</dl>
 
 		}
 		else
 		{
-			<div class="flex gap-3 mb-5">
+			<div class="mb-5 flex gap-3">
 				<MudTooltip Text="Search Covers">
 					<MudIconButton Icon="@Icons.Material.Rounded.ImageSearch" Variant="Variant.Filled" Color="Color.Tertiary" OnClick="@ShowFetchCoversDialog"/>
 				</MudTooltip>
@@ -181,11 +189,11 @@
 					<MudFileUpload T="IBrowserFile" FilesChanged="UploadCoverToTempPath" SelectedTemplate="file => builder => { }" Accept=".jpg">
 						<CustomContent Context="fileUpload">
 							<MudIconButton HtmlTag="label"
-							               Variant="Variant.Filled"
-							               Color="Color.Tertiary"
-							               Class="w-full"
-							               Icon="@Icons.Material.Filled.Image"
-							               OnClick="fileUpload.OpenFilePickerAsync"/>
+								Variant="Variant.Filled"
+								Color="Color.Tertiary"
+								Class="w-full"
+								Icon="@Icons.Material.Filled.Image"
+								OnClick="fileUpload.OpenFilePickerAsync"/>
 						</CustomContent>
 					</MudFileUpload>
 				</MudTooltip>
@@ -193,11 +201,11 @@
 					<MudFileUpload T="IBrowserFile" FilesChanged="UploadEpubToTempPath" SelectedTemplate="file => builder => { }" Accept=".epub" Class="m-0">
 						<CustomContent Context="fileUpload">
 							<MudIconButton HtmlTag="label"
-							               Variant="Variant.Filled"
-							               Color="Color.Tertiary"
-							               Class="w-full"
-							               Icon="@Icons.Material.Rounded.DriveFileMove"
-							               OnClick="fileUpload.OpenFilePickerAsync"/>
+								Variant="Variant.Filled"
+								Color="Color.Tertiary"
+								Class="w-full"
+								Icon="@Icons.Material.Rounded.DriveFileMove"
+								OnClick="fileUpload.OpenFilePickerAsync"/>
 						</CustomContent>
 					</MudFileUpload>
 				</MudTooltip>
@@ -272,7 +280,13 @@
 		}
 	</div>
 </Container>
-
-
-
-
+<MudDialog
+	@bind-Visible="_showReadingHistory"
+	Options="new DialogOptions { FullWidth = true, MaxWidth = MaxWidth.Small, CloseButton = true }">
+	<TitleContent>
+		<MudText Typo="Typo.h6">Reading History</MudText>
+	</TitleContent>
+	<DialogContent>
+		<BookReadingHistory BookId="_book.BookId" ProfileId="SelectedProfile.ProfileId"/>
+	</DialogContent>
+</MudDialog>

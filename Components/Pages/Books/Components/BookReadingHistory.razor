@@ -1,0 +1,69 @@
+@using BookHeaven.Core.Features.ReadingHistory
+@using BookHeaven.Server.Features.Settings.Abstractions
+@using BookHeaven.Server.Features.Settings.DTOs
+@if (!_isInitialized)
+{
+    <div class="flex h-80 items-center justify-center">
+        <MudProgressCircular Indeterminate="true" />
+    </div>
+    return;
+}
+
+@if (_entries.Count == 0)
+{
+    <div class="h-80">
+        <div class="flex h-full flex-col items-center justify-center gap-3">
+            <MudIcon Icon="@Icons.Material.Filled.HistoryToggleOff" Size="Size.Large" Color="Color.Secondary" />
+            <div class="text-center text-sm text-balance text-(--mud-palette-text-secondary)">
+                Nothing to see here yet.<br/>
+                You have to finish your book first.
+            </div>
+        </div>
+    </div>
+    return;
+}
+
+<div class="grid h-full gap-5 overflow-y-auto p-2">
+    @foreach(var entry in _entries)
+    {
+        <MudPaper Class="grid items-center p-4 gap-2" Outlined="true" Elevation="1">
+            <div class="flex justify-between">
+                <span class="text-(--mud-palette-text-secondary) uppercase">@Translations.START_DATE</span>
+                <span>@entry.DateStarted.ToString(_settings.DateFormat)</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-(--mud-palette-text-secondary) uppercase">@Translations.END_DATE</span>
+                <span>@entry.DateFinished.ToString(_settings.DateFormat)</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-(--mud-palette-text-secondary) uppercase">@Translations.READ_TIME</span>
+                <span>@entry.ElapsedTime.ToDisplayFormat()</span>
+            </div>
+        </MudPaper>
+    }
+</div>
+
+@code {
+    [Inject] private ISender Sender { get; set; } = null!;
+    [Inject] private ISettingsManagerService SettingsManager { get; set; } = null!;
+    
+    [Parameter] public Guid ProfileId { get; set; }
+    [Parameter] public Guid BookId { get; set; }
+    
+    private bool _isInitialized;
+    private List<ReadingHistoryEntry> _entries = [];
+    private ServerSettings _settings = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _settings = await SettingsManager.LoadSettingsAsync();
+        var getEntries = await Sender.Send(new GetReadingHistoryByBook.Query(BookId, ProfileId));
+        if(getEntries.IsFailure)
+        {
+            return;
+        }
+        _entries = getEntries.Value;
+        _isInitialized = true;
+    }
+
+}

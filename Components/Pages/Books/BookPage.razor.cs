@@ -36,6 +36,7 @@ public partial class BookPage
 	
 	private ServerSettings _settings = new();
 
+	private bool _showReadingHistory;
 	private bool _addingTags;
 	private string _tagNames = string.Empty;
 
