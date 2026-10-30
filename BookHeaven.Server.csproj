@@ -63,6 +63,7 @@
     <PackageReference Include="MudExRichTextEditor" Version="9.5.5" />
     <PackageReference Include="OpenLibrary.NET" Version="0.1.3" />
     <PackageReference Include="Scalar.AspNetCore" Version="2.18.6" />
+    <PackageReference Include="HarfBuzzSharp.NativeAssets.Linux" Version="14.2.1.400" />
     <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="4.154.0" />
     <PackageReference Include="Toolbelt.Blazor.ViewTransition" Version="2.0.0" />
   </ItemGroup>
