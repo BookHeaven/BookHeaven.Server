@@ -94,12 +94,12 @@
 				<MudPaper 
 					Class="mb-5 flex p-5 md:min-w-[350px] w-full lg:w-fit flex-col gap-5" 
 					Elevation="0">
-					<div class="flex gap-5 justify-between">
-						<dl>
+					<div class="flex flex-col md:flex-row gap-2 md:gap-5 justify-between">
+						<dl class="flex flex-row md:flex-col justify-between">
 							<dt>@Translations.START_DATE</dt>
 							<dd>@_book.Progress().StartDate?.ToString(_settings.DateFormat)</dd>
 						</dl>
-						<dl>
+						<dl class="flex flex-row md:flex-col justify-between">
 							@switch (_book.ReadingStatus())
 							{
 								case BookStatus.Reading:
@@ -112,8 +112,7 @@
 									break;
 							}
 						</dl>
-
-						<dl>
+						<dl class="flex flex-row md:flex-col justify-between">
 							<dt>@Translations.READ_TIME</dt>
 							<dd class="whitespace-nowrap">@_book.Progress().ElapsedTimeFormatted()</dd>
 						</dl>
