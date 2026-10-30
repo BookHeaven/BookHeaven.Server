@@ -1,5 +1,4 @@
-﻿@using System.Diagnostics
-@using BookHeaven.Server.Features.Authentication.Abstractions
+﻿@using BookHeaven.Server.Features.Authentication.Abstractions
 @using BookHeaven.Server.Features.Authentication.Models
 @inherits LayoutComponentBase
 <PageTitle>BookHeaven</PageTitle>
@@ -11,7 +10,7 @@
 }
 
 <CascadingValue Value="SelectedProfile">
-    <div class="flex h-full overflow-hidden relative">
+    <div class="relative flex h-full overflow-hidden">
         <MudDrawer @bind-Open="_drawerOpen" Class="lg:static" Elevation="0">
             <Logo />
             <ProfileButton />
@@ -28,9 +27,9 @@
                 </div>
             </div>
         </MudDrawer>
-        <main class="flex flex-col w-full overflow-y-auto">
-            <div class="flex flex-col-reverse lg:flex-row gap-2 sticky top-0 px-2 2xl:px-3 backdrop-blur py-2 lg:py-3 z-20 bg-(--mud-palette-appbar-background)" style="view-transition-name:appbar;">
-                <div class="flex items-center gap-3 flex-1">
+        <main class="flex w-full flex-col overflow-y-auto">
+            <div class="sticky top-0 z-20 flex flex-col-reverse gap-2 bg-(--mud-palette-appbar-background) px-2 py-2 backdrop-blur lg:flex-row lg:py-3 2xl:px-3" style="view-transition-name:appbar;">
+                <div class="flex flex-1 items-center gap-3">
                     <SectionOutlet SectionName="TopBar" />
                 </div>
                 <div class="flex items-center">
@@ -45,7 +44,7 @@
                     <EbookUploadButton />
                 </div>
             </div>
-            <div class="py-2 lg:py-5 md:px-7 relative flex-1">
+            <div class="relative flex-1 overflow-x-hidden py-2 md:px-7 lg:py-5">
                 <SectionOutlet SectionName="Toolbar" />
                 @Body
             </div>
