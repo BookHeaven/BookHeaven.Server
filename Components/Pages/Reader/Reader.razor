@@ -178,7 +178,7 @@
 else {
     <FontProvider />
 }
-<MudDrawer Width="400px" @bind-Open="_showIndex" Variant="DrawerVariant.Temporary" OverlayAutoClose="true">
+<MudDrawer  @bind-Open="_showIndex" Variant="DrawerVariant.Temporary" OverlayAutoClose="true">
 	<TableOfContents
 		Chapters="@ReaderService.State?.Ebook?.Content.TableOfContents"
 		CurrentChapterId="@ReaderService.State?.CurrentChapter?.Identifier"/>
@@ -188,7 +188,7 @@ else {
 		<GoBackButton/>
 		@if (ReaderService.IsReady)
 		{
-			<span class="text-lg">@ReaderService.State?.Ebook?.Title</span>
+			<span class="xl:text-lg">@ReaderService.State?.Ebook?.Title</span>
 			<div class="ms-auto flex items-center 2xl:gap-2">
 				<MudIconButton Icon="@Icons.Material.Filled.TextFields" OnClick="OpenTextSettingsDialog"/>
 				<MudIconButton Icon="@Icons.Material.Filled.Settings" OnClick="OpenPageSettingsDialog"/>
@@ -212,23 +212,18 @@ else {
 		<span>
 			<MudIconButton Icon="@Icons.Material.Filled.List" OnClick="() => _showIndex = !_showIndex" Edge="Edge.Start"/>
 		</span>
-		@if (_readerState == ReaderState.Ready)
-		{
-			<div class="flex items-center">
-				<span class="mx-auto text-nowrap">
-					@ReaderService.State?.ChapterTitle
-					( @ReaderService.State?.PageNumber / @ReaderService.State?.TotalPages )
-				</span>
+		<div class="flex items-center flex-wrap">
+			<span class="mx-auto text-nowrap pt-2">
+				@ReaderService.State?.ChapterTitle
+				( @ReaderService.State?.PageNumber / @ReaderService.State?.TotalPages )
+			</span>
+			<div class="flex items-center mx-auto">
 				<MudIconButton Icon="@Icons.Material.Filled.ChevronLeft" OnClick="() => ReaderService.PreviousPage()"/>
 				<MudIconButton Icon="@Icons.Material.Filled.KeyboardDoubleArrowLeft" OnClick="() => ReaderService.PreviousChapter()"/>
 				<MudIconButton Icon="@Icons.Material.Filled.KeyboardDoubleArrowRight" OnClick="() => ReaderService.NextChapter()"/>
 				<MudIconButton Icon="@Icons.Material.Filled.ChevronRight" OnClick="() => ReaderService.NextPage()"/>
 			</div>
-		}
-		else
-		{
-			<span></span>
-		}
+		</div>
 		<span class="text-end">
 			@ReaderService.State?.ProgressAsPercentage.ToString("0.00")%
 		</span>
