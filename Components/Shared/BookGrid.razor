@@ -1,11 +1,13 @@
 ﻿@if (IsLoading)
 {
-	<div class="@GridClasses">
-		@for(var i = 0; i < 20; i++)
-		{
-			<MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="370px" Animation="Animation.Pulse" Class="w-[170px] sm:w-[180px] rounded" />
-		}
-	</div>
+	<DelayedContent>
+		<div class="@GridClasses">
+			@for(var i = 0; i < 20; i++)
+			{
+				<MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="370px" Animation="Animation.Pulse" Class="w-[170px] sm:w-[180px] rounded" />
+			}
+		</div>
+	</DelayedContent>
 	return;
 }
 
