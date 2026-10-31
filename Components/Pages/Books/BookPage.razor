@@ -280,13 +280,15 @@
 		}
 	</div>
 </Container>
-<MudDialog
-	@bind-Visible="_showReadingHistory"
-	Options="new DialogOptions { FullWidth = true, MaxWidth = MaxWidth.Small, CloseButton = true }">
-	<TitleContent>
+<MudDrawer
+	@bind-Open="_showReadingHistory"
+	Variant="DrawerVariant.Temporary"
+	Anchor="Anchor.Bottom"
+	Elevation="5">
+	<MudDrawerHeader>
 		<MudText Typo="Typo.h6">Reading History</MudText>
-	</TitleContent>
-	<DialogContent>
+	</MudDrawerHeader>
+	<div class="overflow-x-auto">
 		<BookReadingHistory BookId="_book.BookId" ProfileId="SelectedProfile.ProfileId"/>
-	</DialogContent>
-</MudDialog>
+	</div>
+</MudDrawer>
