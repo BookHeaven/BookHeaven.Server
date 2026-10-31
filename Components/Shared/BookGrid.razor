@@ -1,27 +1,26 @@
-﻿@if (IsLoading)
-{
-	<DelayedContent>
+<LoadingContainer IsLoading="IsLoading">
+	<Skeleton>
 		<div class="@GridClasses">
 			@for(var i = 0; i < 20; i++)
 			{
 				<MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="370px" Animation="Animation.Pulse" Class="w-[170px] sm:w-[180px] rounded" />
 			}
 		</div>
-	</DelayedContent>
-	return;
-}
-
-<VirtualGrid Items="Books" ContainerClass="@GridClasses">
-	<ItemTemplate>
-		<BookCard
-			@key="@context.BookId"
-			Book="context"
-			IsSelectMode="IsSelectMode"
-			IsSelected="SelectedBooks.Contains(context.BookId)"
-			IsInteractive="IsInteractive"
-			OnBookClicked="OnBookClicked"/>
-	</ItemTemplate>
-</VirtualGrid>
+	</Skeleton>
+	<ChildContent>
+		<VirtualGrid Items="Books" ContainerClass="@GridClasses">
+			<ItemTemplate>
+				<BookCard
+					@key="@context.BookId"
+					Book="context"
+					IsSelectMode="IsSelectMode"
+					IsSelected="SelectedBooks.Contains(context.BookId)"
+					IsInteractive="IsInteractive"
+					OnBookClicked="OnBookClicked"/>
+			</ItemTemplate>
+		</VirtualGrid>
+	</ChildContent>
+</LoadingContainer>
 
 
 @code {

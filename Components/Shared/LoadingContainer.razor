@@ -1,0 +1,85 @@
+@implements IDisposable
+
+@if (_isSkeletonVisible)
+{
+    @Skeleton
+}
+else if (!IsLoading)
+{
+    @ChildContent
+}
+
+@code {
+    [Parameter] public bool IsLoading { get; set; }
+    [Parameter] public RenderFragment? Skeleton { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public int DelayMs { get; set; } = 200;
+    [Parameter] public int MinVisibleMs { get; set; } = 400;
+
+    private CancellationTokenSource? _cancellation;
+    private DateTime _skeletonShownAtUtc;
+    private bool _wasLoading;
+    private bool _isSkeletonVisible;
+
+    protected override void OnParametersSet()
+    {
+        if (IsLoading == _wasLoading)
+        {
+            return;
+        }
+        _wasLoading = IsLoading;
+
+        _cancellation?.Cancel();
+        _cancellation?.Dispose();
+        _cancellation = new CancellationTokenSource();
+
+        _ = IsLoading
+            ? ShowSkeletonAfterDelayAsync(_cancellation.Token)
+            : HideSkeletonAfterMinimumAsync(_cancellation.Token);
+    }
+
+    private async Task ShowSkeletonAfterDelayAsync(CancellationToken cancellationToken)
+    {
+        if (!await TryDelayAsync(DelayMs, cancellationToken))
+        {
+            return;
+        }
+        _skeletonShownAtUtc = DateTime.UtcNow;
+        _isSkeletonVisible = true;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HideSkeletonAfterMinimumAsync(CancellationToken cancellationToken)
+    {
+        if (!_isSkeletonVisible)
+        {
+            return;
+        }
+        var remainingMs = MinVisibleMs - (int)(DateTime.UtcNow - _skeletonShownAtUtc).TotalMilliseconds;
+        if (remainingMs > 0 && !await TryDelayAsync(remainingMs, cancellationToken))
+        {
+            return;
+        }
+        _isSkeletonVisible = false;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private static async Task<bool> TryDelayAsync(int milliseconds, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await Task.Delay(milliseconds, cancellationToken);
+            return true;
+        }
+        catch (OperationCanceledException)
+        {
+            return false;
+        }
+    }
+
+    public void Dispose()
+    {
+        _cancellation?.Cancel();
+        _cancellation?.Dispose();
+    }
+}

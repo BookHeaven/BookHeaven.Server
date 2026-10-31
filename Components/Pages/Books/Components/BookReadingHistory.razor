@@ -1,63 +1,63 @@
 @using BookHeaven.Core.Features.ReadingHistory
 @using BookHeaven.Server.Features.Settings.Abstractions
 @using BookHeaven.Server.Features.Settings.DTOs
-@if (!_isInitialized)
-{
-    <DelayedContent>
-        <div class="grid h-full w-fit auto-cols-[265px] grid-flow-col grid-rows-1 items-center gap-5 p-5">
+<LoadingContainer IsLoading="!_isInitialized" MinVisibleMs="600">
+    <Skeleton>
+        <div class="grid h-full w-fit animate-fade-in auto-cols-[265px] grid-flow-col grid-rows-1 items-center gap-5 p-5 animate-duration-200">
             @for(var i = 0; i < 4; i++)
             {
                 <MudPaper Class="grid items-center p-4 gap-2" Outlined="true" Elevation="1">
                     <div class="flex justify-between">
-                        <span class="text-(--mud-palette-text-secondary) uppercase">@Translations.START_DATE</span>
+                        <MudSkeleton Width="110px" Height="20px" />
                         <MudSkeleton Width="100px" Height="20px" />
                     </div>
                     <div class="flex justify-between">
-                        <span class="text-(--mud-palette-text-secondary) uppercase">@Translations.END_DATE</span>
+                        <MudSkeleton Width="100px" Height="20px" />
                         <MudSkeleton Width="100px" Height="20px" />
                     </div>
                     <div class="flex justify-between">
-                        <span class="text-(--mud-palette-text-secondary) uppercase">@Translations.READ_TIME</span>
+                        <MudSkeleton Width="80px" Height="20px" />
                         <MudSkeleton Width="100px" Height="20px" />
                     </div>
                 </MudPaper>
             }
         </div>
-    </DelayedContent>
-    return;
-}
-
-@if (_entries.Count == 0)
-{
-    <div class="flex h-52 flex-col items-center justify-center gap-3">
-        <MudIcon Icon="@Icons.Material.Filled.HistoryToggleOff" Size="Size.Large" Color="Color.Secondary" />
-        <div class="text-center text-sm text-balance text-(--mud-palette-text-secondary)">
-            Nothing to see here yet.<br/>
-            You have to finish your book at least once.
-        </div>
-    </div>
-    return;
-}
-
-<div class="grid h-full w-fit auto-cols-[265px] grid-flow-col grid-rows-1 items-center gap-5 p-5">
-    @foreach(var entry in _entries)
+    </Skeleton>
+    <ChildContent>
+    @if (_entries.Count == 0)
     {
-        <MudPaper Class="grid items-center p-4 gap-2" Outlined="true" Elevation="1">
-            <div class="flex justify-between">
-                <span class="text-(--mud-palette-text-secondary) uppercase">@Translations.START_DATE</span>
-                <span>@entry.DateStarted.ToString(_settings.DateFormat)</span>
+        <div class="flex h-52 animate-fade-in flex-col items-center justify-center gap-3 animate-duration-200">
+            <MudIcon Icon="@Icons.Material.Filled.HistoryToggleOff" Size="Size.Large" Color="Color.Secondary" />
+            <div class="text-center text-sm text-balance text-(--mud-palette-text-secondary)">
+                Nothing to see here yet.<br/>
+                You have to finish your book at least once.
             </div>
-            <div class="flex justify-between">
-                <span class="text-(--mud-palette-text-secondary) uppercase">@Translations.END_DATE</span>
-                <span>@entry.DateFinished.ToString(_settings.DateFormat)</span>
-            </div>
-            <div class="flex justify-between">
-                <span class="text-(--mud-palette-text-secondary) uppercase">@Translations.READ_TIME</span>
-                <span>@entry.ElapsedTime.ToDisplayFormat()</span>
-            </div>
-        </MudPaper>
+        </div>
     }
-</div>
+    else
+    {
+        <div class="grid h-full w-fit animate-fade-in auto-cols-[265px] grid-flow-col grid-rows-1 items-center gap-5 p-5 animate-duration-200">
+            @foreach(var entry in _entries)
+            {
+                <MudPaper Class="grid items-center p-4 gap-2" Outlined="true" Elevation="1">
+                    <div class="flex justify-between">
+                        <span class="text-(--mud-palette-text-secondary) uppercase">@Translations.START_DATE</span>
+                        <span>@entry.DateStarted.ToString(_settings.DateFormat)</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-(--mud-palette-text-secondary) uppercase">@Translations.END_DATE</span>
+                        <span>@entry.DateFinished.ToString(_settings.DateFormat)</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-(--mud-palette-text-secondary) uppercase">@Translations.READ_TIME</span>
+                        <span>@entry.ElapsedTime.ToDisplayFormat()</span>
+                    </div>
+                </MudPaper>
+            }
+        </div>
+    }
+    </ChildContent>
+</LoadingContainer>
 
 @code {
     [Inject] private ISender Sender { get; set; } = null!;
