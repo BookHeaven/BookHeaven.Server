@@ -72,11 +72,10 @@
     {
         _settings = await SettingsManager.LoadSettingsAsync();
         var getEntries = await Sender.Send(new GetReadingHistoryByBook.Query(BookId, ProfileId));
-        if(getEntries.IsFailure)
+        if(getEntries.IsSuccess)
         {
-            return;
+            _entries = getEntries.Value;
         }
-        _entries = getEntries.Value;
         _isInitialized = true;
     }
 
