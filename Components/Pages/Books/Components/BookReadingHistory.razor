@@ -3,25 +3,27 @@
 @using BookHeaven.Server.Features.Settings.DTOs
 @if (!_isInitialized)
 {
-    <div class="grid h-full w-fit auto-cols-[265px] grid-flow-col grid-rows-1 items-center gap-5 p-5">
-        @for(var i = 0; i < 4; i++)
-        {
-            <MudPaper Class="grid items-center p-4 gap-2" Outlined="true" Elevation="1">
-                <div class="flex justify-between">
-                    <span class="text-(--mud-palette-text-secondary) uppercase">@Translations.START_DATE</span>
-                    <MudSkeleton Width="100px" Height="20px" />
-                </div>
-                <div class="flex justify-between">
-                    <span class="text-(--mud-palette-text-secondary) uppercase">@Translations.END_DATE</span>
-                    <MudSkeleton Width="100px" Height="20px" />
-                </div>
-                <div class="flex justify-between">
-                    <span class="text-(--mud-palette-text-secondary) uppercase">@Translations.READ_TIME</span>
-                    <MudSkeleton Width="100px" Height="20px" />
-                </div>
-            </MudPaper>
-        }
-    </div>
+    <DelayedContent>
+        <div class="grid h-full w-fit auto-cols-[265px] grid-flow-col grid-rows-1 items-center gap-5 p-5">
+            @for(var i = 0; i < 4; i++)
+            {
+                <MudPaper Class="grid items-center p-4 gap-2" Outlined="true" Elevation="1">
+                    <div class="flex justify-between">
+                        <span class="text-(--mud-palette-text-secondary) uppercase">@Translations.START_DATE</span>
+                        <MudSkeleton Width="100px" Height="20px" />
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-(--mud-palette-text-secondary) uppercase">@Translations.END_DATE</span>
+                        <MudSkeleton Width="100px" Height="20px" />
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-(--mud-palette-text-secondary) uppercase">@Translations.READ_TIME</span>
+                        <MudSkeleton Width="100px" Height="20px" />
+                    </div>
+                </MudPaper>
+            }
+        </div>
+    </DelayedContent>
     return;
 }
 
