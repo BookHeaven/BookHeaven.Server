@@ -288,7 +288,10 @@
 	<MudDrawerHeader>
 		<MudText Typo="Typo.h6">Reading History</MudText>
 	</MudDrawerHeader>
-	<div class="overflow-x-auto">
-		<BookReadingHistory BookId="_book.BookId" ProfileId="SelectedProfile.ProfileId"/>
-	</div>
+	@if (_showReadingHistory)
+	{
+		<div class="overflow-x-auto">
+			<BookReadingHistory BookId="_book.BookId" ProfileId="SelectedProfile.ProfileId"/>
+		</div>
+	}
 </MudDrawer>
