@@ -419,6 +419,51 @@
         }
       }
     },
+    "/api/annotations/sync": {
+      "put": {
+        "tags": [
+          "Book Annotations"
+        ],
+        "summary": "Synchronizes book annotations for a profile.",
+        "description": "Merges the submitted annotations with the server annotations using last-write-wins and returns the merged annotations.",
+        "operationId": "SyncBookAnnotations",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BookAnnotationsSyncRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BookAnnotation"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/authors": {
       "get": {
         "tags": [
@@ -622,6 +667,87 @@
           "updatedAt": {
             "type": "string",
             "format": "date-time"
+          }
+        }
+      },
+      "BookAnnotation": {
+        "type": "object",
+        "properties": {
+          "bookAnnotationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "bookId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "profileId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "chapterIndex": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "chapterTitle": {
+            "type": "string"
+          },
+          "startOffset": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "endOffset": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "text": {
+            "type": "string"
+          },
+          "note": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "BookAnnotationsSyncRequest": {
+        "required": [
+          "bookId",
+          "profileId",
+          "annotations"
+        ],
+        "type": "object",
+        "properties": {
+          "bookId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "profileId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "annotations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BookAnnotation"
+            }
           }
         }
       },
@@ -1049,6 +1175,9 @@
     },
     {
       "name": "Book Progress"
+    },
+    {
+      "name": "Book Annotations"
     },
     {
       "name": "Authors"
