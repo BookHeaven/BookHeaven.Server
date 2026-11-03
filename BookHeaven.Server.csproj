@@ -83,7 +83,7 @@
     <ProjectReference Include="..\BookHeaven.Core\BookHeaven.Core.csproj" />
   </ItemGroup>
   <ItemGroup Condition="'$(UseNuget)' == 'true'">
-    <PackageReference Include="BookHeaven.Core" Version="2.1.0" />
+    <PackageReference Include="BookHeaven.Core" Version="2.1.1" />
   </ItemGroup>
   <PropertyGroup>
     <MudAllowedAttributePattern>LowerCase</MudAllowedAttributePattern>
