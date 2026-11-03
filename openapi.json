@@ -425,7 +425,7 @@
           "Book Annotations"
         ],
         "summary": "Synchronizes book annotations for a profile.",
-        "description": "Merges the submitted annotations with the server annotations using last-write-wins and returns the merged annotations.",
+        "description": "Merges the submitted annotations with the server annotations using last-write-wins, applies submitted deletions, and returns the merged annotations.",
         "operationId": "SyncBookAnnotations",
         "requestBody": {
           "content": {
@@ -747,6 +747,13 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/BookAnnotation"
+            }
+          },
+          "deletedAnnotationIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
             }
           }
         }

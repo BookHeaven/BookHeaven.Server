@@ -6,7 +6,11 @@ namespace BookHeaven.Server.Features.Api.Endpoints.BookAnnotations;
 
 public static class ApiSyncBookAnnotations
 {
-    public sealed record BookAnnotationsSyncRequest(Guid BookId, Guid ProfileId, List<BookAnnotation> Annotations);
+    public sealed record BookAnnotationsSyncRequest(
+        Guid BookId,
+        Guid ProfileId,
+        List<BookAnnotation> Annotations,
+        List<Guid> DeletedAnnotationIds);
     
     public class Endpoint : IEndpoint
     {
@@ -15,11 +19,11 @@ public static class ApiSyncBookAnnotations
             app.MapPut("/annotations/sync", ApiHandler)
                 .WithName("SyncBookAnnotations")
                 .WithTags("Book Annotations")
-                .Produces<List<BookAnnotation>>(StatusCodes.Status200OK)
+                .Produces<List<BookAnnotation>>()
                 .ProducesProblem(StatusCodes.Status500InternalServerError)
                 .Accepts<BookAnnotationsSyncRequest>("application/json")
                 .WithSummary("Synchronizes book annotations for a profile.")
-                .WithDescription("Merges the submitted annotations with the server annotations using last-write-wins and returns the merged annotations.");
+                .WithDescription("Merges the submitted annotations with the server annotations using last-write-wins, applies submitted deletions, and returns the merged annotations.");
         }
 
         private static async Task<IResult> ApiHandler(
@@ -32,7 +36,11 @@ public static class ApiSyncBookAnnotations
                 syncRequest.Annotations.Count,
                 syncRequest.BookId,
                 syncRequest.ProfileId);
-            var sync = await sender.Send(new SyncBookAnnotations.Command(syncRequest.BookId, syncRequest.ProfileId, syncRequest.Annotations));
+            var sync = await sender.Send(new SyncBookAnnotations.Command(
+                syncRequest.BookId,
+                syncRequest.ProfileId,
+                syncRequest.Annotations,
+                syncRequest.DeletedAnnotationIds));
             if (sync.IsFailure)
             {
                 logger.LogError(sync.Error.Description);
