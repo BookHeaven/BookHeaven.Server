@@ -159,8 +159,8 @@
 			}
 			else
 			{
-				variant.Style = file.Name.ToLower().Contains("italic") ? "italic" : "normal";
-				variant.Weight = file.Name.ToLower().Contains("bold") ? "bold" : "normal";
+				variant.Style = file.Name.Contains("italic", StringComparison.OrdinalIgnoreCase) ? "italic" : "normal";
+				variant.Weight = file.Name.Contains("bold", StringComparison.OrdinalIgnoreCase) ? "bold" : "normal";
 			}
 			variant.FileName = file.Name;
 			_variants.Add(variant);
