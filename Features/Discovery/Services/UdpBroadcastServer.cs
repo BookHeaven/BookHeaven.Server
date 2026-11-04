@@ -7,7 +7,7 @@ namespace BookHeaven.Server.Features.Discovery.Services;
 
 public sealed class UdpBroadcastServer(ILogger<UdpBroadcastServer> logger) : BackgroundService
 {
-    private readonly int _maxRetries = 5;
+    private const int MaxRetries = 5;
     private readonly string _message = $"{Broadcast.SERVER_URL_MESSAGE_PREFIX}{Environment.GetEnvironmentVariable("SERVER_URL")}";
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -54,9 +54,9 @@ public sealed class UdpBroadcastServer(ILogger<UdpBroadcastServer> logger) : Bac
                 if (completedTask != task)
                 {
                     logger.LogInformation($"Client {broadcastAddress.Address} hasn't responded, resending broadcast...");
-                    if (++retries >= _maxRetries)
+                    if (++retries >= MaxRetries)
                     {
-                        logger.LogInformation($"Client {broadcastAddress.Address} hasn't responded after {_maxRetries} retries, stopping broadcast.");
+                        logger.LogInformation($"Client {broadcastAddress.Address} hasn't responded after {MaxRetries} retries, stopping broadcast.");
                         break;
                     }
                     continue;
