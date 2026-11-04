@@ -41,11 +41,11 @@ public sealed partial class DuckDuckGoImageProvider(ILogger<DuckDuckGoImageProvi
     private static readonly string Sources = HttpUtility.UrlEncode("(" + string.Join(" OR ", PreferredSources.Select(s => $"site:{s}")) + ")");
     private static readonly string Parameters = "&iar=images&iaf=" + HttpUtility.UrlEncode(string.Join(",", ParametersParts));
     
-    [GeneratedRegex(@"vqd=([-\d]+)", RegexOptions.Compiled)]
+    [GeneratedRegex(@"vqd=([-\d]+)")]
     private static partial Regex TokenRegex();
     
     private static readonly HttpClientHandler HttpClientHandler = new() { AllowAutoRedirect = true, UseCookies = true, CookieContainer = new() };
-    private static readonly HttpClient HttpClient = new(HttpClientHandler);
+    private static readonly HttpClient HttpClient = CreateHttpClient();
     
     public async Task<Result<List<string>>> GetCoversAsync(MetadataRequest request, CancellationToken cancellationToken = default)
     {
@@ -53,19 +53,23 @@ public sealed partial class DuckDuckGoImageProvider(ILogger<DuckDuckGoImageProvi
         
         try
         {
-            var token = await GetVqdTokenAsync(query, cancellationToken);
-            var preferredResults = await FetchImageUrlsAsync(query, token, cancellationToken);
+            var results = await Task.WhenAll(
+                FetchCoversAsync(query, ignorePreferredSources: false, cancellationToken),
+                FetchCoversAsync(query, ignorePreferredSources: true, cancellationToken));
             
-            var newToken = await GetVqdTokenAsync(query, cancellationToken, true);
-            var otherResults = await FetchImageUrlsAsync(query, newToken, cancellationToken, true);
-            
-            return preferredResults.Concat(otherResults).Distinct().ToList();
+            return results.SelectMany(r => r).Distinct().ToList();
         }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
         {
             logger.LogError(ex, "DuckDuckGo: Error fetching covers");
             return new Error("Network error while fetching covers");
         }
+    }
+    
+    private async Task<List<string>> FetchCoversAsync(string query, bool ignorePreferredSources, CancellationToken cancellationToken)
+    {
+        var token = await GetVqdTokenAsync(query, cancellationToken, ignorePreferredSources);
+        return await FetchImageUrlsAsync(query, token, cancellationToken, ignorePreferredSources);
     }
     
     private async Task<string> GetVqdTokenAsync(string query, CancellationToken cancellationToken, bool ignorePreferredSources = false)
@@ -92,13 +96,13 @@ public sealed partial class DuckDuckGoImageProvider(ILogger<DuckDuckGoImageProvi
                 {
                     
                     var imageUrl = result.TryGetProperty("image", out var imageElement) ? imageElement.GetString() : string.Empty;
-                    if(string.IsNullOrWhiteSpace(imageUrl) || !_preferredFileTypes.Any(t => imageUrl.EndsWith(t))) continue;
+                    if(string.IsNullOrWhiteSpace(imageUrl) || !PreferredFileTypes.Any(t => imageUrl.EndsWith(t))) continue;
                     
                     var width = result.TryGetProperty("width", out var widthElement) ? widthElement.GetInt32() : 0;
                     var height = result.TryGetProperty("height", out var heightElement) ? heightElement.GetInt32() : 0;
                     
                     // Ignore images if ratio is not close to preferred ratios or width is too small
-                    if (width < 350 || !_ratios.Any(r => Math.Abs((double)width / height - r.width / r.height) < 0.05))
+                    if (width < 350 || !Ratios.Any(r => Math.Abs((double)width / height - r.width / r.height) < 0.05))
                         continue;
                     
                     imageUrls.Add(imageUrl);
@@ -113,15 +117,22 @@ public sealed partial class DuckDuckGoImageProvider(ILogger<DuckDuckGoImageProvi
         return imageUrls;
     }
 
+    private static HttpClient CreateHttpClient()
+    {
+        var client = new HttpClient(HttpClientHandler);
+        client.DefaultRequestHeaders.UserAgent.ParseAdd(USER_AGENT);
+        client.DefaultRequestHeaders.Referrer = new Uri(REFERRER);
+        client.DefaultRequestHeaders.Accept.ParseAdd(ACCEPT);
+        return client;
+    }
+    
     private static async Task<string> MakeRequestAsync(string url, CancellationToken cancellationToken, bool ignoreContentType = false)
     {
-        HttpClient.DefaultRequestHeaders.UserAgent.Clear();
-        HttpClient.DefaultRequestHeaders.UserAgent.ParseAdd(USER_AGENT);
-        HttpClient.DefaultRequestHeaders.Referrer = new Uri(REFERRER);
-        HttpClient.DefaultRequestHeaders.Accept.Clear();
-        HttpClient.DefaultRequestHeaders.Accept.ParseAdd(ignoreContentType ? "*/*" : ACCEPT);
+        using var request = new HttpRequestMessage(HttpMethod.Get, url);
+        if (ignoreContentType)
+            request.Headers.Accept.ParseAdd("*/*");
         
-        var response = await HttpClient.GetAsync(url, cancellationToken);
+        using var response = await HttpClient.SendAsync(request, cancellationToken);
         return await response.Content.ReadAsStringAsync(cancellationToken);
     }
 
