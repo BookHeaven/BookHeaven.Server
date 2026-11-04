@@ -29,7 +29,7 @@ public sealed class ETagMiddleware(RequestDelegate next, string requestPrefix, s
             return;
         }
 
-        var physicalPath = Path.Combine(_physicalBasePath, relPath.Replace('/', Path.DirectorySeparatorChar));
+        var physicalPath = Path.Combine(_physicalBasePath, relPath);
         var fileInfo = new FileInfo(physicalPath);
         if (!fileInfo.Exists)
         {
