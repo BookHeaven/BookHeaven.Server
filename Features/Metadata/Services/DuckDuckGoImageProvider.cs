@@ -13,33 +13,33 @@ public sealed partial class DuckDuckGoImageProvider(ILogger<DuckDuckGoImageProvi
     private const string REFERRER = "https://duckduckgo.com/";
     private const string ACCEPT = "application/json, text/javascript";
     
-    private readonly List<string> _preferredSources =
+    private static readonly List<string> PreferredSources =
     [
         "goodreads.com",
         "amazon.com"
     ];
     
-    private readonly List<string> _parameters =
+    private static readonly List<string> ParametersParts =
     [
         "size:Large",
         "layout:Tall"
     ];
     
-    private readonly List<(double width, double height)> _ratios =
+    private static readonly List<(double width, double height)> Ratios =
     [
         (1, 1.4),
         (1, 1.5),
         (1, 1.6)
     ];
     
-    private readonly List<string> _preferredFileTypes =
+    private static readonly List<string> PreferredFileTypes =
     [
         ".jpg",
         ".jpeg"
     ];
     
-    private string Sources => HttpUtility.UrlEncode("(" + string.Join(" OR ", _preferredSources.Select(s => $"site:{s}")) + ")");
-    private string Parameters => "&iar=images&iaf=" + HttpUtility.UrlEncode(string.Join(",", _parameters));
+    private static readonly string Sources = HttpUtility.UrlEncode("(" + string.Join(" OR ", PreferredSources.Select(s => $"site:{s}")) + ")");
+    private static readonly string Parameters = "&iar=images&iaf=" + HttpUtility.UrlEncode(string.Join(",", ParametersParts));
     
     [GeneratedRegex(@"vqd=([-\d]+)", RegexOptions.Compiled)]
     private static partial Regex TokenRegex();
