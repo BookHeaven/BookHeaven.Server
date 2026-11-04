@@ -7,9 +7,10 @@ using BookHeaven.Server.Features.Api.Abstractions;
 
 namespace BookHeaven.Server.Features.Api.Endpoints.Koreader;
 
-public static class ApiSaveKoreaderProgress
+public static partial class ApiSaveKoreaderProgress
 {
-    private static readonly Regex DocFragmentRegex = new("DocFragment\\[(\\d+)\\]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    [GeneratedRegex("DocFragment\\[(\\d+)\\]", RegexOptions.IgnoreCase)]
+    private static partial Regex DocFragmentRegex();
 
     private sealed class KOReaderDocumentRequest
     {
@@ -106,7 +107,7 @@ public static class ApiSaveKoreaderProgress
             return null;
         }
 
-        var match = DocFragmentRegex.Match(progress);
+        var match = DocFragmentRegex().Match(progress);
         if (!match.Success)
         {
             return null;
