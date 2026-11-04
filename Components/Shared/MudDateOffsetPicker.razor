@@ -21,13 +21,13 @@
     [Parameter] public bool Required { get; set; }
     [Parameter] public string RequiredError { get; set; } = "Required";
 
-    string DatePattern => CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern;
+    static string DatePattern => CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern;
 
-    string DatePatternLong => "ddd, " + CultureInfo.CurrentCulture.DateTimeFormat.MonthDayPattern;
+    static string DatePatternLong => "ddd, " + CultureInfo.CurrentCulture.DateTimeFormat.MonthDayPattern;
 
-    DayOfWeek FirstDayOfWeek => CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek;
+    static DayOfWeek FirstDayOfWeek => CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek;
 
-    bool TimeAmPm => CultureInfo.CurrentCulture.DateTimeFormat.ShortTimePattern.EndsWith("tt");
+    bool TimeAmPm => CultureInfo.CurrentCulture.DateTimeFormat.ShortTimePattern.EndsWith("tt", StringComparison.Ordinal);
 
     DateTime? _dateTime;
 
