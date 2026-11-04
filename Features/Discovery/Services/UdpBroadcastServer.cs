@@ -61,7 +61,7 @@ public sealed class UdpBroadcastServer(ILogger<UdpBroadcastServer> logger) : Bac
                     }
                     continue;
                 }
-                var ackResult = task.Result;
+                var ackResult = await task;
                 var ackMessage = Encoding.UTF8.GetString(ackResult.Buffer);
                 if (ackMessage == Broadcast.ACK_MESSAGE)
                 {
