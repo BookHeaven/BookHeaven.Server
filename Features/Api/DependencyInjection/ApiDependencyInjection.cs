@@ -37,7 +37,7 @@ public static class ApiDependencyInjection
         foreach (var group in ApiGroups)
         {
             IEndpointRouteBuilder routeBuilder = !string.IsNullOrEmpty(group.basePath) ? app.MapGroup(group.basePath) : app;
-            var mapMethodName = group.interfaceType.GetMethods().First(m => m.Name.StartsWith("Map")).Name;
+            var mapMethodName = group.interfaceType.GetMethods().First(m => m.Name.StartsWith("Map", StringComparison.Ordinal)).Name;
             
             var endpoints = app.Services.GetServices(group.interfaceType);
             foreach (var endpoint in endpoints)
