@@ -6,7 +6,7 @@ using Google.Apis.Services;
 
 namespace BookHeaven.Server.Features.Metadata.Services;
 
-public class GoogleBooksProvider(ILogger<GoogleBooksProvider> logger) : IMetadataProvider
+public sealed class GoogleBooksProvider(ILogger<GoogleBooksProvider> logger) : IMetadataProvider
 {
     private readonly List<string> _dateFormats = ["yyyy-MM-dd", "yyyy-MM", "yyyy"];
     

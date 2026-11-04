@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 
 namespace BookHeaven.Server.Features.Settings.Services;
 
-public class SettingsManagerService(IOptions<CoreOptions> options) : ISettingsManagerService
+public sealed class SettingsManagerService(IOptions<CoreOptions> options) : ISettingsManagerService
 {
     private const string SettingsFileName = "settings.json";
     

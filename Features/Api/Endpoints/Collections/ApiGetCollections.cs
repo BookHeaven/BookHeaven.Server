@@ -7,7 +7,7 @@ namespace BookHeaven.Server.Features.Api.Endpoints.Collections;
 
 public static class ApiGetCollections
 {
-    public class Endpoint : IEndpoint
+    public sealed class Endpoint : IEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)
         {

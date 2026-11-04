@@ -4,7 +4,7 @@ namespace BookHeaven.Server.Features.Api.Endpoints;
 
 public static class Ping
 {
-    public class Endpoint : IEndpoint
+    public sealed class Endpoint : IEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)
         {

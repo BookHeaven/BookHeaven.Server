@@ -4,7 +4,7 @@ using BookHeaven.Server.Features.Files.DTOs;
 
 namespace BookHeaven.Server.Features.Files.Services;
 
-public class EbookLoadNotifier : IEbookLoadNotifier
+public sealed class EbookLoadNotifier : IEbookLoadNotifier
 {
     private const int MaxHistorySize = 500;
     public event Action<EbookLoadNotificationDto>? OnNotificationPublished;

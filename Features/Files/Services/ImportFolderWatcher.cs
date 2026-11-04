@@ -6,7 +6,7 @@ using BookHeaven.Server.Features.Files.Enums;
 
 namespace BookHeaven.Server.Features.Files.Services;
 
-public class ImportFolderWatcher(
+public sealed class ImportFolderWatcher(
     ILogger<ImportFolderWatcher> logger, 
     IEbookFileLoader epubService,
     IEbookLoadNotifier loadNotifier) 

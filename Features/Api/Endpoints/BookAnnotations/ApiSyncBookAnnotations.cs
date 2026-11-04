@@ -12,7 +12,7 @@ public static class ApiSyncBookAnnotations
         List<BookAnnotation> Annotations,
         List<Guid> DeletedAnnotationIds);
     
-    public class Endpoint : IEndpoint
+    public sealed class Endpoint : IEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)
         {

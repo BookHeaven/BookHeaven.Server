@@ -8,7 +8,7 @@ using OpenLibraryNET;
 
 namespace BookHeaven.Server.Features.Metadata.Services;
 
-public class OpenLibraryProvider(ILogger<OpenLibraryProvider> logger) : IMetadataProvider
+public sealed class OpenLibraryProvider(ILogger<OpenLibraryProvider> logger) : IMetadataProvider
 {
 	private readonly List<string> _dateFormats = ["yyyy-MM-dd", "yyyy-MM", "yyyy"];
 	

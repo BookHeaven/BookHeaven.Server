@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 
 namespace BookHeaven.Server.Features.Authentication.Services;
 
-public class AuthenticationService(
+public sealed class AuthenticationService(
     AuthenticationStateProvider stateProvider,
     ISender sender)
     : IAuthenticationService

@@ -3,7 +3,7 @@ using BookHeaven.Server.Features.Metadata.Services;
 
 namespace BookHeaven.Server.Features.Metadata.Factories;
 
-public class MetadataProvidersFactory(IServiceProvider serviceProvider)
+public sealed class MetadataProvidersFactory(IServiceProvider serviceProvider)
 {
     public enum MetadataProvider
     {

@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 
 namespace BookHeaven.Server.Middlewares;
 
-public class CoverNotFoundMiddleware(RequestDelegate next)
+public sealed class CoverNotFoundMiddleware(RequestDelegate next)
 {
 
     public async Task InvokeAsync(HttpContext context, IOptions<CoreOptions> options)

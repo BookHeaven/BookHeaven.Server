@@ -1,6 +1,6 @@
 ﻿namespace BookHeaven.Server.Features.Metadata.DTOs;
 
-public class BookMetadata
+public sealed class BookMetadata
 {
 	public string Title { get; set; } = string.Empty;
 	public string? Series { get; set; }

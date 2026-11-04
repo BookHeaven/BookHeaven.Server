@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 namespace BookHeaven.Server.Services;
 
-public class LocalReaderSettingsService(ProtectedLocalStorage protectedLocalStorage) : IReaderSettingsService
+public sealed class LocalReaderSettingsService(ProtectedLocalStorage protectedLocalStorage) : IReaderSettingsService
 {
     private const string KeyPrefix = "ReaderSettings";
     private static string LocalStorageKey(Guid profileId) => $"{KeyPrefix}_{profileId}";

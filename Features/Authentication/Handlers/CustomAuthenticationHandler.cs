@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 
 namespace BookHeaven.Server.Features.Authentication.Handlers;
 
-public class CustomAuthenticationHandler(IOptionsMonitor<CustomAuthOptions> options, ILoggerFactory logger, UrlEncoder encoder)
+public sealed class CustomAuthenticationHandler(IOptionsMonitor<CustomAuthOptions> options, ILoggerFactory logger, UrlEncoder encoder)
     : AuthenticationHandler<CustomAuthOptions>(options, logger, encoder) 
 {
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -15,7 +15,7 @@ public class CustomAuthenticationHandler(IOptionsMonitor<CustomAuthOptions> opti
     }
 }
 
-public class CustomAuthOptions : AuthenticationSchemeOptions
+public sealed class CustomAuthOptions : AuthenticationSchemeOptions
 {
     // Add any custom options here if needed in the future
 }

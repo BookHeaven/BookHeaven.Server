@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Components.Forms;
 
 namespace BookHeaven.Server.Features.Files.Services;
 
-public class EbookFileLoader(
+public sealed class EbookFileLoader(
 	IEbookManagerProvider ebookManagerProvider,
 	ISender sender, 
 	ILogger<EbookFileLoader> logger)

@@ -5,7 +5,7 @@ namespace BookHeaven.Server.Features.Api.Endpoints.Authors;
 
 public static class ApiGetAuthors
 {
-    public class Endpoint : IEndpoint
+    public sealed class Endpoint : IEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)
         {

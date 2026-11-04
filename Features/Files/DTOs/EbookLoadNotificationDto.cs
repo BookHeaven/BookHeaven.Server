@@ -2,7 +2,7 @@
 
 namespace BookHeaven.Server.Features.Files.DTOs;
 
-public class EbookLoadNotificationDto
+public sealed class EbookLoadNotificationDto
 {
     public Guid ItemId { get; init; }
     public string FileName { get; init; } = string.Empty;

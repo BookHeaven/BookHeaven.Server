@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 namespace BookHeaven.Server.Features.Authorization.Services;
 
-public class IdentityStateProvider(
+public sealed class IdentityStateProvider(
     ProtectedLocalStorage protectedLocalStorage,
     ISender sender) : AuthenticationStateProvider
 {

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace BookHeaven.Server.Middlewares;
 
-public class ETagMiddleware(RequestDelegate next, string requestPrefix, string physicalBasePath)
+public sealed class ETagMiddleware(RequestDelegate next, string requestPrefix, string physicalBasePath)
 {
     private readonly RequestDelegate _next = next ?? throw new ArgumentNullException(nameof(next));
     private readonly string _requestPrefix = requestPrefix ?? throw new ArgumentNullException(nameof(requestPrefix));

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace BookHeaven.Server.Services;
 
-public class AlertService(ISnackbar snackbar, IDialogService dialogService) : IAlertService
+public sealed class AlertService(ISnackbar snackbar, IDialogService dialogService) : IAlertService
 {
     public async Task ShowAlertAsync(string title, string message, string cancel = "OK")
     {

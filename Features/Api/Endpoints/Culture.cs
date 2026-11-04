@@ -5,7 +5,7 @@ namespace BookHeaven.Server.Features.Api.Endpoints;
 
 public static class Culture
 {
-    public class Endpoint : IEndpoint
+    public sealed class Endpoint : IEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)
         {

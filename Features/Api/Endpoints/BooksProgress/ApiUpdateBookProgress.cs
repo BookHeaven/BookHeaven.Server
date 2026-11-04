@@ -6,7 +6,7 @@ namespace BookHeaven.Server.Features.Api.Endpoints.BooksProgress;
 
 public static class ApiUpdateBookProgress
 {
-    public class Endpoint : IEndpoint
+    public sealed class Endpoint : IEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)
         {

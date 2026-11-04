@@ -7,7 +7,7 @@ namespace BookHeaven.Server.Features.Api.Endpoints.Opds;
 
 public static class OpdsV1
 {
-    public class Endpoint : IOpdsEndpoint
+    public sealed class Endpoint : IOpdsEndpoint
     {
         public void MapOpdsEndpoint(IEndpointRouteBuilder app)
         {

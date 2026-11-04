@@ -5,7 +5,7 @@ namespace BookHeaven.Server.Features.Api.Endpoints.BooksProgress;
 
 public static class ApiGetAllBooksProgressByProfile
 {
-    public class Endpoint : IEndpoint
+    public sealed class Endpoint : IEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)
         {

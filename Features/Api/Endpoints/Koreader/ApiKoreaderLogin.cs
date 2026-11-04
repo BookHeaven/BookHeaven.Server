@@ -5,7 +5,7 @@ namespace BookHeaven.Server.Features.Api.Endpoints.Koreader;
 
 public static class ApiKoreaderLogin
 {
-    public class Endpoint : IKoreaderSyncEndpoint
+    public sealed class Endpoint : IKoreaderSyncEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)
         {

@@ -6,7 +6,7 @@ namespace BookHeaven.Server.Features.Api.Endpoints.Koreader;
 
 public static class ApiGetKoreaderProgress
 {
-    public class Endpoint : IKoreaderSyncEndpoint
+    public sealed class Endpoint : IKoreaderSyncEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)
         {

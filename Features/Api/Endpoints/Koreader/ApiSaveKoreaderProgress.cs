@@ -11,7 +11,7 @@ public static class ApiSaveKoreaderProgress
 {
     private static readonly Regex DocFragmentRegex = new("DocFragment\\[(\\d+)\\]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-    private class KOReaderDocumentRequest
+    private sealed class KOReaderDocumentRequest
     {
         public string document { get; set; } = null!;
         public string progress { get; set; } = null!;
@@ -20,7 +20,7 @@ public static class ApiSaveKoreaderProgress
         public string device_id { get; set; } = null!;
     }
     
-    public class Endpoint : IKoreaderSyncEndpoint
+    public sealed class Endpoint : IKoreaderSyncEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)
         {

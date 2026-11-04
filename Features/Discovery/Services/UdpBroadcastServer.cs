@@ -5,7 +5,7 @@ using BookHeaven.Core.Constants;
 
 namespace BookHeaven.Server.Features.Discovery.Services;
 
-public class UdpBroadcastServer(ILogger<UdpBroadcastServer> logger) : BackgroundService
+public sealed class UdpBroadcastServer(ILogger<UdpBroadcastServer> logger) : BackgroundService
 {
     private readonly int _maxRetries = 5;
     private readonly string _message = $"{Broadcast.SERVER_URL_MESSAGE_PREFIX}{Environment.GetEnvironmentVariable("SERVER_URL")}";
