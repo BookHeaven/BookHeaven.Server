@@ -23,7 +23,7 @@ public sealed class CoverNotFoundMiddleware(RequestDelegate next)
             return;
         }
 
-        var physicalPath = Path.Combine(options.Value.CoversPath, relPath.Replace('/', Path.DirectorySeparatorChar));
+        var physicalPath = Path.Combine(options.Value.CoversPath, relPath);
         var fileInfo = new FileInfo(physicalPath);
         if (fileInfo.Exists)
         {
