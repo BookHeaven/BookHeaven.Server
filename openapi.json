@@ -731,7 +731,8 @@
         "required": [
           "bookId",
           "profileId",
-          "annotations"
+          "annotations",
+          "deletedAnnotationIds"
         ],
         "type": "object",
         "properties": {
