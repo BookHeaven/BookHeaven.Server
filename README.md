@@ -103,6 +103,10 @@ podman run -d --name bookheaven --userns=keep-id \
   ghcr.io/bookheaven/bookheaven-server:latest
 ```
 
+## :cloud: One-Click Deploy
+
+[![Deploy on RepoCloud](https://d16t0pc4846x52.cloudfront.net/deploylobe.svg)](https://repocloud.io/details/BookHeaven%20Server/)
+
 ## :memo: API reference
 The API reference can be found [here](https://bookheaven.ggarrido.dev/api-reference).
 
