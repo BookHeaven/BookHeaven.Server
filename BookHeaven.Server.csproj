@@ -49,7 +49,7 @@
     <Content Remove="wwwroot\logo.svg" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Google.Apis.Books.v1" Version="1.74.0.3331" />
+    <PackageReference Include="Google.Apis.Books.v1" Version="1.78.0.3331" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.14" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.14">
       <PrivateAssets>all</PrivateAssets>
@@ -60,9 +60,9 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="MudBlazor" Version="9.12.0" />
-    <PackageReference Include="MudExRichTextEditor" Version="9.5.5" />
+    <PackageReference Include="MudExRichTextEditor" Version="9.5.7" />
     <PackageReference Include="OpenLibrary.NET" Version="0.1.3" />
-    <PackageReference Include="Scalar.AspNetCore" Version="2.18.7" />
+    <PackageReference Include="Scalar.AspNetCore" Version="2.19.0" />
     <PackageReference Include="HarfBuzzSharp.NativeAssets.Linux" Version="14.2.1.400" />
     <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="4.154.0" />
     <PackageReference Include="Toolbelt.Blazor.ViewTransition" Version="2.0.0" />
