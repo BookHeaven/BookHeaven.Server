@@ -1,6 +1,6 @@
-﻿@using System.Globalization
+@using System.Globalization
 @using BookHeaven.Core.DOM.Text.Abstractions
-@using BookHeaven.Core.DOM.Text.Enums
+@using BookHeaven.Core.Features.Reader.Enums
 @using BookHeaven.Core.Features.Reader.Abstractions
 @using BookHeaven.Core.Features.Reader.Models
 @using BookHeaven.Server.Components.Pages.Reader.Components
@@ -9,6 +9,7 @@
 @using BookHeaven.Server.Features.Authentication.Abstractions
 @attribute [Route($"{Urls.Reader}/{{BookId:guid}}")]
 @layout EmptyLayout
+@implements IReaderViewAdapter
 @implements IAsyncDisposable
 <!--suppress CssUnresolvedCustomProperty -->
 <style>
@@ -169,9 +170,9 @@
 	}
 </style>
 
-@if (!ReaderService.IsReady)
+@if (IsInitialLoadInProgress)
 {
-	<div class="fixed inset-0 z-10000 flex items-center justify-center">
+	<div class="inset-0 fixed z-10000 flex items-center justify-center">
 		<MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
 	</div>
 }
@@ -184,23 +185,23 @@ else {
 		Chapters="@ReaderService.State?.Ebook?.Content.TableOfContents"
 		CurrentChapterId="@ReaderService.State?.CurrentChapter?.Identifier"/>
 </MudDrawer>
-<div class="flex h-dvh w-dvw flex-col 2xl:relative 2xl:px-50 2xl:py-20 @(ReaderService.IsReady ? "" : "opacity-0")">
-	<div class="flex items-center gap-2 2xl:absolute 2xl:inset-x-0 2xl:top-0 2xl:p-5">
+<div class="flex h-dvh w-dvw flex-col 2xl:relative 2xl:px-50 2xl:py-20 @(ReaderService.PageCalculationState is ReaderPageCalculationState.Ready or ReaderPageCalculationState.RecalculatingPages ? "" : "opacity-0")">
+	<div class="gap-2 2xl:absolute 2xl:inset-x-0 2xl:top-0 2xl:p-5 flex items-center">
 		<GoBackButton/>
-		@if (ReaderService.IsReady)
+		@if (!IsInitialLoadInProgress)
 		{
 			<span class="xl:text-lg">@ReaderService.State?.Ebook?.Title</span>
-			<div class="ms-auto flex items-center 2xl:gap-2">
+			<div class="2xl:gap-2 ms-auto flex items-center">
 				<MudIconButton Icon="@Icons.Material.Filled.TextFields" OnClick="OpenTextSettingsDialog"/>
 				<MudIconButton Icon="@Icons.Material.Filled.Settings" OnClick="OpenPageSettingsDialog"/>
 				<MudIconButton Icon="@(_isFullscreen ? Icons.Material.Filled.FullscreenExit : Icons.Material.Filled.Fullscreen)" OnClick="ToggleFullscreen"/>
 			</div>
 		}
 	</div>
-	<div class="relative flex flex-1 bg-white dark:bg-neutral-900">
+	<div class="bg-white dark:bg-neutral-900 relative flex flex-1">
 		<NavigationOverlay />
-		<div id="viewer" class="flex-1 overflow-hidden @(_readerState == ReaderState.Ready ? "" : "opacity-0")">
-			<span class="page-divider absolute inset-y-0 left-[50%] -translate-x-1/2 border border-neutral-200 dark:border-neutral-600"></span>
+		<div id="viewer" class="flex-1 overflow-hidden @(ReaderService.FlowState == ReaderFlowState.Ready ? "" : "opacity-0")">
+			<span class="page-divider inset-y-0 border-neutral-200 dark:border-neutral-600 absolute left-[50%] -translate-x-1/2 border"></span>
 			<div class="chapter current @(string.Join(" ", ReaderService.State?.CurrentChapter?.Stylesheets.Select(s => "stylesheet-" + s) ?? []))">
 				@if (ReaderService.State?.CurrentChapter is not null)
 				{
@@ -209,16 +210,16 @@ else {
 			</div>
 		</div>
 	</div>
-	<div class="grid grid-cols-[50px_1fr_50px] items-center gap-2 px-2 2xl:absolute 2xl:inset-x-0 2xl:bottom-0 2xl:p-5">
+	<div class="gap-2 px-2 2xl:absolute 2xl:inset-x-0 2xl:bottom-0 2xl:p-5 grid grid-cols-[50px_1fr_50px] items-center">
 		<span>
 			<MudIconButton Icon="@Icons.Material.Filled.List" OnClick="() => _showIndex = !_showIndex" Edge="Edge.Start"/>
 		</span>
-		<div class="flex items-center flex-wrap">
-			<span class="mx-auto text-nowrap pt-2">
+		<div class="flex flex-wrap items-center">
+			<span class="pt-2 mx-auto text-nowrap">
 				@ReaderService.State?.ChapterTitle
 				( @ReaderService.State?.PageNumber / @ReaderService.State?.TotalPages )
 			</span>
-			<div class="flex items-center mx-auto">
+			<div class="mx-auto flex items-center">
 				<MudIconButton Icon="@Icons.Material.Filled.ChevronLeft" OnClick="() => ReaderService.PreviousPage()"/>
 				<MudIconButton Icon="@Icons.Material.Filled.KeyboardDoubleArrowLeft" OnClick="() => ReaderService.PreviousChapter()"/>
 				<MudIconButton Icon="@Icons.Material.Filled.KeyboardDoubleArrowRight" OnClick="() => ReaderService.NextChapter()"/>
@@ -242,10 +243,8 @@ else {
 	private DotNetObjectReference<Reader> _dotNetReference = null!;
 	private IJSObjectReference? _module;
 	
-	private ReaderState _readerState = ReaderState.Uninitialized;
-	private bool _recountPagesOnNextRender;
-	private Guid _assetLoadToken = Guid.NewGuid();
-	
+	private bool IsInitialLoadInProgress =>
+		ReaderService.FlowState is not (ReaderFlowState.Ready or ReaderFlowState.WaitingForChapterAssets);
 	private bool _isFullscreen;
 	private bool _showIndex;
 
@@ -257,8 +256,7 @@ else {
 		ReaderSettingsService.OnSettingChanged += OnSettingChanged;
 
 		var selectedProfile = await AuthenticationService.GetSelectedProfileAsync();
-		await ReaderService.InitializeAsync(BookId, selectedProfile!.ProfileId);
-		_readerState = ReaderState.Initialized;
+		await ReaderService.InitializeAsync(BookId, selectedProfile!.ProfileId, this);
 	}
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -270,53 +268,11 @@ else {
 			await _module.InvokeVoidAsync("Initialize", _dotNetReference);
 		}
 		
-		if(_module is null) return;
+		if (_module is null) return;
 
-		switch (_readerState)
+		if (await ReaderService.AdvanceViewAsync())
 		{
-			case ReaderState.Initialized:
-				var readerContext = await GetReaderContextAsync();
-				await ReaderService.LoadCachedPagesAsync(readerContext);
-				if (ReaderService.State?.PagesPerChapter.Length > 0)
-				{
-					ReaderService.NavigateToInitialPage();
-				}
-				else
-				{
-					await UpdateTotalPages();
-				}
-				_assetLoadToken = Guid.NewGuid();
-				_readerState = ReaderState.WaitingForAssets;
-				StateHasChanged();
-				break;
-			case ReaderState.WaitingForAssets:
-				var assetLoadToken = _assetLoadToken;
-				await _module!.InvokeVoidAsync("WaitForAssetsToLoad");
-				if (assetLoadToken != _assetLoadToken || _readerState != ReaderState.WaitingForAssets)
-				{
-					break;
-				}
-
-				_readerState = ReaderState.Ready;
-				StateHasChanged();
-				break;
-		}
-		
-		if (_recountPagesOnNextRender)
-		{
-			_recountPagesOnNextRender = false;
-			_ = UpdateTotalPages();
-		}
-	}
-	
-	private async Task UpdateTotalPages()
-	{
-		if(_module is null) return;
-		var context = await GetReaderContextAsync();
-		await ReaderService.CalculatePagesAsync(context);
-		if (!ReaderService.IsReady)
-		{
-			ReaderService.NavigateToInitialPage();
+			StateHasChanged();
 		}
 	}
 
@@ -327,32 +283,29 @@ else {
 
 	private void OnChapterChanged()
 	{
-		_assetLoadToken = Guid.NewGuid();
-		_readerState = ReaderState.WaitingForAssets;
 		RefreshUi();
 	}
 
 	private void OnSettingChanged(string? settingName)
 	{
-		_recountPagesOnNextRender = true;
+		ReaderService.RequestPageRecount();
 		RefreshUi();
 	}
 	
-	private async Task<ReaderContext> GetReaderContextAsync()
+	async Task<ReaderContext> IReaderViewAdapter.GetReaderContextAsync()
 	{
 		if(_module is null) throw new InvalidOperationException("JS module is not initialized.");
 		var info = await _module.InvokeAsync<ReaderContextInfo>("GetReaderContext");
-		var mode = info.Engine == "gecko" ? LineBreakingMode.Firefox : LineBreakingMode.Chrome;
-		return new ReaderContext
-		{
-			ViewportWidth = info.ViewportWidth,
-			ViewportHeight = info.ViewportHeight,
-			PageWidth = (int)info.PageWidth,
-			PageHeight = (int)info.PageHeight,
-			LineBreakingMode = mode,
-			ColumnCount = info.ColumnCount
-		};
+		return ReaderContext.FromBrowserInfo(info);
 	}
+
+	async Task IReaderViewAdapter.WaitForAssetsToLoadAsync()
+	{
+		if (_module is null) throw new InvalidOperationException("JS module is not initialized.");
+		await _module.InvokeVoidAsync("WaitForAssetsToLoad");
+	}
+
+	Task IReaderViewAdapter.RestoreHighlightsAsync() => Task.CompletedTask;
 
 	[JSInvokable("OnKeyDown")]
 	public void OnKeyDown(string key)
@@ -371,8 +324,9 @@ else {
 	[JSInvokable("OnViewportChanged")]
 	public async Task OnViewportChanged()
 	{
-		if(!ReaderService.IsReady || _readerState != ReaderState.Ready) return;
-		_recountPagesOnNextRender = true;
+		if(ReaderService.PageCalculationState is not (ReaderPageCalculationState.Ready or ReaderPageCalculationState.RecalculatingPages)
+		   || ReaderService.FlowState != ReaderFlowState.Ready) return;
+		ReaderService.RequestPageRecount();
 		await InvokeAsync(StateHasChanged);
 	}
 	private async Task OpenTextSettingsDialog()
@@ -425,13 +379,4 @@ else {
 
 	}
 	
-	private record ReaderContextInfo(int ViewportWidth, int ViewportHeight, double PageWidth, double PageHeight, string Engine, int ColumnCount);
-	
-	private enum ReaderState
-	{
-		Uninitialized,
-		Initialized,
-		WaitingForAssets,
-		Ready
-	}
 }
