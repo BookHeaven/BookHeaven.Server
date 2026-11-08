@@ -1,6 +1,5 @@
 @using System.Globalization
 @using BookHeaven.Core.DOM.Text.Abstractions
-@using BookHeaven.Core.Features.Reader.Enums
 @using BookHeaven.Core.Features.Reader.Abstractions
 @using BookHeaven.Core.Features.Reader.Models
 @using BookHeaven.Server.Components.Pages.Reader.Components
@@ -170,7 +169,7 @@
 	}
 </style>
 
-@if (IsInitialLoadInProgress)
+@if (!ReaderService.IsInitialLoadReady)
 {
 	<div class="inset-0 fixed z-10000 flex items-center justify-center">
 		<MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
@@ -185,10 +184,10 @@ else {
 		Chapters="@ReaderService.State?.Ebook?.Content.TableOfContents"
 		CurrentChapterId="@ReaderService.State?.CurrentChapter?.Identifier"/>
 </MudDrawer>
-<div class="flex h-dvh w-dvw flex-col 2xl:relative 2xl:px-50 2xl:py-20 @(ReaderService.PageCalculationState is ReaderPageCalculationState.Ready or ReaderPageCalculationState.RecalculatingPages ? "" : "opacity-0")">
+<div class="flex h-dvh w-dvw flex-col 2xl:relative 2xl:px-50 2xl:py-20 @(ReaderService.IsInitialLoadReady ? "" : "opacity-0")">
 	<div class="gap-2 2xl:absolute 2xl:inset-x-0 2xl:top-0 2xl:p-5 flex items-center">
 		<GoBackButton/>
-		@if (!IsInitialLoadInProgress)
+		@if (ReaderService.IsInitialLoadReady)
 		{
 			<span class="xl:text-lg">@ReaderService.State?.Ebook?.Title</span>
 			<div class="2xl:gap-2 ms-auto flex items-center">
@@ -200,7 +199,7 @@ else {
 	</div>
 	<div class="bg-white dark:bg-neutral-900 relative flex flex-1">
 		<NavigationOverlay />
-		<div id="viewer" class="flex-1 overflow-hidden @(ReaderService.FlowState == ReaderFlowState.Ready ? "" : "opacity-0")">
+		<div id="viewer" class="flex-1 overflow-hidden @(ReaderService.IsCurrentChapterLoaded ? "" : "opacity-0")">
 			<span class="page-divider inset-y-0 border-neutral-200 dark:border-neutral-600 absolute left-[50%] -translate-x-1/2 border"></span>
 			<div class="chapter current @(string.Join(" ", ReaderService.State?.CurrentChapter?.Stylesheets.Select(s => "stylesheet-" + s) ?? []))">
 				@if (ReaderService.State?.CurrentChapter is not null)
@@ -217,7 +216,7 @@ else {
 		<div class="flex flex-wrap items-center">
 			<span class="pt-2 mx-auto text-nowrap">
 				@ReaderService.State?.ChapterTitle
-				( @ReaderService.State?.PageNumber / @ReaderService.State?.TotalPages )
+				( @ReaderService.State?.PageNumber / @(ReaderService.IsCalculatingPages ? "..." : ReaderService.State?.TotalPages) )
 			</span>
 			<div class="mx-auto flex items-center">
 				<MudIconButton Icon="@Icons.Material.Filled.ChevronLeft" OnClick="() => ReaderService.PreviousPage()"/>
@@ -243,8 +242,6 @@ else {
 	private DotNetObjectReference<Reader> _dotNetReference = null!;
 	private IJSObjectReference? _module;
 	
-	private bool IsInitialLoadInProgress =>
-		ReaderService.FlowState is not (ReaderFlowState.Ready or ReaderFlowState.WaitingForChapterAssets);
 	private bool _isFullscreen;
 	private bool _showIndex;
 
@@ -324,8 +321,7 @@ else {
 	[JSInvokable("OnViewportChanged")]
 	public async Task OnViewportChanged()
 	{
-		if(ReaderService.PageCalculationState is not (ReaderPageCalculationState.Ready or ReaderPageCalculationState.RecalculatingPages)
-		   || ReaderService.FlowState != ReaderFlowState.Ready) return;
+		if (!ReaderService.IsCurrentChapterLoaded) return;
 		ReaderService.RequestPageRecount();
 		await InvokeAsync(StateHasChanged);
 	}
