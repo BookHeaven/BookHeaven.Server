@@ -83,7 +83,6 @@ public partial class BookPage
 	private void EnableEditing()
 	{
 		IsEditing = true;
-		StateHasChanged();
 	}
 
 	private async Task DisableEditing(bool revertChanges = false)
@@ -274,7 +273,6 @@ public partial class BookPage
 			_book.ISBN10 = metadata.Isbn10 ?? _book.ISBN10;
 			_book.ISBN13 = metadata.Isbn13 ?? _book.ISBN13;
 			if(!string.IsNullOrWhiteSpace(metadata.Description)) _book.Description = metadata.Description;
-			StateHasChanged();
 		}
 	}
 
@@ -290,7 +288,6 @@ public partial class BookPage
 		if (result?.Canceled == false && !string.IsNullOrWhiteSpace(result.Data as string))
 		{
 			_newCoverTempPath = result.Data as string;
-			StateHasChanged();
 		}
 	}
 		
