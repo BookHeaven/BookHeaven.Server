@@ -3,7 +3,7 @@
 
 <AppShell>
 	<CascadingAuthenticationState>
-		<ViewTransitionRouter AppAssembly="@typeof(Program).Assembly">
+		<Router AppAssembly="@typeof(Program).Assembly" OnNavigateAsync="OnNavigateAsync">
 			<Found Context="routeData">
 				<AuthorizeRouteView RouteData="routeData">
 					<NotAuthorized>
@@ -22,11 +22,26 @@
 			<NotFound>
 				<LayoutView Layout="@typeof(EmptyLayout)">
 					<PageTitle>404 - Not found</PageTitle>
-					<div class="absolute inset-0 flex flex-col items-center justify-center">
+					<div class="inset-0 absolute flex flex-col items-center justify-center">
 						<h1 class="text-5xl mb-5">Whatever you are looking for, it's gone</h1>
 					</div>
 				</LayoutView>
 			</NotFound>
-		</ViewTransitionRouter>
+		</Router>
 	</CascadingAuthenticationState>
 </AppShell>
+
+@code
+{
+	[Inject] private IViewTransition ViewTransition { get; set; } = null!;
+	
+	private async Task OnNavigateAsync()
+	{
+		await ViewTransition.BeginAsync();
+	}
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		await ViewTransition.EndAsync();
+	}
+}

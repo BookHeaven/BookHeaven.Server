@@ -25,6 +25,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Scalar.AspNetCore;
 using BookHeaven.Server.Middlewares;
+using Toolbelt.Blazor.Extensions.DependencyInjection;
 
 var appDataPath = Path.Combine(Directory.GetCurrentDirectory(), "data");
 
@@ -36,6 +37,7 @@ builder.Services.AddLocalization(options => options.ResourcesPath = "Localizatio
 
 builder.Services.AddRazorComponents()
 	.AddInteractiveServerComponents();
+builder.Services.AddViewTransition();
 
 builder.Services.AddDataProtection()
 	.SetApplicationName("BookHeaven")
