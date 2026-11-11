@@ -21,8 +21,8 @@
 
 @if (BookManager.IsEmpty)
 {
-	<div class="absolute inset-0 flex items-center justify-center text-center">
-		<span class="text-2xl 2xl:text-4xl text-balance text-neutral-300">@Translations.SHELF_EMPTY</span>
+	<div class="inset-0 absolute flex items-center justify-center text-center">
+		<span class="text-2xl 2xl:text-4xl text-neutral-300 text-balance">@Translations.SHELF_EMPTY</span>
 	</div>
 	return;
 }
@@ -100,15 +100,15 @@
 				</MudButton>
 				<MudSpacer/>
 			
-				<span class="ms-auto text-nowrap font-bold">@_selectedBooks.Count selected</span>
+				<span class="font-bold ms-auto text-nowrap">@_selectedBooks.Count selected</span>
 			}
 		</BottomToolbar>
 	}
 }
 else
 {
-	<div class="absolute inset-0 flex items-center justify-center text-center">
-		<span class="text-2xl 2xl:text-4xl text-balance text-neutral-300">@Translations.SHELF_FILTER_NO_RESULTS</span>
+	<div class="inset-0 absolute flex items-center justify-center text-center">
+		<span class="text-2xl 2xl:text-4xl text-neutral-300 text-balance">@Translations.SHELF_FILTER_NO_RESULTS</span>
 	</div>
 }
 
@@ -260,7 +260,14 @@ else
 	{
 		GlobalEventsService.Unsubscribe<BookAdded>(OnBookAdded);
 		GlobalEventsService.Unsubscribe<BookDeleted>(OnBookDeleted);
-		JsRuntime.InvokeVoidAsync("saveScrollPosition", Urls.Shelf);
+		try
+		{
+			JsRuntime.InvokeVoidAsync("saveScrollPosition", Urls.Shelf);
+		}
+		catch
+		{
+			// Ignore errors
+		}
 	}
 
 }
