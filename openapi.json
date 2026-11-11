@@ -1,5 +1,5 @@
 {
-  "openapi": "3.1.1",
+  "openapi": "3.2.0",
   "info": {
     "title": "BookHeaven.Server | v1",
     "version": "1.0.0"
@@ -1167,31 +1167,31 @@
   },
   "tags": [
     {
-      "name": "Reading History"
-    },
-    {
-      "name": "Profiles"
-    },
-    {
-      "name": "Fonts"
-    },
-    {
-      "name": "Collections"
-    },
-    {
-      "name": "Books"
-    },
-    {
-      "name": "Book Progress"
+      "name": "Authors"
     },
     {
       "name": "Book Annotations"
     },
     {
-      "name": "Authors"
+      "name": "Book Progress"
+    },
+    {
+      "name": "Books"
+    },
+    {
+      "name": "Collections"
+    },
+    {
+      "name": "Fonts"
     },
     {
       "name": "OPDS"
+    },
+    {
+      "name": "Profiles"
+    },
+    {
+      "name": "Reading History"
     }
   ]
 }
