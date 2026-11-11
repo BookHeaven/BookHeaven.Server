@@ -5,7 +5,8 @@
 @using BookHeaven.Server.Components.Pages.Reader.Components
 @using BookHeaven.Server.Components.Pages.Reader.Components.Settings
 @using BookHeaven.Server.Components.Pages.Reader.Components.TableOfContents
-@using BookHeaven.Server.Features.Authentication.Abstractions
+@using BookHeaven.Server.Features.Authentication.Models
+@using Microsoft.AspNetCore.Components.Authorization
 @attribute [Route($"{Urls.Reader}/{{BookId:guid}}")]
 @layout EmptyLayout
 @implements IReaderViewAdapter
@@ -231,12 +232,12 @@ else {
 	</div>
 </div>
 @code {
-	[Inject] private IAuthenticationService AuthenticationService { get; set; } = null!;
 	[Inject] private IReaderService ReaderService { get; set; } = null!;
 	[Inject] private IReaderSettingsService ReaderSettingsService { get; set; } = null!;
 	[Inject] private IJSRuntime JsRuntime { get; set; } = null!;
 	[Inject] private IDialogService DialogService { get; set; } = null!;
 
+	[CascadingParameter] private Task<AuthenticationState> AuthenticationStateTask { get; set; } = null!;
 	[Parameter] public Guid BookId { get; set; }
 	
 	private DotNetObjectReference<Reader> _dotNetReference = null!;
@@ -252,17 +253,25 @@ else {
 		ReaderService.OnTotalPagesChanged += RefreshUi;
 		ReaderSettingsService.OnSettingChanged += OnSettingChanged;
 
-		var selectedProfile = await AuthenticationService.GetSelectedProfileAsync();
-		await ReaderService.InitializeAsync(BookId, selectedProfile!.ProfileId, this);
+		var authenticationState = await AuthenticationStateTask;
+		var selectedProfile = authenticationState.User.ToSelectedProfile();
+		await ReaderService.InitializeAsync(BookId, selectedProfile.ProfileId, this);
 	}
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
 		if (firstRender)
 		{
-			_module = await JsRuntime.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Reader/Reader.razor.js");
-			_dotNetReference = DotNetObjectReference.Create(this);
-			await _module.InvokeVoidAsync("Initialize", _dotNetReference);
+			try
+			{
+				_module = await JsRuntime.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Reader/Reader.razor.js");
+				_dotNetReference = DotNetObjectReference.Create(this);
+				await _module.InvokeVoidAsync("Initialize", _dotNetReference);
+			}
+			catch (Exception ex)
+			{
+				throw new Exception("Error initializing reader JS module", ex);
+			}
 		}
 		
 		if (_module is null) return;
@@ -292,14 +301,28 @@ else {
 	async Task<ReaderContext> IReaderViewAdapter.GetReaderContextAsync()
 	{
 		if(_module is null) throw new InvalidOperationException("JS module is not initialized.");
-		var info = await _module.InvokeAsync<ReaderContextInfo>("GetReaderContext");
-		return ReaderContext.FromBrowserInfo(info);
+		try
+		{
+			var info = await _module.InvokeAsync<ReaderContextInfo>("GetReaderContext");
+			return ReaderContext.FromBrowserInfo(info);
+		}
+		catch (JSException ex)
+		{
+			throw new InvalidOperationException("Failed to get reader context from JS.", ex);
+		}
 	}
 
 	async Task IReaderViewAdapter.WaitForAssetsToLoadAsync()
 	{
 		if (_module is null) throw new InvalidOperationException("JS module is not initialized.");
-		await _module.InvokeVoidAsync("WaitForAssetsToLoad");
+		try
+		{
+			await _module.InvokeVoidAsync("WaitForAssetsToLoad");
+		}
+		catch (Exception ex)
+		{
+			throw new InvalidOperationException("Failed to wait for assets to load in JS.", ex);
+		}
 	}
 
 	Task IReaderViewAdapter.RestoreHighlightsAsync() => Task.CompletedTask;
@@ -337,13 +360,20 @@ else {
 	private async Task ToggleFullscreen()
 	{
 		if(_module is null) return;
-		if (_isFullscreen)
+		try
 		{
-			await _module.InvokeVoidAsync("ExitFullscreen");
+			if (_isFullscreen)
+			{
+				await _module.InvokeVoidAsync("ExitFullscreen");
+			}
+			else
+			{
+				await _module.InvokeVoidAsync("EnterFullscreen");
+			}
 		}
-		else
+		catch (JSException ex)
 		{
-			await _module.InvokeVoidAsync("EnterFullscreen");
+			throw new InvalidOperationException("Failed to toggle fullscreen mode.", ex);
 		}
 	}
 	
@@ -371,7 +401,10 @@ else {
 				await _module.DisposeAsync();
 			}
 		}
-		catch {}
+		catch
+		{
+			// Ignore exceptions during disposal
+		}
 
 	}
 	
