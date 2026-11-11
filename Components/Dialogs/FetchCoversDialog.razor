@@ -2,7 +2,7 @@
 @using BookHeaven.Server.Features.Metadata.DTOs
 <MudDialog>
 	<DialogContent>
-		<div class="sticky top-0 py-3 mb-4 bg-(--mud-palette-surface)">
+		<div class="top-0 py-3 mb-4 sticky bg-(--mud-palette-surface)">
 			<MudTextField 
 				@bind-Value="Title" 
 				Variant="Variant.Outlined" 
@@ -14,10 +14,10 @@
 		</div>
 		@if (!_isLoaded)
 		{
-			<div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 p-3">
+			<div class="md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 p-3 grid grid-cols-1">
 				@for(var i = 0; i < 10; i++)
 				{
-					<div class="w-full h-[300px] bg-slate-600 animate-pulse"></div>
+					<div class="bg-slate-600 animate-pulse h-[300px] w-full"></div>
 				}
 			</div>
 		}
@@ -35,7 +35,7 @@
 		}
 		else
 		{
-			<div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 p-3">
+			<div class="md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 p-3 grid grid-cols-1">
 				@foreach (var coverUrl in _coverUrls)
 				{
 					<img 
@@ -76,7 +76,6 @@
 	{
 		if(string.IsNullOrWhiteSpace(Title)) return;
 		_isLoaded = false;
-		StateHasChanged();
 		var getCovers = await ImageProvider.GetCoversAsync(new MetadataRequest(Title, Author));
 		if (getCovers.IsSuccess)
 		{
@@ -87,7 +86,6 @@
 			_errorMessage = getCovers.Error.Description;
 		}
 		_isLoaded = true;
-		StateHasChanged();
 	}
 	
 	private void Apply()
