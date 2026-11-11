@@ -37,8 +37,15 @@
 	{
 		if (firstRender)
 		{
-			_jsModule = await JsRuntime.InvokeAsync<IJSObjectReference>("import", "./" + Assets["Components/Shared/VirtualGrid.razor.js"]);
-			await _jsModule.InvokeVoidAsync("observe", _containerRef, _dotNetRef);
+			try
+			{
+				_jsModule = await JsRuntime.InvokeAsync<IJSObjectReference>("import", "./" + Assets["Components/Shared/VirtualGrid.razor.js"]);
+				await _jsModule.InvokeVoidAsync("observe", _containerRef, _dotNetRef);
+			}
+			catch(Exception ex)
+			{
+				throw new Exception("Error initializing virtual grid", ex);
+			}
 		}
 	}
 
