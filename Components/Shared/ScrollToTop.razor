@@ -1,10 +1,17 @@
 ﻿@code {
-    [Inject] IJSRuntime JSRuntime { get; set; } = null!;
+    [Inject] IJSRuntime JsRuntime { get; set; } = null!;
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await JSRuntime.InvokeVoidAsync("scrollToTop");
+            try
+            {
+                await JsRuntime.InvokeVoidAsync("scrollToTop");
+            }
+            catch
+            {
+                // Ignore errors
+            }
         }
     }
 }
