@@ -11,7 +11,14 @@
 	{
 		if (string.IsNullOrEmpty(Url))
 		{
-			await JsRuntime.InvokeVoidAsync("history.back");
+			try
+			{
+				await JsRuntime.InvokeVoidAsync("history.back");
+			}
+			catch(Exception ex)
+			{
+				throw new Exception("Error navigating back", ex);
+			}
 		}
 		else
 		{
